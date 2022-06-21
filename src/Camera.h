@@ -16,8 +16,9 @@ public:
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
 		: m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
 		m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
-		m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch),
-		m_Context(GLContext::getTnstance())
+		m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch)
+		//m_Context(std::make_unique<GLContext>(GLContext::getTnstance()))
+		
 	{
 		updateCameraVectors();
 	}
@@ -26,8 +27,9 @@ public:
 		: m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED), 
 		m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
 		m_Position(glm::vec3(posX, posY, posZ)), m_WorldUp(glm::vec3(upX, upY, upZ)), 
-		m_Yaw(yaw), m_Pitch(pitch),
-		m_Context(GLContext::getTnstance())
+		m_Yaw(yaw), m_Pitch(pitch)
+		//m_Context(std::make_unique<GLContext>(GLContext::getTnstance()))
+		
 	{
 		
 		updateCameraVectors();
@@ -48,13 +50,16 @@ public:
 	inline const glm::vec3& Front() const { return m_Front; }
 	inline const glm::vec3& Right() const { return m_Right; }
 	
+	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 
 	~Camera() {}
 private:
 	void updateCameraVectors();
-	inline const float Velocity() const { return m_MovementSpeed * m_Context.DeltaTime(); }
+	inline const float Velocity() const { return m_MovementSpeed * 
+		GLContext::getTnstance().DeltaTime(); }
 
-	GLContext& m_Context;
+	//std::unique_ptr<GLContext> m_Context;
+	//GLContext& m_Context;
 
 	glm::vec3 m_Position;
 	glm::vec3 m_Up;

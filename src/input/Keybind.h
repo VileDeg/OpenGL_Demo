@@ -9,7 +9,7 @@ public:
 	Keybind(int id) : m_GlId(id) {}
 	~Keybind() {}
 
-	virtual void OnPress(Camera) const = 0;
+	virtual void OnPress() const = 0;
 	inline const int GlId() const { return m_GlId; }
 private:
 	int m_GlId;
@@ -21,7 +21,7 @@ public:
 	Keybind_Forward(int id) : Keybind(id) {}
 	~Keybind_Forward() {}
 
-	virtual void OnPress(Camera) const;	
+	virtual void OnPress() const;	
 };
 
 class Keybind_Backward : public Keybind
@@ -30,7 +30,7 @@ public:
 	Keybind_Backward(int id) : Keybind(id) {}
 	~Keybind_Backward() {}
 
-	virtual void OnPress(Camera) const;
+	virtual void OnPress() const;
 };
 
 class Keybind_Left : public Keybind
@@ -39,7 +39,7 @@ public:
 	Keybind_Left(int id) : Keybind(id) {}
 	~Keybind_Left() {}
 
-	virtual void OnPress(Camera) const;
+	virtual void OnPress() const;
 };
 
 class Keybind_Right : public Keybind
@@ -48,5 +48,14 @@ public:
 	Keybind_Right(int id) : Keybind(id) {}
 	~Keybind_Right() {}
 
-	virtual void OnPress(Camera) const;
+	virtual void OnPress() const;
+};
+
+class Keybind_CloseWindow : public Keybind
+{
+public:
+	Keybind_CloseWindow(int id) : Keybind(id) {}
+	~Keybind_CloseWindow() {}
+
+	virtual void OnPress() const;
 };

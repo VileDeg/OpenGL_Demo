@@ -5,7 +5,7 @@
 
 #include "math_headers.h"
 
-#include "GLContext.h"
+#include "globals.h"
 
 namespace test
 {
@@ -16,7 +16,7 @@ namespace test
     glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
     glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
     glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
-    GLContext& context = GLContext::getTnstance();
+    GLContext& context = g_GLContext;
 
     //float deltaTime = 0.0f;	// Time between current frame and last frame
     //float lastFrame = 0.0f; // Time of last frame

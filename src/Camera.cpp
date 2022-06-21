@@ -13,54 +13,27 @@ void Camera::updateCameraVectors()
 	m_Up = glm::normalize(glm::cross(m_Right, m_Front));
 }
 
-//void ProcessKeyboard(Camera_Movement direction, float deltaTime)
-//{
-//    float velocity = MovementSpeed * deltaTime;
-//    if (direction == FORWARD)
-//        Position += Front * velocity;
-//    if (direction == BACKWARD)
-//        Position -= Front * velocity;
-//    if (direction == LEFT)
-//        Position -= Right * velocity;
-//    if (direction == RIGHT)
-//        Position += Right * velocity;
-//}
-//
-//void processInput(GLFWwindow* window)
-//{
-//    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-//        glfwSetWindowShouldClose(window, true);
-//
-//    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-//        camera.ProcessKeyboard(FORWARD, deltaTime);
-//    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-//        camera.ProcessKeyboard(BACKWARD, deltaTime);
-//    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-//        camera.ProcessKeyboard(LEFT, deltaTime);
-//    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-//        camera.ProcessKeyboard(RIGHT, deltaTime);
-//}
-//
-//void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
-//{
-//    xoffset *= MouseSensitivity;
-//    yoffset *= MouseSensitivity;
-//
-//    Yaw += xoffset;
-//    Pitch += yoffset;
-//
-//    // make sure that when pitch is out of bounds, screen doesn't get flipped
-//    if (constrainPitch)
-//    {
-//        if (Pitch > 89.0f)
-//            Pitch = 89.0f;
-//        if (Pitch < -89.0f)
-//            Pitch = -89.0f;
-//    }
-//
-//    // update Front, Right and Up Vectors using the updated Euler angles
-//    updateCameraVectors();
-//}
+
+void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
+{
+    xoffset *= m_MouseSensitivity;
+    yoffset *= m_MouseSensitivity;
+
+    m_Yaw += xoffset;
+    m_Pitch += yoffset;
+
+    // make sure that when pitch is out of bounds, screen doesn't get flipped
+    if (constrainPitch)
+    {
+        if (m_Pitch > 89.0f)
+            m_Pitch = 89.0f;
+        if (m_Pitch < -89.0f)
+            m_Pitch = -89.0f;
+    }
+
+    // update Front, Right and Up Vectors using the updated Euler angles
+    updateCameraVectors();
+}
 //
 //// processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 //void ProcessMouseScroll(float yoffset)
