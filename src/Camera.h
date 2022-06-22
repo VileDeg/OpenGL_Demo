@@ -37,8 +37,8 @@ public:
 	
 	inline void MoveForward() { m_Position += m_Front * Velocity(); }
 	inline void MoveBackward() { m_Position -= m_Front * Velocity(); }
-	inline void MoveLeft() { m_Position += m_Right * Velocity(); }
-	inline void MoveRight() { m_Position -= m_Front * Velocity(); }
+	inline void MoveLeft() { m_Position -= m_Right * Velocity(); }
+	inline void MoveRight() { m_Position += m_Right * Velocity(); }
 
 	glm::mat4 GetViewMatrix()
 	{
@@ -51,6 +51,7 @@ public:
 	inline const glm::vec3& Right() const { return m_Right; }
 	
 	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+	void ProcessMouseScroll(float yoffset);
 
 	~Camera() {}
 private:

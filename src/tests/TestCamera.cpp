@@ -4,19 +4,25 @@
 #include "imgui/imgui.h"
 
 #include "math_headers.h"
+#include "GLContext.h"
+#include "input/InputManager.h"
 
-#include "globals.h"
 
 namespace test
 {
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+    /*glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
     glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-    glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);
-    GLContext& context = g_GLContext;
+    glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);*/
+    GLContext& context = GLContext::getTnstance();
+    InputManager& inputManager = InputManager::getInstance();
+
+    Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
+    
 
     //float deltaTime = 0.0f;	// Time between current frame and last frame
     //float lastFrame = 0.0f; // Time of last frame
@@ -98,6 +104,9 @@ namespace test
 		m_Shader->Use();
 		m_Shader->setInt("texture1", 0);
         m_Texture->Bind();
+
+        inputManager.SetCamera(&camera);
+        inputManager.HideCursor();
 	}
 
 	TestCamera::~TestCamera()
@@ -123,18 +132,20 @@ namespace test
             glm::mat4 identity = glm::mat4(1.0f);
 //            glm::mat4 scale = glm::scale(identity, glm::vec3(0.5f));
 
-
-            m_View = glm::translate(identity, glm::vec3(0.0f, 0.0f, -3.0f));
+            /*camera.ProcessMouseMovement(inputManager.xoffset, inputManager.yoffset);
+            inputManager.xoffset = 0.0f;
+            inputManager.yoffset = 0.0f;*/
+           /* m_View = glm::translate(identity, glm::vec3(0.0f, 0.0f, -3.0f));
             const float radius = 10.0f;
             float camX = sin(glfwGetTime()) * radius;
             float camZ = cos(glfwGetTime()) * radius;
-            m_View = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
+            m_View = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);*/
+            m_View = camera.GetViewMatrix();
             /*float currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;*/
             
-            float cameraSpeed = 2.5f * context.DeltaTime();
+            /*float cameraSpeed = 2.5f * context.DeltaTime();
             if (glfwGetKey(context.Window(), GLFW_KEY_W) == GLFW_PRESS)
                 cameraPos += cameraSpeed * cameraFront;
             if (glfwGetKey(context.Window(), GLFW_KEY_S) == GLFW_PRESS)
@@ -142,9 +153,9 @@ namespace test
             if (glfwGetKey(context.Window(), GLFW_KEY_A) == GLFW_PRESS)
                 cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             if (glfwGetKey(context.Window(), GLFW_KEY_D) == GLFW_PRESS)
-                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;*/
 
-            m_Proj = glm::perspective(glm::radians(45.0f), (float)800/600, 0.1f, 100.0f);
+            m_Proj = glm::perspective(glm::radians(45.0f), (float)(context.Width())/ context.Height(), 0.1f, 100.0f);
 
             m_Shader->setMat4f("view", m_View);
             m_Shader->setMat4f("proj", m_Proj);

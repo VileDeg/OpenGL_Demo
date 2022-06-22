@@ -17,8 +17,15 @@ public:
     inline const int Height() const { return m_SCR_HEIGHT; }
     inline const std::string& Name() const { return m_WINDOW_NAME; }
     inline GLFWwindow* Window() const { return m_WINDOW; }
+    inline void SetViewport(const int width, const int height)
+        { m_SCR_WIDTH = width; m_SCR_HEIGHT = height; }
     
-    const float DeltaTime();
+    void SetFBSizeCallback(fb_size_callback);
+
+    inline const float DeltaTime() { return m_DeltaTime; }
+    inline void SetDeltaTime(float dt) { m_DeltaTime = dt; }
+    //float m_LastFrame;
+    float m_DeltaTime;
 
     GLContext(const GLContext&)      = delete;
     void operator=(const GLContext&) = delete;
@@ -29,9 +36,12 @@ private:
     void Init();
     void OpenWindow();
     void SetGlobalSettings();
+    //void DeltaTimer();
 
-    float m_DeltaTime;
-    float m_LastFrame;
+    static void default_fb_size_callback(GLFWwindow* window, int width, int height);
+
+    
+    
 
     int m_SCR_WIDTH;
     int m_SCR_HEIGHT;

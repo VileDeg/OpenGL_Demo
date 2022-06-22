@@ -13,14 +13,17 @@ private:
 public:
 	static InputManager& getInstance();
 	void ProcessInput() const;
-	void SetCamera(Camera camera) { m_Camera = &camera; }
+	inline void SetCamera(Camera* camera) { m_Camera = camera; }
 
 	inline void SetCursor(const float x, const float y) { m_CursorX = x; m_CursorY = y; }
 	inline void GetCursor(float& x, float& y) { x = m_CursorX; y = m_CursorY; }
-	inline Camera& GetCamera() { return *m_Camera; }
+	inline Camera* GetCamera() { return m_Camera; }
 
-	inline void SetCursorCallback(mouse_callback cpcb) { m_CursorPosCallback = cpcb; }
-	inline void SetScrollCallback(mouse_callback sccb) { m_ScrollCallback = sccb; }
+	float xoffset, yoffset;
+
+	void SetCursorCallback(mouse_callback cpcb);
+	void SetScrollCallback(mouse_callback sccb);
+	void HideCursor();
 
 	template<typename T>
 	void RegisterKeybind(int keyId);
@@ -33,7 +36,8 @@ private:
 	~InputManager();
 	void SetGlobalSettings();
 
-	static void default_mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
+	static void default_cursor_callback(GLFWwindow* window, double xposIn, double yposIn);
+	static void default_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 	Camera* m_Camera;
 	GLContext& m_Context;
@@ -47,3 +51,8 @@ private:
 };
 
 
+template<typename T>
+inline void InputManager::RegisterKeybind(int keyId)
+{
+	m_Keybinds.push_back(new T(keyId));
+}

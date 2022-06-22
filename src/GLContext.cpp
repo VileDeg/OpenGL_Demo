@@ -9,20 +9,24 @@ GLContext& GLContext::getTnstance(const unsigned width, const unsigned height,
     return INSTANCE;   
 }
 
-static void default_fb_size_callback(GLFWwindow* window, int width, int height)
+void GLContext::default_fb_size_callback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+    GLContext::getTnstance().SetViewport(width, height);
 }
 
-const float GLContext::DeltaTime()
+void GLContext::SetFBSizeCallback(fb_size_callback fbcb)
 {
-    float currentFrame = glfwGetTime();
-    m_DeltaTime = currentFrame - m_LastFrame;
-    m_LastFrame = currentFrame;
-    return m_DeltaTime;
+    if (fbcb != NULL)
+        m_FBSIZE_CALLBACK = fbcb;
+    else
+        m_FBSIZE_CALLBACK = default_fb_size_callback;
+    glfwSetFramebufferSizeCallback(m_WINDOW, m_FBSIZE_CALLBACK);
 }
+
+
 
 GLContext::GLContext(const unsigned width, const unsigned height,
     const std::string& name, fb_size_callback callback)
@@ -30,12 +34,10 @@ GLContext::GLContext(const unsigned width, const unsigned height,
 {
     Init();
     OpenWindow();
+    SetFBSizeCallback(default_fb_size_callback);
     SetGlobalSettings();
 
-    if (callback == NULL)
-        m_FBSIZE_CALLBACK = default_fb_size_callback;
-    else
-        m_FBSIZE_CALLBACK = callback;
+    //DeltaTimer();
 }
 
 void GLContext::Init()
@@ -63,7 +65,7 @@ void GLContext::OpenWindow()
         glfwTerminate();
     }
     glfwMakeContextCurrent(m_WINDOW);
-    glfwSetFramebufferSizeCallback(m_WINDOW, m_FBSIZE_CALLBACK);
+    
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -82,3 +84,13 @@ void GLContext::SetGlobalSettings()
 
     
 }
+
+//void GLContext::DeltaTimer()
+//{
+//    while (!glfwWindowShouldClose(m_WINDOW))
+//    {
+//        float currentFrame = glfwGetTime();
+//        m_DeltaTime = currentFrame - m_LastFrame;
+//        m_LastFrame = currentFrame;
+//    }
+//}

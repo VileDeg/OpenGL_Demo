@@ -35,6 +35,16 @@ void SetKeybinds()
     inp.RegisterKeybind<Keybind_CloseWindow>(GLFW_KEY_ESCAPE);
 }
 
+float DeltaTimer()
+{
+    static float lastFrame = 0.0f;
+    static float deltaTime = 0.0f;
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+    return deltaTime;
+}
+
 int main()
 {
     /*GLFWwindow* window{};
@@ -47,6 +57,7 @@ int main()
     glEnable(GL_DEPTH_TEST);*/
     GLContext& context = GLContext::getTnstance();
     InputManager& inputManager = InputManager::getInstance();
+    SetKeybinds();
 
     Renderer renderer;
 
@@ -67,9 +78,13 @@ int main()
     testMenu->RegisterTest<test::TestObject3D>("3D Object");//, SCR_WIDTH/SCR_HEIGHT
     testMenu->RegisterTest<test::TestCamera>("Camera");
     
-
+    
     while (!glfwWindowShouldClose(context.Window()))
     {
+        context.SetDeltaTime(DeltaTimer());
+        glfwPollEvents();
+        inputManager.ProcessInput();
+
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         renderer.Clear();
 
@@ -79,6 +94,10 @@ int main()
         
         if (currentTest)
         {
+            /*float currentFrame = glfwGetTime();
+            context.m_DeltaTime = currentFrame - context.m_LastFrame;
+            context.m_LastFrame = currentFrame;*/
+            
             currentTest->OnUpdate(0.0f);
             currentTest->OnRender();
             ImGui::Begin("Test");
@@ -92,13 +111,15 @@ int main()
         }
 
         //processInput(context.Window());
-        inputManager.ProcessInput();
+        
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        
+        glfwSwapInterval(1);
         glfwSwapBuffers(context.Window());
-        glfwPollEvents();
+   
+        
+        //glfwWaitEvents();
     }
     delete testMenu;
     if (currentTest != testMenu)

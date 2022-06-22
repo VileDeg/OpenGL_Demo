@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include <iostream>
 
 void Camera::updateCameraVectors()
 {
@@ -11,15 +12,19 @@ void Camera::updateCameraVectors()
 	// also re-calculate the Right and Up vector
 	m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp));
 	m_Up = glm::normalize(glm::cross(m_Right, m_Front));
+    /*std::cout << "Camera:\n";
+    std::cout << "front(" << m_Front.x << ", " << m_Front.y << ", " << m_Front.z << '\n';
+    std::cout << "right(" << m_Right.x << ", " << m_Right.y << ", " << m_Right.z << '\n';
+    std::cout << "up(" << m_Up.x << ", " << m_Up.y << ", " << m_Up.z << '\n';*/
 }
 
 
-void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
+void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
     xoffset *= m_MouseSensitivity;
     yoffset *= m_MouseSensitivity;
 
-    m_Yaw += xoffset;
+    m_Yaw   += xoffset;
     m_Pitch += yoffset;
 
     // make sure that when pitch is out of bounds, screen doesn't get flipped
@@ -35,12 +40,12 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
     updateCameraVectors();
 }
 //
-//// processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-//void ProcessMouseScroll(float yoffset)
-//{
-//    Zoom -= (float)yoffset;
-//    if (Zoom < 1.0f)
-//        Zoom = 1.0f;
-//    if (Zoom > 45.0f)
-//        Zoom = 45.0f;
-//}
+// processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
+void Camera::ProcessMouseScroll(float yoffset)
+{
+    m_Zoom -= (float)yoffset;
+    if (m_Zoom < 1.0f)
+        m_Zoom = 1.0f;
+    if (m_Zoom > 45.0f)
+        m_Zoom = 45.0f;
+}
