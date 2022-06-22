@@ -10,22 +10,12 @@
 
 namespace test
 {
-    /*glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-    glm::vec3 cameraFront(0.0f, 0.0f, -1.0f);*/
+  
     GLContext& context = GLContext::getTnstance();
     InputManager& inputManager = InputManager::getInstance();
 
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-    
-
-    //float deltaTime = 0.0f;	// Time between current frame and last frame
-    //float lastFrame = 0.0f; // Time of last frame
  
 	TestCamera::TestCamera()
 	{
@@ -155,7 +145,8 @@ namespace test
             if (glfwGetKey(context.Window(), GLFW_KEY_D) == GLFW_PRESS)
                 cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;*/
 
-            m_Proj = glm::perspective(glm::radians(45.0f), (float)(context.Width())/ context.Height(), 0.1f, 100.0f);
+            //glm::radians(45.0f)
+            m_Proj = glm::perspective(glm::radians(camera.Zoom()), (float)(context.Width()) / context.Height(), 0.1f, 100.0f);
 
             m_Shader->setMat4f("view", m_View);
             m_Shader->setMat4f("proj", m_Proj);

@@ -1,5 +1,7 @@
 #include "Camera.h"
-#include <iostream>
+#ifdef _DEBUG
+    #include <iostream>
+#endif
 
 void Camera::updateCameraVectors()
 {
@@ -48,4 +50,7 @@ void Camera::ProcessMouseScroll(float yoffset)
         m_Zoom = 1.0f;
     if (m_Zoom > 45.0f)
         m_Zoom = 45.0f;
+#ifdef _DEBUG
+    std::cout << "Zoom: " << m_Zoom << '\n';
+#endif
 }

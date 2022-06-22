@@ -8,6 +8,7 @@ static const float PITCH = 0.0f;
 static const float SPEED = 2.5f;
 static const float SENSITIVITY = 0.1f;
 static const float ZOOM = 45.0f;
+//static const float ZOOM_SENS = 0.1f;
 
 class Camera
 {
@@ -49,6 +50,7 @@ public:
 	inline const glm::vec3& Up() const { return m_Up; }
 	inline const glm::vec3& Front() const { return m_Front; }
 	inline const glm::vec3& Right() const { return m_Right; }
+	inline const float Zoom() const { return m_Zoom; }
 	
 	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 	void ProcessMouseScroll(float yoffset);

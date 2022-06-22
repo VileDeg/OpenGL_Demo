@@ -115,7 +115,7 @@ int main()
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapInterval(1);
+        //glfwSwapInterval(1);
         glfwSwapBuffers(context.Window());
    
         

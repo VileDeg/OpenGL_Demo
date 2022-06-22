@@ -48,8 +48,6 @@ void InputManager::default_scroll_callback(GLFWwindow* window, double xoffset, d
     cam->ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-
-
 void InputManager::ProcessInput() const
 {
     for (auto keyBind : m_Keybinds)
