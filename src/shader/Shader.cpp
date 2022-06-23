@@ -93,7 +93,7 @@ const int Shader::GetUniformLocation(const std::string& name)
 	return location;
 }
 
-void Shader::Use() const
+void Shader::Bind() const
 {
 	glUseProgram(ID);
 }

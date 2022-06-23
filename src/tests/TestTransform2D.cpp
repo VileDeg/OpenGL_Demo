@@ -39,7 +39,7 @@ namespace test
 
 		m_Texture = std::make_unique<Texture>("res/textures/cherno_logo.jpg");
 
-		m_Shader->Use();
+		m_Shader->Bind();
 		m_Shader->setInt("texture1", 0);
 	}
 
@@ -65,7 +65,7 @@ namespace test
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1.f), m_TranslationA);
 			glm::mat4 mvp = m_Proj * m_View * model;
-			m_Shader->Use();
+			m_Shader->Bind();
 			m_Shader->setMat4f("u_mvp", mvp);
 			renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
 		}
@@ -73,7 +73,7 @@ namespace test
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1.f), m_TranslationB);
 			glm::mat4 mvp = m_Proj * m_View * model;
-			m_Shader->Use();
+			m_Shader->Bind();
 			m_Shader->setMat4f("u_mvp", mvp);
 			renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
 		}

@@ -13,14 +13,10 @@
 #include "tests/TestTexture2D.h"
 #include "tests/TestObject3D.h"
 #include "tests/TestCamera.h"
+#include "tests/TestLight.h"
 
 #include "input/InputManager.h"
 
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-//void processInput(GLFWwindow *window);
-
-// settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
@@ -47,14 +43,6 @@ float DeltaTimer()
 
 int main()
 {
-    /*GLFWwindow* window{};
-    if (!(window = open_window()))
-        return -1;
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-
-    glEnable(GL_DEPTH_TEST);*/
     GLContext& context = GLContext::getTnstance();
     InputManager& inputManager = InputManager::getInstance();
     SetKeybinds();
@@ -77,6 +65,7 @@ int main()
     testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
     testMenu->RegisterTest<test::TestObject3D>("3D Object");//, SCR_WIDTH/SCR_HEIGHT
     testMenu->RegisterTest<test::TestCamera>("Camera");
+    testMenu->RegisterTest<test::TestLight>("Light");
     
     
     while (!glfwWindowShouldClose(context.Window()))
@@ -94,10 +83,6 @@ int main()
         
         if (currentTest)
         {
-            /*float currentFrame = glfwGetTime();
-            context.m_DeltaTime = currentFrame - context.m_LastFrame;
-            context.m_LastFrame = currentFrame;*/
-            
             currentTest->OnUpdate(0.0f);
             currentTest->OnRender();
             ImGui::Begin("Test");
@@ -133,12 +118,6 @@ int main()
     glfwTerminate();
     return 0;
 }
-
-//void processInput(GLFWwindow *window)
-//{
-//    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-//        glfwSetWindowShouldClose(window, true);
-//}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {

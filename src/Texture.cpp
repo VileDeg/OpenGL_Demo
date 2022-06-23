@@ -17,7 +17,7 @@ Texture::Texture(const std::string& filePath)
 	buffer = stbi_load(path.c_str(), &width, &height, &BPP, 4);
 	if (!buffer)
 	{
-		std::cerr << "Error: Failed to load texture! " << filePath << std::endl;
+		std::cerr << "Error: Failed to load texture! " << path << std::endl;
 	}
 	// set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	

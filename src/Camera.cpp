@@ -3,6 +3,9 @@
     #include <iostream>
 #endif
 
+
+
+
 void Camera::updateCameraVectors()
 {
 	// calculate the new Front vector

@@ -15,6 +15,7 @@ void VAO::AddBuffer(const VBO& vbo, const VertexLayout& layout)
 	Bind();
 	vbo.Bind();
 	layout.Enable();
+	count = vbo.Count();
 }
 
 void VAO::Bind() const

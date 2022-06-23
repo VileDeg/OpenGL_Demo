@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Object.cpp" />
     <ClCompile Include="src\GLContext.cpp" />
     <ClCompile Include="src\input\InputManager.cpp" />
     <ClCompile Include="src\input\Keybind.cpp" />
@@ -143,6 +144,7 @@
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\tests\TestCamera.cpp" />
     <ClCompile Include="src\tests\TestClearColor.cpp" />
+    <ClCompile Include="src\tests\TestLight.cpp" />
     <ClCompile Include="src\tests\TestObject3D.cpp" />
     <ClCompile Include="src\tests\TestTexture2D.cpp" />
     <ClCompile Include="src\tests\TestTransform2D.cpp" />
@@ -161,6 +163,7 @@
     <ClCompile Include="src\VertexLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Object.h" />
     <ClInclude Include="src\GLContext.h" />
     <ClInclude Include="src\input\callbacks.h" />
     <ClInclude Include="src\input\InputManager.h" />
@@ -173,6 +176,7 @@
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\tests\TestCamera.h" />
     <ClInclude Include="src\tests\TestClearColor.h" />
+    <ClInclude Include="src\tests\TestLight.h" />
     <ClInclude Include="src\tests\TestObject3D.h" />
     <ClInclude Include="src\tests\TestTexture2D.h" />
     <ClInclude Include="src\tests\TestTransform2D.h" />
@@ -476,6 +480,8 @@
   <ItemGroup>
     <None Include="imgui.ini" />
     <None Include="res\shaders\fragment.shader" />
+    <None Include="res\shaders\light_frag.shader" />
+    <None Include="res\shaders\light_vert.shader" />
     <None Include="res\shaders\test_object3D_frag.shader" />
     <None Include="res\shaders\test_object3D_vert.shader" />
     <None Include="res\shaders\vertex.shader" />

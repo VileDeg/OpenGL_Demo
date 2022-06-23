@@ -1,17 +1,22 @@
 #pragma once
 
 #include "glad/glad.h"
+#include <cstddef>
 
 class VBO
 {
-private:
-    unsigned int id;
 public:
-    VBO(const void* data, unsigned int size);
+    VBO(const void* data, const std::size_t size);
+    VBO(const void* data, const std::size_t size, const int vertexCount);
     ~VBO();
+
+    inline const int Count() const { return count; }
 
     void Bind() const;
     void Unbind() const;
+private:
+    unsigned id;
+    int count;
 };
 
 

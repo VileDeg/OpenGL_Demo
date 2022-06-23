@@ -1,16 +1,20 @@
-#include "TestObject3D.h"
+#include "TestLight.h"
 
 #include "GLFW/glfw3.h"
 #include "imgui/imgui.h"
 
 #include "math_headers.h"
+#include "GLContext.h"
+#include "input/InputManager.h"
 
 
 namespace test
 {
-	TestObject3D::TestObject3D()
-	{
-        float vertices[] = {
+    static GLContext& context = GLContext::getTnstance();
+    static InputManager& inputManager = InputManager::getInstance();
+
+    static Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    static float vertices[] = {
                 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
                 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
                 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -52,9 +56,13 @@ namespace test
                 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
                 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
                 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-        };
+    };
+    static Texture tex1("res/textures/container.jpg");
 
-
+    TestLight::TestLight()
+        : m_Object({ vertices, sizeof(vertices), 36, 3, 0, 2 }, { tex1 },
+            "light_vert.shader", "light_frag.shader")
+    {
         {
             m_ObjPositions.emplace_back(glm::vec3(0.0f, 0.0f, 0.0f));
             m_ObjPositions.emplace_back(glm::vec3(2.0f, 5.0f, -15.0f));
@@ -67,73 +75,30 @@ namespace test
             m_ObjPositions.emplace_back(glm::vec3(1.5f, 0.2f, -1.5f));
             m_ObjPositions.emplace_back(glm::vec3(-1.3f, 1.0f, -1.5f));
         }
-
-
-
-		m_Shader = std::make_unique<Shader>("test_object3D_vert.shader", "test_object3D_frag.shader");
-		m_VAO = std::make_unique<VAO>();
-		m_VBO = std::make_unique<VBO>(vertices, sizeof(vertices));
-		VertexLayout layout;
-		layout.Push<float>(3);
-		layout.Push<float>(2);
-		m_VAO->AddBuffer(*m_VBO, layout);
-		
-		//m_IndexBuffer = std::make_unique<EBO>(indices, sizeof(indices) / sizeof(unsigned));
-
-		m_Texture = std::make_unique<Texture>("awesomeface.png");
-
-		m_Shader->Bind();
-		m_Shader->setInt("texture1", 0);
-        m_Texture->Bind();
+        
+        inputManager.SetCamera(&camera);
+        inputManager.HideCursor();
 	}
 
-	TestObject3D::~TestObject3D()
+	void TestLight::OnRender()
 	{
+        m_Object.SetViewMat(camera.GetViewMat());
+        m_Object.SetProjMat(camera.GetProjMat());
 
-	}
-
-	void TestObject3D::OnUpdate(float deltaTime)
-	{
-
-	}
-
-	void TestObject3D::OnRender()
-	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		Renderer renderer;
-
+        for (int i = 0; i < m_ObjPositions.size(); ++i)
         {
-            m_Shader->Bind();
-
-            glm::mat4 identity = glm::mat4(1.0f);
-//            glm::mat4 scale = glm::scale(identity, glm::vec3(0.5f));
-
-
-            m_View = glm::translate(identity, glm::vec3(0.0f, 0.0f, -3.0f));
-            m_Proj = glm::perspective(glm::radians(45.0f), (float)800/600, 0.1f, 100.0f);
-
-            m_Shader->setMat4f("view", m_View);
-            m_Shader->setMat4f("proj", m_Proj);
-            //renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
-            glBindVertexArray(m_VAO->Id());
-            for (int i = 0; i < m_ObjPositions.size(); ++i)
-            {
-                m_Model = glm::translate(identity, m_ObjPositions[i]);
-                float angle = 20.0f * (i+1);
-                m_Model = glm::rotate(m_Model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-                m_Shader->setMat4f("model", m_Model);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
-
+            m_Object.ResetTransform();
+            m_Object.Move(m_ObjPositions[i]);
+            float angle = 20.0f * (i+1);
+            m_Object.Rotate((float)glfwGetTime() * glm::radians(angle),
+                glm::vec3(1.0f, 0.3f, 0.5f));
+                
+            m_Object.DrawNoIndex();
         }
 	}
 
-	void TestObject3D::OnImGuiRender()
+	void TestLight::OnImGuiRender()
 	{
-		/*ImGui::SliderFloat3("TranslationA", &m_TranslationA.x, 0.0f, 800.0f);
-		ImGui::SliderFloat3("TranslationB", &m_TranslationB.x, 0.0f, 800.0f);*/
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }

@@ -91,7 +91,7 @@ namespace test
 
 		m_Texture = std::make_unique<Texture>("container.jpg");
 
-		m_Shader->Use();
+		m_Shader->Bind();
 		m_Shader->setInt("texture1", 0);
         m_Texture->Bind();
 
@@ -117,7 +117,7 @@ namespace test
 		Renderer renderer;
 
         {
-            m_Shader->Use();
+            m_Shader->Bind();
 
             glm::mat4 identity = glm::mat4(1.0f);
 //            glm::mat4 scale = glm::scale(identity, glm::vec3(0.5f));
@@ -130,7 +130,7 @@ namespace test
             float camX = sin(glfwGetTime()) * radius;
             float camZ = cos(glfwGetTime()) * radius;
             m_View = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);*/
-            m_View = camera.GetViewMatrix();
+            m_View = camera.GetViewMat();
             /*float currentFrame = glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;*/

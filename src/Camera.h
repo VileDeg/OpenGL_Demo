@@ -8,7 +8,8 @@ static const float PITCH = 0.0f;
 static const float SPEED = 2.5f;
 static const float SENSITIVITY = 0.1f;
 static const float ZOOM = 45.0f;
-//static const float ZOOM_SENS = 0.1f;
+static const float NEAR_PLANE = 0.1f;
+static const float FAR_PLANE = 100.0f;
 
 class Camera
 {
@@ -17,9 +18,8 @@ public:
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
 		: m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
 		m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
-		m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch)
-		//m_Context(std::make_unique<GLContext>(GLContext::getTnstance()))
-		
+		m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch),
+		m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE)
 	{
 		updateCameraVectors();
 	}
@@ -28,9 +28,8 @@ public:
 		: m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED), 
 		m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
 		m_Position(glm::vec3(posX, posY, posZ)), m_WorldUp(glm::vec3(upX, upY, upZ)), 
-		m_Yaw(yaw), m_Pitch(pitch)
-		//m_Context(std::make_unique<GLContext>(GLContext::getTnstance()))
-		
+		m_Yaw(yaw), m_Pitch(pitch),
+		m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE)
 	{
 		
 		updateCameraVectors();
@@ -41,7 +40,7 @@ public:
 	inline void MoveLeft() { m_Position -= m_Right * Velocity(); }
 	inline void MoveRight() { m_Position += m_Right * Velocity(); }
 
-	glm::mat4 GetViewMatrix()
+	inline const glm::mat4 GetViewMat()
 	{
 		return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 	}
@@ -54,6 +53,13 @@ public:
 	
 	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 	void ProcessMouseScroll(float yoffset);
+
+	inline const glm::mat4 GetProjMat()
+	{
+		return glm::perspective(glm::radians(m_Zoom),
+			(float)(GLContext::getTnstance().Width()) / GLContext::getTnstance().Height(),
+			m_NearPlane, m_FarPlane);
+	}
 
 	~Camera() {}
 private:
@@ -76,7 +82,8 @@ private:
 	float m_MovementSpeed;
 	float m_MouseSensitivity;
 	float m_Zoom;
-
 	
+	float m_NearPlane;
+	float m_FarPlane;
 };
 

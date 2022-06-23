@@ -16,7 +16,7 @@ public:
 	void Compile();
 	
 	void Link();
-	void Use() const;
+	void Bind() const;
 	void setBool(const std::string& name, bool value);
 	void setInt(const std::string& name, int value);
 
