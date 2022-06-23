@@ -1,6 +1,9 @@
 # OpenGL_Demo
-OpenGL app made for learning purposes. </br>
+OpenGL app made for learning purposes. </br> </br>
 Some code and motivation was taken from: </br>
 LearnOpenGL website: https://learnopengl.com/ </br>
-The Cherno youtube channel OpenGL series: https://www.youtube.com/playlist?list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2 </br>
-
+The Cherno youtube channel OpenGL series: https://www.youtube.com/playlist?list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2 </br> </br>
+Third-party libraries/headers used: </br>
+GLM: https://github.com/g-truc/glm </br>
+stb_image: https://github.com/nothings/stb/blob/master/stb_image.h </br>
+ImGui: https://github.com/ocornut/imgui </br>
