@@ -19,7 +19,6 @@ struct VertexAttribute
         case GL_UNSIGNED_BYTE: return sizeof(GLbyte);
         }
 
-        
         return 0;
     }
 };
@@ -44,18 +43,21 @@ public:
     template<>
     void Push<float>(unsigned count)
     {
+        if (count == 0) return;
         attribs.push_back({ GL_FLOAT, count, GL_FALSE });
         stride += count * sizeof(GLfloat);
     }
     template<>
     void Push<unsigned>(unsigned count)
     {
+        if (count == 0) return;
         attribs.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
         stride += count * sizeof(GLuint);
     }
     template<>
     void Push<unsigned char>(unsigned count)
     {
+        if (count == 0) return;
         attribs.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
         stride += count * sizeof(GLbyte);
     }

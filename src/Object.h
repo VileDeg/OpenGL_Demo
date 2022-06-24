@@ -5,6 +5,7 @@
 #include "Texture.h"
 #include "Renderer.h"
 
+#include <memory>
 
 class Object
 {
@@ -21,15 +22,18 @@ public:
 
 public:
 	Object(const VertexData& vData, const unsigned* indices,
-		std::size_t indices_size, const std::vector<Texture> textures,
+		std::size_t indices_size, const std::vector<Texture>& textures,
 		const char* vertShaderPath, const char* fragShaderPath,
 		const glm::vec3& position = glm::vec3(0.0f) );
-
-	Object(const VertexData& vData, const std::vector<Texture> textures,
+	//const std::vector<Texture>& textures
+	//const std::vector<const char*>& texturePaths
+	Object(const VertexData& vData, const std::vector<const char*>& texturePaths,
 		const char* vertShaderPath, const char* fragShaderPath,
 		const glm::vec3& position = glm::vec3(0.0f));
 
-	
+	//Object(const VAO* vao, const VBO* vbo, const Shader* shader);
+
+	//Object() {}
 	~Object() {}
 
 	void Move(glm::vec3 by);
@@ -43,12 +47,17 @@ public:
 	void DrawNoIndex();
 	inline void ResetTransform() { m_Model = glm::mat4(1.0f); };
 	
+	
 private:
-	VAO m_VAO;
-	VBO m_VBO;
-	EBO m_EBO;
-	Shader m_Shader;
+	std::unique_ptr<Shader> m_Shader;
+	std::unique_ptr<VAO> m_VAO;
+	std::unique_ptr<VBO> m_VBO;
+	std::unique_ptr<EBO> m_EBO;
+
+	std::vector< std::unique_ptr<Texture> > m_Textures;
+
 	glm::mat4 m_Model;
+	
 	int m_TextureCount;
 	Renderer m_Renderer;
 

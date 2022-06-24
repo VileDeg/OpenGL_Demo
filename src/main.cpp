@@ -62,10 +62,10 @@ int main()
     currentTest = testMenu;
 
     testMenu->RegisterTest<test::TestClearColor>("Clear Color");
-    testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
-    testMenu->RegisterTest<test::TestObject3D>("3D Object");//, SCR_WIDTH/SCR_HEIGHT
-    testMenu->RegisterTest<test::TestCamera>("Camera");
-    testMenu->RegisterTest<test::TestLight>("Light");
+    testMenu->RegisterTest<test::TestTexture2D> ("2D Texture");
+    testMenu->RegisterTest<test::TestObject3D>  ("3D Object");//, SCR_WIDTH/SCR_HEIGHT
+    testMenu->RegisterTest<test::TestCamera>    ("Camera");
+    testMenu->RegisterTest<test::TestLight>     ("Light");
     
     
     while (!glfwWindowShouldClose(context.Window()))

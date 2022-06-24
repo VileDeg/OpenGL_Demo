@@ -11,10 +11,10 @@
 namespace test
 {
   
-    GLContext& context = GLContext::getTnstance();
-    InputManager& inputManager = InputManager::getInstance();
+    static GLContext& context = GLContext::getTnstance();
+    static InputManager& inputManager = InputManager::getInstance();
 
-    Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    static Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
  
 	TestCamera::TestCamera()

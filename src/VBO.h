@@ -8,6 +8,8 @@ class VBO
 public:
     VBO(const void* data, const std::size_t size);
     VBO(const void* data, const std::size_t size, const int vertexCount);
+    VBO() {}
+
     ~VBO();
 
     inline const int Count() const { return count; }

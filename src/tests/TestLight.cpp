@@ -57,11 +57,13 @@ namespace test
                 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
                 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
-    static Texture tex1("res/textures/container.jpg");
+
+
+    
 
     TestLight::TestLight()
-        : m_Object({ vertices, sizeof(vertices), 36, 3, 0, 2 }, { tex1 },
-            "light_vert.shader", "light_frag.shader")
+        : m_Object({ vertices, sizeof(vertices), 36, 3, 0, 2 },
+            { "container.jpg" }, "light_vert.shader", "light_frag.shader")
     {
         {
             m_ObjPositions.emplace_back(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -82,8 +84,11 @@ namespace test
 
 	void TestLight::OnRender()
 	{
+
         m_Object.SetViewMat(camera.GetViewMat());
         m_Object.SetProjMat(camera.GetProjMat());
+        
+        Renderer renderer;
 
         for (int i = 0; i < m_ObjPositions.size(); ++i)
         {
