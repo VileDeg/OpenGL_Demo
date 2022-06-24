@@ -4,6 +4,7 @@
 #include "math_headers.h"
 #include "Texture.h"
 #include "Renderer.h"
+#include "Camera.h"
 
 #include <memory>
 
@@ -16,6 +17,7 @@ public:
 		std::size_t size;
 		unsigned vertexCount;
 		unsigned char vertexCoordsCount;
+		unsigned char normalCoordsCount;
 		unsigned char colorCoordsCount;
 		unsigned char textureCoordsCount;
 	};
@@ -43,10 +45,14 @@ public:
 	void SetProjMat(const glm::mat4 projMat);
 	void SetViewMat(const glm::mat4 viewMat);
 
+	void WatchedBy(const Camera& camera);
+
 	void Draw();
 	void DrawNoIndex();
 	inline void ResetTransform() { m_Model = glm::mat4(1.0f); };
-	
+	inline const glm::vec3& Position() { return m_Model[3]; }
+
+	inline Shader& GetShader() { return *m_Shader; }
 	
 private:
 	std::unique_ptr<Shader> m_Shader;

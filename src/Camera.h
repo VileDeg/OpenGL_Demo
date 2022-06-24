@@ -40,7 +40,7 @@ public:
 	inline void MoveLeft() { m_Position -= m_Right * Velocity(); }
 	inline void MoveRight() { m_Position += m_Right * Velocity(); }
 
-	inline const glm::mat4 GetViewMat()
+	inline const glm::mat4 GetViewMat() const
 	{
 		return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 	}
@@ -54,7 +54,7 @@ public:
 	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 	void ProcessMouseScroll(float yoffset);
 
-	inline const glm::mat4 GetProjMat()
+	inline const glm::mat4 GetProjMat() const
 	{
 		return glm::perspective(glm::radians(m_Zoom),
 			(float)(GLContext::getTnstance().Width()) / GLContext::getTnstance().Height(),

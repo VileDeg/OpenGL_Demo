@@ -26,6 +26,14 @@ void GLContext::SetFBSizeCallback(fb_size_callback fbcb)
     glfwSetFramebufferSizeCallback(m_WINDOW, m_FBSIZE_CALLBACK);
 }
 
+void GLContext::SetParams(const unsigned width, const unsigned height, const std::string& name, fb_size_callback callback)
+{
+    m_SCR_WIDTH = width;
+    m_SCR_HEIGHT = height;
+    m_WINDOW_NAME = name;
+    SetFBSizeCallback(callback);
+}
+
 
 
 GLContext::GLContext(const unsigned width, const unsigned height,

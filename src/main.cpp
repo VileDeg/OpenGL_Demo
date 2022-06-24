@@ -17,8 +17,8 @@
 
 #include "input/InputManager.h"
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1280;
+const unsigned int SCR_HEIGHT = 720;
 
 void SetKeybinds()
 {
@@ -44,6 +44,12 @@ float DeltaTimer()
 int main()
 {
     GLContext& context = GLContext::getTnstance();
+    context.SetWindowSize(SCR_WIDTH, SCR_HEIGHT);
+    context.SetWindowTitle("OpenGL Demo");
+    /*context.OpenWindow();
+    context.SetFBSizeCallback(GLContext::default_fb_size_callback);
+    context.SetGlobalSettings();*/
+    //context.SetParams(SCR_WIDTH, SCR_HEIGHT, "Omega Engine");
     InputManager& inputManager = InputManager::getInstance();
     SetKeybinds();
 

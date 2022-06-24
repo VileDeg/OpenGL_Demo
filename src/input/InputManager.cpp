@@ -77,8 +77,7 @@ void InputManager::SetScrollCallback(mouse_callback sccb)
 
 void InputManager::HideCursor()
 {
-    GLContext& context = GLContext::getTnstance();
-    glfwSetInputMode(context.Window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(GLContext::getTnstance().Window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 InputManager::~InputManager()

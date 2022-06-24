@@ -22,15 +22,10 @@ namespace test
         void OnRender() override;
         void OnImGuiRender() override;
     private:
-        /*std::unique_ptr<VAO> m_VAO;
-        std::unique_ptr<VBO> m_VBO;
-        std::unique_ptr<EBO> m_IndexBuffer;
-        std::unique_ptr<Shader> m_Shader;
-        std::unique_ptr<Texture> m_Texture;
-
-        glm::mat4 m_Proj, m_View, m_Model;*/
-
+        
+        Camera m_Camera;
+        Texture m_DiffuseTexture, m_SpecularTexture;
         std::vector<glm::vec3> m_ObjPositions;
-        Object m_Object;
+        Object m_Container, m_LightSource;
     };
 }

@@ -480,6 +480,7 @@
   <ItemGroup>
     <None Include="imgui.ini" />
     <None Include="res\shaders\fragment.shader" />
+    <None Include="res\shaders\lightSource_frag.shader" />
     <None Include="res\shaders\light_frag.shader" />
     <None Include="res\shaders\light_vert.shader" />
     <None Include="res\shaders\test_object3D_frag.shader" />
@@ -626,6 +627,8 @@
     <Image Include="res\textures\awesomeface.png" />
     <Image Include="res\textures\cherno_logo.jpg" />
     <Image Include="res\textures\container.jpg" />
+    <Image Include="res\textures\container2.png" />
+    <Image Include="res\textures\container2_specular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

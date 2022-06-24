@@ -1466,6 +1466,7 @@
     <None Include="imgui.ini" />
     <None Include="res\shaders\light_frag.shader" />
     <None Include="res\shaders\light_vert.shader" />
+    <None Include="res\shaders\lightSource_frag.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\awesomeface.png">
@@ -1475,6 +1476,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\textures\container.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\container2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\container2_specular.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

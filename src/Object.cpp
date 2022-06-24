@@ -61,6 +61,7 @@ Object::Object(const VertexData& vData, const std::vector<const char*>& textureP
 	
 	VertexLayout layout;
 	layout.Push<float>(vData.vertexCoordsCount);
+	layout.Push<float>(vData.normalCoordsCount);
 	layout.Push<float>(vData.colorCoordsCount);
 	
 	for (std::size_t i = 0; i < m_Textures.size(); ++i)
@@ -116,4 +117,11 @@ void Object::SetViewMat(const glm::mat4 viewMat)
 {
 	m_Shader->Bind();
 	m_Shader->setMat4f(Object::viewMatUniformName, viewMat);
+}
+
+void Object::WatchedBy(const Camera& camera)
+{
+	m_Shader->Bind();
+	m_Shader->setMat4f(Object::projMatUniformName, camera.GetProjMat());
+	m_Shader->setMat4f(Object::viewMatUniformName, camera.GetViewMat());
 }

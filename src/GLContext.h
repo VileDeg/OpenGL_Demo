@@ -11,6 +11,7 @@ class GLContext
 private:
     using fb_size_callback = void (*)(GLFWwindow* window, int width, int height);
 public:
+
     static GLContext& getTnstance(const unsigned width = 800, const unsigned height = 600,
         const std::string& name = "Window", fb_size_callback callback = NULL);
     inline const int Width() const { return m_SCR_WIDTH; }
@@ -20,12 +21,28 @@ public:
     inline void SetViewport(const int width, const int height)
         { m_SCR_WIDTH = width; m_SCR_HEIGHT = height; }
     
+    void OpenWindow();
+    void SetGlobalSettings();
     void SetFBSizeCallback(fb_size_callback);
 
     inline const float DeltaTime() { return m_DeltaTime; }
     inline void SetDeltaTime(float dt) { m_DeltaTime = dt; }
-    //float m_LastFrame;
-    float m_DeltaTime;
+    inline void SetWindowSize(const int width, const int height)
+    { 
+        glfwSetWindowSize(m_WINDOW, width, height);
+        m_SCR_WIDTH = width;
+        m_SCR_HEIGHT = height;
+    }
+    inline void SetWindowTitle(const char* title)
+    {
+        glfwSetWindowTitle(m_WINDOW, title);
+        m_WINDOW_NAME = title;   
+    }
+
+    void SetParams(const unsigned width = 800, const unsigned height = 600,
+        const std::string& name = "Window", fb_size_callback callback = NULL);
+
+    static void default_fb_size_callback(GLFWwindow* window, int width, int height);
 
     GLContext(const GLContext&)      = delete;
     void operator=(const GLContext&) = delete;
@@ -34,15 +51,14 @@ private:
         const std::string& name, fb_size_callback callback);
 
     void Init();
-    void OpenWindow();
-    void SetGlobalSettings();
+    
     //void DeltaTimer();
 
-    static void default_fb_size_callback(GLFWwindow* window, int width, int height);
+    
 
     
     
-
+    float m_DeltaTime;
     int m_SCR_WIDTH;
     int m_SCR_HEIGHT;
     std::string m_WINDOW_NAME;
