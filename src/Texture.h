@@ -9,7 +9,7 @@ private:
 	unsigned char* buffer;
 	int width, height, BPP;
 public:
-    static std::string texture_path;
+    static constexpr const char* texture_path = "res/textures/";
 
 	Texture(const std::string& path);
 	~Texture();

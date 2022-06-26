@@ -1,4 +1,4 @@
-#include "TestLight.h"
+#include "TestLight_Spotlight.h"
 
 #include "GLFW/glfw3.h"
 #include "imgui/imgui.h"
@@ -73,14 +73,16 @@ namespace test
         float quadratic;
 
         float shininess;
+
+        float cutOff;
     } LightParams;
 
     static glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
 
-    TestLight::TestLight()
+    TestSpotlight::TestSpotlight()
         : m_Camera(glm::vec3(0.0f, 0.0f, 3.0f)),
         m_Container({ vertices, sizeof(vertices), 36, 3, 3, 0, 2 },
-            {}, "material_vert.shader", "pointLight_frag.shader"),
+            {}, "material_vert.shader", "spotLight_frag.shader"),
         m_LightSource({ vertices, sizeof(vertices), 36, 3, 3, 0, 2 },
             {}, "material_vert.shader", "plainWhite_frag.shader", lightPos),
         m_DiffuseTexture("container2.png"), m_SpecularTexture("container2_specular.png")
@@ -106,12 +108,13 @@ namespace test
             LightParams.ambient = glm::vec3(0.2f, 0.2f, 0.2f);
             LightParams.diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
             LightParams.specular = glm::vec3(1.f, 1.f, 1.f);
-
+            LightParams.shininess = 32.0f;
+            
             LightParams.constant = 1.0f;
             LightParams.linear = 0.09f;
             LightParams.quadratic = 0.032f;
 
-            LightParams.shininess = 32.0f;
+            LightParams.cutOff = glm::cos(glm::radians(12.5f));
         }
         
         m_LightSource.Scale(glm::vec3(0.2f));
@@ -123,21 +126,23 @@ namespace test
         contSh.setInt("material.specular", 1);
 	}
 
-	void TestLight::OnRender()
+	void TestSpotlight::OnRender()
 	{
         
         Shader& contSh = m_Container.GetShader();
         contSh.Bind();
 
-        contSh.setFloat3("light.position", m_LightSource.Position());
-        contSh.setFloat3("viewPos", m_Camera.Position());
+        contSh.setFloat3("light.position",  m_Camera.Position());
+        contSh.setFloat3("light.direction", m_Camera.Front());
+        contSh.setFloat ("light.cutOff",    LightParams.cutOff);
+        contSh.setFloat3("viewPos",         m_Camera.Position());
 
-        contSh.setFloat3("light.ambient", LightParams.ambient);
-        contSh.setFloat3("light.diffuse", LightParams.diffuse);
-        contSh.setFloat3("light.specular", LightParams.specular);
-        contSh.setFloat("light.constant", LightParams.constant);
-        contSh.setFloat("light.linear", LightParams.linear);
-        contSh.setFloat("light.quadratic", LightParams.quadratic);
+        contSh.setFloat3("light.ambient",   LightParams.ambient);
+        contSh.setFloat3("light.diffuse",   LightParams.diffuse);
+        contSh.setFloat3("light.specular",  LightParams.specular);
+        contSh.setFloat ("light.constant",  LightParams.constant);
+        contSh.setFloat ("light.linear",    LightParams.linear);
+        contSh.setFloat ("light.quadratic", LightParams.quadratic);
 
         contSh.setFloat("material.shininess", 32.0f);
 
@@ -164,7 +169,7 @@ namespace test
         }
 	}
 
-	void TestLight::OnImGuiRender()
+	void TestSpotlight::OnImGuiRender()
 	{
         /*float w = context.Width();
         float h = context.Height();
@@ -183,11 +188,14 @@ namespace test
         LightParams.diffuse = glm::vec3(LightParams.diffuse.x);
         ImGui::SliderFloat("Specular",        &LightParams.specular[0], min, maxParams);
         LightParams.specular = glm::vec3(LightParams.specular.x);
+        ImGui::SliderFloat("Shininess", &LightParams.shininess, min, 256.0f);
         
         ImGui::SliderFloat ("Constant",       &LightParams.constant,  min, maxAtten  );
         ImGui::SliderFloat ("Linear",         &LightParams.linear,    min, maxAtten  );
         ImGui::SliderFloat ("Quadratic",      &LightParams.quadratic, min, maxAtten  );
 
-        ImGui::SliderFloat ("Shininess",      &LightParams.shininess, min, 256.0f);
+        static float cutOff = LightParams.cutOff;
+        ImGui::SliderFloat("CutOff", &cutOff, min, 180.0f);
+        LightParams.cutOff = glm::cos(glm::radians(cutOff));
 	}
 }

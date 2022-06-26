@@ -6,15 +6,8 @@ const std::string Object::modelMatUniformName = "u_ModelMat";
 const std::string Object::projMatUniformName = "u_ProjMat";
 const std::string Object::viewMatUniformName = "u_ViewMat";
 
-void Object::Move(glm::vec3 by)
-{
-	m_Model = glm::translate(m_Model, by);
-}
 
-void Object::Rotate(float angle, glm::vec3 axis)
-{
-	m_Model = glm::rotate(m_Model, angle, axis);
-}
+
 
 //Object::Object(const VertexData& vData, const unsigned* indices,
 //	std::size_t indices_size, const std::vector<Texture>& textures,
@@ -64,10 +57,10 @@ Object::Object(const VertexData& vData, const std::vector<const char*>& textureP
 	layout.Push<float>(vData.normalCoordsCount);
 	layout.Push<float>(vData.colorCoordsCount);
 	
-	for (std::size_t i = 0; i < m_Textures.size(); ++i)
-	{
+	/*for (std::size_t i = 0; i < m_Textures.size(); ++i)
+	{*/
 		layout.Push<float>(vData.textureCoordsCount);
-	}
+	//}
 	m_VAO->AddBuffer(*m_VBO, layout);
 
 	m_Shader->Bind();
@@ -100,11 +93,6 @@ void Object::DrawNoIndex()
 	m_Shader->Bind();
 	m_Shader->setMat4f(modelMatUniformName, m_Model);
 	m_Renderer.DrawNoIndex(*m_VAO, *m_Shader);
-}
-
-void Object::Scale(glm::vec3 by)
-{
-	m_Model = glm::scale(m_Model, by);
 }
 
 void Object::SetProjMat(const glm::mat4 projMat)

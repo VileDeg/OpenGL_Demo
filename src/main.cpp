@@ -14,6 +14,7 @@
 #include "tests/TestObject3D.h"
 #include "tests/TestCamera.h"
 #include "tests/TestLight.h"
+#include "tests/TestLight_Spotlight.h"
 
 #include "input/InputManager.h"
 
@@ -24,11 +25,11 @@ void SetKeybinds()
 {
     InputManager& inp = InputManager::getInstance();
 
-    inp.RegisterKeybind<Keybind_Forward>    (GLFW_KEY_W);
-    inp.RegisterKeybind<Keybind_Backward>   (GLFW_KEY_S);
-    inp.RegisterKeybind<Keybind_Left>       (GLFW_KEY_A);
-    inp.RegisterKeybind<Keybind_Right>      (GLFW_KEY_D);
-    inp.RegisterKeybind<Keybind_CloseWindow>(GLFW_KEY_ESCAPE);
+    inp.RegisterKeybind<Keybind_Forward>     (GLFW_KEY_W);
+    inp.RegisterKeybind<Keybind_Backward>    (GLFW_KEY_S);
+    inp.RegisterKeybind<Keybind_Left>        (GLFW_KEY_A);
+    inp.RegisterKeybind<Keybind_Right>       (GLFW_KEY_D);
+    inp.RegisterKeybind<Keybind_CloseWindow> (GLFW_KEY_ESCAPE);
     inp.RegisterKeybind<Keybind_ToggleCursor>(GLFW_KEY_C);
 }
 
@@ -74,12 +75,13 @@ int main()
     testMenu->RegisterTest<test::TestObject3D>  ("3D Object");//, SCR_WIDTH/SCR_HEIGHT
     testMenu->RegisterTest<test::TestCamera>    ("Camera");
     testMenu->RegisterTest<test::TestLight>     ("Light");
+    testMenu->RegisterTest<test::TestSpotlight> ("Spotlight");
     
     
     while (!glfwWindowShouldClose(context.Window()))
     {
-        if (!context.CursorVisible())
-            context.DrawCursor();
+        /*if (!context.CursorVisible())
+            context.DrawCursor();*/
         context.SetDeltaTime(DeltaTimer());
         glfwPollEvents();
         inputManager.ProcessInput();

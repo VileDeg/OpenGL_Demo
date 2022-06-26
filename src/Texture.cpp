@@ -3,8 +3,6 @@
 #include "stb_image/stb_image.h"
 #include <iostream>
 
-std::string Texture::texture_path = "res/textures/";
-
 Texture::Texture(const std::string& filePath)
 	: id(0), path(texture_path + filePath), buffer(nullptr), width(0), height(0)
 {

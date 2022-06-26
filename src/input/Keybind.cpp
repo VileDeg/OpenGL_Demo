@@ -1,70 +1,43 @@
 #include "InputManager.h"
 #include <thread>
 
-static Camera* cam = InputManager::getInstance().GetCamera();
 static GLContext& context = GLContext::getTnstance();
 static GLFWwindow* window = context.Window();
 
-
-
-void Keybind_Forward::OnPress()
+void KeybindCamera::OnPress()
 {
-	if (cam)
-		cam->MoveForward();
+	if (cam && !context.CursorVisible())
+		Action();
 	else
 		cam = InputManager::getInstance().GetCamera();
 }
 
-void Keybind_Backward::OnPress()
-{
-	if (cam)
-		cam->MoveBackward();
-	else
-		cam = InputManager::getInstance().GetCamera();
-}
-
-void Keybind_Left::OnPress()
-{
-	if (cam)
-		cam->MoveLeft();
-	else
-		cam = InputManager::getInstance().GetCamera();
-}
-
-void Keybind_Right::OnPress()
-{
-	if (cam)
-		cam->MoveRight();
-	else
-		cam = InputManager::getInstance().GetCamera();
-}
 
 void KeybindDelayed::DelayTimer()
 {
 	while (m_DelayTimer < m_Delay)
 	{
-		std::cout << "Timer is running.\n";
-		++m_DelayTimer;
+		std::cout << m_DelayTimer << "  :  " << m_Delay << '\n';
+		m_DelayTimer += context.DeltaTime();
 	}
-
 }
-
 
 void KeybindDelayed::OnPress()
 {
-	if (m_DelayTimer >= m_Delay)
-	{
-		Action();
-		m_DelayTimer = 0;
-	}
-	else
-	{
-		std::thread timer([this]{ this->DelayTimer(); });
-		timer.detach();
-	}
+	//Action();
+	//m_DelayTimer = 0;
+	//if (m_DelayTimer >= m_Delay)
+	//{
+	//	
+	//}
+	//else
+	//{
+	//	/*std::thread timer([this]{ this->DelayTimer(); });
+	//	timer.detach();*/
+	//}
 }
 
-void Keybind_CloseWindow::Action() const
+void Keybind_CloseWindow::Action()
 {
 	if (!context.CursorVisible())
 		context.ShowCursor();
@@ -72,10 +45,11 @@ void Keybind_CloseWindow::Action() const
 		glfwSetWindowShouldClose(window, true);
 }
 
-void Keybind_ToggleCursor::Action() const
+void Keybind_ToggleCursor::Action()
 {
 	if (context.CursorVisible())
 		context.HideCursor();
 	else
 		context.ShowCursor();
 }
+

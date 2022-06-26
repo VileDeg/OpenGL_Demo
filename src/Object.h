@@ -38,9 +38,11 @@ public:
 	//Object() {}
 	~Object() {}
 
-	void Move(glm::vec3 by);
-	void Rotate(float angle, glm::vec3 axis);
-	void Scale(glm::vec3 by);
+	inline void MoveBy(glm::vec3 by) { m_Model = glm::translate(m_Model, by); }
+	inline void MoveTo(glm::vec3 to) { m_Model = glm::translate(glm::mat4(1.0f), to); }
+	inline void Rotate(float angle, glm::vec3 axis) { m_Model = glm::rotate(m_Model, angle, axis); }
+	inline void Scale(glm::vec3 by) { m_Model = glm::scale(m_Model, by); }
+
 
 	void SetProjMat(const glm::mat4 projMat);
 	void SetViewMat(const glm::mat4 viewMat);

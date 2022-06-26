@@ -34,8 +34,9 @@ void InputManager::default_cursor_callback(GLFWwindow* window, double xposIn, do
     inp.m_CursorX = xpos;
     inp.m_CursorY = ypos;
     //std::cout << "Cursor x: " << xpos << ", y: " << ypos << '\n';
+    if (inp.m_Camera && !inp.m_Context.CursorVisible())
+        inp.m_Camera->ProcessMouseMovement(xoffset, yoffset);
 
-    inp.m_Camera->ProcessMouseMovement(xoffset, yoffset); 
     inp.xoffset = xoffset;
     inp.yoffset = yoffset;
 }
@@ -52,7 +53,7 @@ void InputManager::ProcessInput() const
 {
     for (auto keyBind : m_Keybinds)
     {
-        if (glfwGetKey(m_Context.Window(), keyBind->GlId()) == GLFW_PRESS)
+        if (glfwGetKey(m_Context.Window(), keyBind->GlId()) == keyBind->GlType())
             keyBind->OnPress();
     }
 }

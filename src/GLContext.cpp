@@ -1,7 +1,7 @@
 #include "GLContext.h"
 #include "input/InputManager.h"
 
-//#include "Object.h"
+#include "Object.h"
 
 #include <iostream>
 
@@ -30,44 +30,46 @@ void GLContext::SetFBSizeCallback(fb_size_callback fbcb)
         m_FBSIZE_CALLBACK = default_fb_size_callback;
     glfwSetFramebufferSizeCallback(m_WINDOW, m_FBSIZE_CALLBACK);
 }
-
-void GLContext::DrawCursorSetup()
+static float dist = 200.f;
+static float quad2D[20]
 {
-    float quad2D[8]
-    {
-        -1.0f, -1.0f,
-        1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, 1.0f
-    };
-    
-    Shader shader("cursor_vert.shader", "cursor_frag.shader");
-    VAO vao;
-    VBO vbo(quad2D, sizeof(quad2D), 4);
-    static VertexLayout layout;
-    layout.Push<float>(2);
-    vao.AddBuffer(vbo, layout);
-    
-    GLContext::m_CursorData.data = quad2D;
-    GLContext::m_CursorData.vao = vao;
-    GLContext::m_CursorData.shader = shader;
-}
-
-void GLContext::DrawCursor()
-{
-    
-
-    //Object obj({quad2D, sizeof(quad2D), 8, 2, 0, 0, 0}, {}, vertShaderPath)
-
-    
-    GLContext::m_CursorData.shader.Bind();
-    float x, y;
-    InputManager::getInstance().GetCursor(x, y);
-    GLContext::m_CursorData.shader.setFloat("cursorX", x);
-    GLContext::m_CursorData.shader.setFloat("cursorY", y);
-    glDrawArrays(GL_TRIANGLES, 0, GLContext::m_CursorData.vao.Count());
-    std::cout << "Drawing cursor.\n";
-}
+    -dist, -dist, 0.0f,    0.0f, 0.0f,
+    dist, -dist, 0.0f,    1.0f, 0.0f,
+    dist, dist, 0.0f,    1.0f, 1.0f, 
+    -dist, dist, 0.0f,    0.0f, 1.0f
+};                      
+//void GLContext::DrawCursorSetup()
+//{
+//
+//    m_CursorData.shader = new Shader("cursor_vert.shader", "cursor_frag.shader");
+//    m_CursorData.vao = new VAO;
+//    m_CursorData.vbo = new VBO(quad2D, sizeof(quad2D), 4);
+//    static VertexLayout layout;
+//    layout.Push<float>(3);
+//    m_CursorData.vao->AddBuffer(*m_CursorData.vbo, layout);
+//    
+//    m_CursorData.data = quad2D;
+//}
+//
+//void GLContext::DrawCursor()
+//{
+//    
+//    Object cursorObj({ quad2D, sizeof(quad2D), 4, 3, 0, 0, 2 }, { "awesomeface.png" }, "cursor_vert.shader", "cursor_frag.shader");
+//    //Object obj({quad2D, sizeof(quad2D), 8, 2, 0, 0, 0}, {}, vertShaderPath)
+//
+//    cursorObj.SetProjMat(glm::ortho(0, m_SCR_WIDTH, 0, m_SCR_HEIGHT));
+//    cursorObj.DrawNoIndex();
+//
+//    /*m_CursorData.shader->Bind();
+//    m_CursorData.vao->Bind();
+//    float x, y;
+//    InputManager::getInstance().GetCursor(x, y);
+//    m_CursorData.shader->setFloat("cursorX", x);
+//    m_CursorData.shader->setFloat("cursorY", y);
+//    m_CursorData.shader->setFloat("cursorSize", 20.0f);
+//    glDrawArrays(GL_TRIANGLES, 0, m_CursorData.vao->Count());*/
+//    std::cout << "Drawing cursor.\n";
+//}
 
 void GLContext::SetParams(const unsigned width, const unsigned height, const std::string& name, fb_size_callback callback)
 {
@@ -82,13 +84,13 @@ void GLContext::SetParams(const unsigned width, const unsigned height, const std
 GLContext::GLContext(const unsigned width, const unsigned height,
     const std::string& name, fb_size_callback callback)
     : m_SCR_WIDTH(width), m_SCR_HEIGHT(height), m_WINDOW_NAME(name),
-    m_CursorData{ -1, {}, nullptr }, m_CursorVisible(true)
+    m_CursorData{ nullptr, nullptr, nullptr, nullptr }, m_CursorVisible(true)
 {
     Init();
     OpenWindow();
     SetFBSizeCallback(default_fb_size_callback);
     SetGlobalSettings();
-    DrawCursorSetup();
+    //DrawCursorSetup();
     //DeltaTimer();
 }
 

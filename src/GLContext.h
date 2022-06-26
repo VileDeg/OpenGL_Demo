@@ -76,8 +76,9 @@ private:
 
     struct CursorData
     {
-        VAO vao;
-        Shader shader;
+        VAO* vao;
+        VBO* vbo;
+        Shader* shader;
         const float* data;
     };
     CursorData m_CursorData;

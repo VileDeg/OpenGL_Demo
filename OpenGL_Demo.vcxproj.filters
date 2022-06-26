@@ -108,6 +108,9 @@
     <ClCompile Include="src\tests\TestLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\tests\TestLight_Spotlight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\shader\Shader.h">
@@ -1049,6 +1052,9 @@
     <ClInclude Include="src\tests\TestLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\tests\TestLight_Spotlight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl">
@@ -1469,6 +1475,8 @@
     <None Include="res\shaders\plainWhite_frag.shader" />
     <None Include="res\shaders\cursor_frag.shader" />
     <None Include="res\shaders\cursor_vert.shader" />
+    <None Include="res\shaders\pointLight_frag.shader" />
+    <None Include="res\shaders\spotLight_frag.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\awesomeface.png">
