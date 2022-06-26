@@ -1,6 +1,11 @@
 #include "GLContext.h"
+#include "input/InputManager.h"
+
+//#include "Object.h"
 
 #include <iostream>
+
+
 
 GLContext& GLContext::getTnstance(const unsigned width, const unsigned height,
     const std::string& name, fb_size_callback callback)
@@ -26,6 +31,44 @@ void GLContext::SetFBSizeCallback(fb_size_callback fbcb)
     glfwSetFramebufferSizeCallback(m_WINDOW, m_FBSIZE_CALLBACK);
 }
 
+void GLContext::DrawCursorSetup()
+{
+    float quad2D[8]
+    {
+        -1.0f, -1.0f,
+        1.0f, -1.0f,
+        -1.0f, 1.0f,
+        1.0f, 1.0f
+    };
+    
+    Shader shader("cursor_vert.shader", "cursor_frag.shader");
+    VAO vao;
+    VBO vbo(quad2D, sizeof(quad2D), 4);
+    static VertexLayout layout;
+    layout.Push<float>(2);
+    vao.AddBuffer(vbo, layout);
+    
+    GLContext::m_CursorData.data = quad2D;
+    GLContext::m_CursorData.vao = vao;
+    GLContext::m_CursorData.shader = shader;
+}
+
+void GLContext::DrawCursor()
+{
+    
+
+    //Object obj({quad2D, sizeof(quad2D), 8, 2, 0, 0, 0}, {}, vertShaderPath)
+
+    
+    GLContext::m_CursorData.shader.Bind();
+    float x, y;
+    InputManager::getInstance().GetCursor(x, y);
+    GLContext::m_CursorData.shader.setFloat("cursorX", x);
+    GLContext::m_CursorData.shader.setFloat("cursorY", y);
+    glDrawArrays(GL_TRIANGLES, 0, GLContext::m_CursorData.vao.Count());
+    std::cout << "Drawing cursor.\n";
+}
+
 void GLContext::SetParams(const unsigned width, const unsigned height, const std::string& name, fb_size_callback callback)
 {
     m_SCR_WIDTH = width;
@@ -38,13 +81,14 @@ void GLContext::SetParams(const unsigned width, const unsigned height, const std
 
 GLContext::GLContext(const unsigned width, const unsigned height,
     const std::string& name, fb_size_callback callback)
-    : m_SCR_WIDTH(width), m_SCR_HEIGHT(height), m_WINDOW_NAME(name)
+    : m_SCR_WIDTH(width), m_SCR_HEIGHT(height), m_WINDOW_NAME(name),
+    m_CursorData{ -1, {}, nullptr }, m_CursorVisible(true)
 {
     Init();
     OpenWindow();
     SetFBSizeCallback(default_fb_size_callback);
     SetGlobalSettings();
-
+    DrawCursorSetup();
     //DeltaTimer();
 }
 

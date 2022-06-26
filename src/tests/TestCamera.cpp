@@ -96,7 +96,7 @@ namespace test
         m_Texture->Bind();
 
         inputManager.SetCamera(&camera);
-        inputManager.HideCursor();
+        context.HideCursor();
 	}
 
 	TestCamera::~TestCamera()

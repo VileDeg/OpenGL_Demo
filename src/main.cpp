@@ -24,11 +24,12 @@ void SetKeybinds()
 {
     InputManager& inp = InputManager::getInstance();
 
-    inp.RegisterKeybind<Keybind_Forward>(GLFW_KEY_W);
-    inp.RegisterKeybind<Keybind_Backward>(GLFW_KEY_S);
-    inp.RegisterKeybind<Keybind_Left>(GLFW_KEY_A);
-    inp.RegisterKeybind<Keybind_Right>(GLFW_KEY_D);
+    inp.RegisterKeybind<Keybind_Forward>    (GLFW_KEY_W);
+    inp.RegisterKeybind<Keybind_Backward>   (GLFW_KEY_S);
+    inp.RegisterKeybind<Keybind_Left>       (GLFW_KEY_A);
+    inp.RegisterKeybind<Keybind_Right>      (GLFW_KEY_D);
     inp.RegisterKeybind<Keybind_CloseWindow>(GLFW_KEY_ESCAPE);
+    inp.RegisterKeybind<Keybind_ToggleCursor>(GLFW_KEY_C);
 }
 
 float DeltaTimer()
@@ -46,6 +47,7 @@ int main()
     GLContext& context = GLContext::getTnstance();
     context.SetWindowSize(SCR_WIDTH, SCR_HEIGHT);
     context.SetWindowTitle("OpenGL Demo");
+    
     /*context.OpenWindow();
     context.SetFBSizeCallback(GLContext::default_fb_size_callback);
     context.SetGlobalSettings();*/
@@ -76,6 +78,8 @@ int main()
     
     while (!glfwWindowShouldClose(context.Window()))
     {
+        if (!context.CursorVisible())
+            context.DrawCursor();
         context.SetDeltaTime(DeltaTimer());
         glfwPollEvents();
         inputManager.ProcessInput();

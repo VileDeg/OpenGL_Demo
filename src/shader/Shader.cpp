@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 
-std::string Shader::shader_path = "res/shaders/";
+//std::string Shader::shader_path = "res/shaders/";
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {

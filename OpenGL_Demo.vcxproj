@@ -479,10 +479,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini" />
+    <None Include="res\shaders\cursor_frag.shader" />
+    <None Include="res\shaders\cursor_vert.shader" />
     <None Include="res\shaders\fragment.shader" />
-    <None Include="res\shaders\lightSource_frag.shader" />
-    <None Include="res\shaders\light_frag.shader" />
-    <None Include="res\shaders\light_vert.shader" />
+    <None Include="res\shaders\plainWhite_frag.shader" />
+    <None Include="res\shaders\material_frag.shader" />
+    <None Include="res\shaders\material_vert.shader" />
     <None Include="res\shaders\test_object3D_frag.shader" />
     <None Include="res\shaders\test_object3D_vert.shader" />
     <None Include="res\shaders\vertex.shader" />

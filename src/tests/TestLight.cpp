@@ -72,9 +72,9 @@ namespace test
     TestLight::TestLight()
         : m_Camera(glm::vec3(0.0f, 0.0f, 3.0f)),
         m_Container({ vertices, sizeof(vertices), 36, 3, 3, 2, 0 },
-            {}, "light_vert.shader", "light_frag.shader"),
+            {}, "material_vert.shader", "material_frag.shader"),
         m_LightSource({ vertices, sizeof(vertices), 36, 3, 3, 2, 0 },
-            {}, "light_vert.shader", "lightSource_frag.shader", glm::vec3(1.2f, 1.0f, 2.0f)),
+            {}, "material_vert.shader", "plainWhite_frag.shader", glm::vec3(1.2f, 1.0f, 2.0f)),
         m_DiffuseTexture("container2.png"), m_SpecularTexture("container2_specular.png")
     {
         {
@@ -94,12 +94,12 @@ namespace test
         m_LightSource.Scale(glm::vec3(0.2f));
 
         inputManager.SetCamera(&m_Camera);
-        inputManager.HideCursor();
+        context.HideCursor();
 	}
 
 	void TestLight::OnRender()
 	{
-
+        
         m_Container.WatchedBy(m_Camera);
         m_LightSource.WatchedBy(m_Camera);
         
@@ -148,6 +148,9 @@ namespace test
 
 	void TestLight::OnImGuiRender()
 	{
+        float w = context.Width();
+        float h = context.Height();
+        ImGui::SetNextWindowPos(ImVec2(w * 0.75f, h * 0.75f));
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }

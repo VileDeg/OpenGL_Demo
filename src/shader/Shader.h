@@ -35,7 +35,7 @@ public:
 
 
 private:
-	static std::string shader_path;
+	static constexpr const char* shader_path = "res/shaders/";
 
 	std::string vertexCode;
 	std::string fragmentCode;

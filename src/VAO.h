@@ -7,6 +7,7 @@
 class VAO
 {
 public:
+    VAO(int avoidConst) {}
     VAO();
     ~VAO();
     void AddBuffer(const VBO& vbo, const VertexLayout& layout);

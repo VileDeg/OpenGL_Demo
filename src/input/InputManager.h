@@ -23,7 +23,7 @@ public:
 
 	void SetCursorCallback(mouse_callback cpcb);
 	void SetScrollCallback(mouse_callback sccb);
-	void HideCursor();
+	
 
 	template<typename T>
 	void RegisterKeybind(int keyId);
