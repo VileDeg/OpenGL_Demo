@@ -80,10 +80,12 @@ namespace test
 
     static glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
 
-    static Shader modelSh("material_vert.shader", "spotLight_frag.shader");
+    
+
+    static Shader modelSh("material_vert.shader", "model_frag.shader");
 
     TestModelImport::TestModelImport()
-        : m_Model("res/models/backpack/"),
+        : m_Model("res/models/backpack/backpack.obj"),
         m_Camera(glm::vec3(0.0f, 0.0f, 3.0f)),
         m_LightSource({ vertices, sizeof(vertices), 36, 3, 3, 0, 2 },
             {}, "material_vert.shader", "plainWhite_frag.shader", lightPos)
@@ -142,6 +144,10 @@ namespace test
         
         modelSh.setMat4f("u_ProjMat", m_Camera.GetProjMat());
         modelSh.setMat4f("u_ViewMat", m_Camera.GetViewMat());
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        modelSh.setMat4f("u_ModelMat", model);
 
         m_Model.Draw(modelSh);
         //m_LightSource.WatchedBy(m_Camera);

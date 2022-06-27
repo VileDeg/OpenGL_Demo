@@ -29,7 +29,7 @@ struct Vertex {
     float m_Weights[MAX_BONE_INFLUENCE];
 };
 
-struct Texture {
+struct STexture {
     unsigned int id;
     string type;
     string path;
@@ -40,11 +40,11 @@ public:
     // mesh Data
     vector<Vertex>       vertices;
     vector<unsigned int> indices;
-    vector<Texture>      textures;
+    vector<STexture>      textures;
     unsigned int VAO;
 
     // constructor
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<STexture> textures)
     {
         this->vertices = vertices;
         this->indices = indices;
@@ -68,13 +68,13 @@ public:
             // retrieve texture number (the N in diffuse_textureN)
             string number;
             string name = textures[i].type;
-            if (name == "texture_diffuse")
+            if (name == DIFFUSE_TEX_NAME)
                 number = std::to_string(diffuseNr++);
-            else if (name == "texture_specular")
+            else if (name == SPECULAR_TEX_NAME)
                 number = std::to_string(specularNr++); // transfer unsigned int to string
-            else if (name == "texture_normal")
+            else if (name == NORMAL_TEX_NAME)
                 number = std::to_string(normalNr++); // transfer unsigned int to string
-            else if (name == "texture_height")
+            else if (name == HEIGHT_TEX_NAME)
                 number = std::to_string(heightNr++); // transfer unsigned int to string
 
             // now set the sampler to the correct texture unit
@@ -92,6 +92,11 @@ public:
         // always good practice to set everything back to defaults once configured.
         glActiveTexture(GL_TEXTURE0);
     }
+
+    static constexpr const char* DIFFUSE_TEX_NAME = "material.diffuse";
+    static constexpr const char* SPECULAR_TEX_NAME = "material.specular";
+    static constexpr const char* NORMAL_TEX_NAME = "material.normal";
+    static constexpr const char* HEIGHT_TEX_NAME = "material.height";
 
 private:
     // render data 

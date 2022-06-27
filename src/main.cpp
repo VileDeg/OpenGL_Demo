@@ -15,6 +15,7 @@
 #include "tests/TestCamera.h"
 #include "tests/TestLight.h"
 #include "tests/TestLight_Spotlight.h"
+#include "tests/TestModelImport.h"
 
 #include "input/InputManager.h"
 
@@ -74,7 +75,7 @@ int main()
     testMenu->RegisterTest<test::TestCamera>    ("Camera");
     testMenu->RegisterTest<test::TestLight>     ("Light");
     testMenu->RegisterTest<test::TestSpotlight> ("Spotlight");
-    
+    testMenu->RegisterTest<test::TestModelImport> ("Model Import");
     
     while (!glfwWindowShouldClose(context.Window()))
     {

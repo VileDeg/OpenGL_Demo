@@ -574,6 +574,7 @@
     <None Include="res\shaders\cursor_frag.shader" />
     <None Include="res\shaders\cursor_vert.shader" />
     <None Include="res\shaders\fragment.shader" />
+    <None Include="res\shaders\model_frag.shader" />
     <None Include="res\shaders\plainWhite_frag.shader" />
     <None Include="res\shaders\material_frag.shader" />
     <None Include="res\shaders\material_vert.shader" />
