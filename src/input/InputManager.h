@@ -12,7 +12,7 @@ private:
 
 public:
 	static InputManager& getInstance();
-	void ProcessInput() const;
+	//void ProcessInput() const;
 	inline void SetCamera(Camera* camera) { m_Camera = camera; }
 
 	inline void SetCursor(const float x, const float y) { m_CursorX = x; m_CursorY = y; }
@@ -25,9 +25,7 @@ public:
 	void SetScrollCallback(mouse_callback sccb);
 	
 
-	template<typename T>
-	void RegisterKeybind(int keyId);
-
+	
 	
 	InputManager(InputManager const&) = delete;
 	void operator=(InputManager const&) = delete;
@@ -51,8 +49,3 @@ private:
 };
 
 
-template<typename T>
-inline void InputManager::RegisterKeybind(int keyId)
-{
-	m_Keybinds.push_back(new T(keyId));
-}

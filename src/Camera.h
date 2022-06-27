@@ -1,7 +1,7 @@
 #pragma once
 
 #include "math_headers.h"
-#include "GLContext.h"
+//#include "GLContext.h"
 
 static const float YAW = -90.0f;
 static const float PITCH = 0.0f;
@@ -51,21 +51,16 @@ public:
 	inline const glm::vec3& Right() const { return m_Right; }
 	inline const float Zoom() const { return m_Zoom; }
 	
-	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+	void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
 	void ProcessMouseScroll(float yoffset);
 
-	inline const glm::mat4 GetProjMat() const
-	{
-		return glm::perspective(glm::radians(m_Zoom),
-			(float)(GLContext::getTnstance().Width()) / GLContext::getTnstance().Height(),
-			m_NearPlane, m_FarPlane);
-	}
+	const glm::mat4 GetProjMat() const;
+	
 
 	~Camera() {}
 private:
 	void updateCameraVectors();
-	inline const float Velocity() const { return m_MovementSpeed * 
-		GLContext::getTnstance().DeltaTime(); }
+	const float Velocity() const;
 
 	//std::unique_ptr<GLContext> m_Context;
 	//GLContext& m_Context;

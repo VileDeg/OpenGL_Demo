@@ -20,6 +20,7 @@ void InputManager::default_cursor_callback(GLFWwindow* window, double xposIn, do
     
     //inp.m_CursorX = 0.0f;
     //inp.m_CursorY = 0.0f;
+   
 
     if (firstMouseUse)
     {
@@ -36,6 +37,8 @@ void InputManager::default_cursor_callback(GLFWwindow* window, double xposIn, do
     //std::cout << "Cursor x: " << xpos << ", y: " << ypos << '\n';
     if (inp.m_Camera && !inp.m_Context.CursorVisible())
         inp.m_Camera->ProcessMouseMovement(xoffset, yoffset);
+    else
+        firstMouseUse = true;
 
     inp.xoffset = xoffset;
     inp.yoffset = yoffset;
@@ -49,14 +52,7 @@ void InputManager::default_scroll_callback(GLFWwindow* window, double xoffset, d
     cam->ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-void InputManager::ProcessInput() const
-{
-    for (auto keyBind : m_Keybinds)
-    {
-        if (glfwGetKey(m_Context.Window(), keyBind->GlId()) == keyBind->GlType())
-            keyBind->OnPress();
-    }
-}
+
 
 void InputManager::SetCursorCallback(mouse_callback cpcb)
 {

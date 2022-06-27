@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLContext.h"
+
 #include "Camera.h"
 //#include <chrono>
 //#include <thread>
@@ -10,15 +10,18 @@
 
 class Keybind
 {
+protected:
+	//using key_command = void(GLFWwindow*, int, int, int, int);
 public:
 	Keybind(int id, int type) 
 		: m_GlId(id), m_GlEventType(type) {}
 	~Keybind() {}
 
-	virtual void OnPress() = 0;
+	//virtual void Command(GLFWwindow*, int, int, int, int) = 0;
+	virtual void Action() = 0;
 	inline const int GlId() const { return m_GlId; }
 	inline const int GlType() const { return m_GlEventType; }
-private:
+protected:
 	int m_GlId;
 	int m_GlEventType;
 };
@@ -29,10 +32,9 @@ class KeybindCamera : public Keybind
 public:
 	KeybindCamera(int id) 
 		: Keybind(id, GL_TYPE), cam(nullptr) {}
-	~KeybindCamera() {}
+	virtual ~KeybindCamera() = 0;
 
-	void OnPress() final;
-	virtual void Action() = 0;
+	void Command();
 	Camera* cam;
 private:
 	static constexpr int GL_TYPE = GLFW_PRESS;
@@ -41,19 +43,19 @@ private:
 class KeybindDelayed : public Keybind
 {
 public:
-	KeybindDelayed(int id) : Keybind(id, GL_TYPE), m_Delay(DELAY), m_DelayTimer(0) {}
+	KeybindDelayed(int id) : Keybind(id, GL_TYPE) {}
 	~KeybindDelayed() {}
 
-	void OnPress() final;
+	void Command(GLFWwindow*, int, int, int, int);
 
 	virtual void Action() = 0;
 private:
-	void DelayTimer();
+	//void DelayTimer();
 
 	int m_Delay;
 	int m_DelayTimer;
 	static constexpr int GL_TYPE = GLFW_PRESS;
-	static constexpr int DELAY = 100000;
+	//static constexpr int DELAY = 100000;
 };
 
 class Keybind_Forward : public KeybindCamera
@@ -80,7 +82,7 @@ public:
 	Keybind_Left(int id) : KeybindCamera(id) {}
 	~Keybind_Left() {}
 
-	inline void Action() override { cam->MoveLeft(); }
+	inline void Action() override { cam->MoveLeft(); };
 };
 
 class Keybind_Right : public KeybindCamera
@@ -104,7 +106,7 @@ public:
 class Keybind_ToggleCursor : public KeybindDelayed
 {
 public:
-	GLContext& context;
+	/*GLContext& context;
 	using key_callback = void(*)(GLFWwindow*, int, int, int, int);
 	Keybind_ToggleCursor(int id) : KeybindDelayed(id), context(GLContext::getTnstance()) {
 		key_callback keyCB = [=](GLFWwindow* win, int keycode, int scancode, int action , int mods)
@@ -112,7 +114,8 @@ public:
 			if (keycode == id)
 		};
 		glfwSetKeyCallback()
-	}
+	}*/
+	Keybind_ToggleCursor(int id) : KeybindDelayed(id) {}
 	~Keybind_ToggleCursor() {}
 
 	void Action() override;

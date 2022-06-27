@@ -21,16 +21,14 @@
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
-void SetKeybinds()
+void SetKeybinds(GLContext& context)
 {
-    InputManager& inp = InputManager::getInstance();
-
-    inp.RegisterKeybind<Keybind_Forward>     (GLFW_KEY_W);
-    inp.RegisterKeybind<Keybind_Backward>    (GLFW_KEY_S);
-    inp.RegisterKeybind<Keybind_Left>        (GLFW_KEY_A);
-    inp.RegisterKeybind<Keybind_Right>       (GLFW_KEY_D);
-    inp.RegisterKeybind<Keybind_CloseWindow> (GLFW_KEY_ESCAPE);
-    inp.RegisterKeybind<Keybind_ToggleCursor>(GLFW_KEY_C);
+    context.RegisterCameraKeybind<Keybind_Forward>     (GLFW_KEY_W);
+    context.RegisterCameraKeybind<Keybind_Backward>    (GLFW_KEY_S);
+    context.RegisterCameraKeybind<Keybind_Left>        (GLFW_KEY_A);
+    context.RegisterCameraKeybind<Keybind_Right>       (GLFW_KEY_D);
+    context.RegisterDelayedKeybind<Keybind_CloseWindow> (GLFW_KEY_ESCAPE);
+    context.RegisterDelayedKeybind<Keybind_ToggleCursor>(GLFW_KEY_C);
 }
 
 float DeltaTimer()
@@ -54,7 +52,7 @@ int main()
     context.SetGlobalSettings();*/
     //context.SetParams(SCR_WIDTH, SCR_HEIGHT, "Omega Engine");
     InputManager& inputManager = InputManager::getInstance();
-    SetKeybinds();
+    SetKeybinds(context);
 
     Renderer renderer;
 
@@ -84,7 +82,7 @@ int main()
             context.DrawCursor();*/
         context.SetDeltaTime(DeltaTimer());
         glfwPollEvents();
-        inputManager.ProcessInput();
+        context.ProcessInput();
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         renderer.Clear();

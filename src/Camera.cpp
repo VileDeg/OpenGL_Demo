@@ -1,10 +1,18 @@
 #include "Camera.h"
-#ifdef _DEBUG
-    #include <iostream>
-#endif
+#include "GLContext.h"
 
 
+const float Camera::Velocity() const {
+    return m_MovementSpeed *
+        GLContext::getTnstance().DeltaTime();
+}
 
+const glm::mat4 Camera::GetProjMat() const
+{
+    return glm::perspective(glm::radians(m_Zoom),
+        (float)(GLContext::getTnstance().Width()) / GLContext::getTnstance().Height(),
+        m_NearPlane, m_FarPlane);
+}
 
 void Camera::updateCameraVectors()
 {
@@ -24,7 +32,7 @@ void Camera::updateCameraVectors()
 }
 
 
-void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
+void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch)
 {
     xoffset *= m_MouseSensitivity;
     yoffset *= m_MouseSensitivity;

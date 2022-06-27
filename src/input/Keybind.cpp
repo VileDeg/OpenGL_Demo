@@ -1,10 +1,15 @@
 #include "InputManager.h"
-#include <thread>
+//#include <thread>
+#include "GLContext.h"
 
 static GLContext& context = GLContext::getTnstance();
 static GLFWwindow* window = context.Window();
 
-void KeybindCamera::OnPress()
+KeybindCamera::~KeybindCamera()
+{
+}
+
+void KeybindCamera::Command()
 {
 	if (cam && !context.CursorVisible())
 		Action();
@@ -13,18 +18,18 @@ void KeybindCamera::OnPress()
 }
 
 
-void KeybindDelayed::DelayTimer()
-{
-	while (m_DelayTimer < m_Delay)
-	{
-		std::cout << m_DelayTimer << "  :  " << m_Delay << '\n';
-		m_DelayTimer += context.DeltaTime();
-	}
-}
+//void KeybindDelayed::DelayTimer()
+//{
+//	while (m_DelayTimer < m_Delay)
+//	{
+//		std::cout << m_DelayTimer << "  :  " << m_Delay << '\n';
+//		m_DelayTimer += context.DeltaTime();
+//	}
+//}
 
-void KeybindDelayed::OnPress()
+void KeybindDelayed::Command(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-	//Action();
+	Action();
 	//m_DelayTimer = 0;
 	//if (m_DelayTimer >= m_Delay)
 	//{
@@ -53,3 +58,9 @@ void Keybind_ToggleCursor::Action()
 		context.ShowCursor();
 }
 
+
+//void Keybind_Left::Action()
+//{
+//	while (context.GetKey(m_GlId) == GLFW_PRESS)
+//		cam->MoveLeft(); 
+//}

@@ -70,6 +70,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\int\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -105,12 +109,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\dev\libs\gl\GLFW\include;C:\dev\libs\gl\glad\include;$(ProjectDir)\src\vendor;$(ProjectDir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\dev\libs\gl\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\dev\libs\gl\GLFW\lib;C:\dev\libs\gl\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,6 +151,7 @@
     <ClCompile Include="src\tests\TestClearColor.cpp" />
     <ClCompile Include="src\tests\TestLight.cpp" />
     <ClCompile Include="src\tests\TestLight_Spotlight.cpp" />
+    <ClCompile Include="src\tests\TestModelImport.cpp" />
     <ClCompile Include="src\tests\TestObject3D.cpp" />
     <ClCompile Include="src\tests\TestTexture2D.cpp" />
     <ClCompile Include="src\tests\TestTransform2D.cpp" />
@@ -164,6 +170,8 @@
     <ClCompile Include="src\VertexLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Mesh.h" />
+    <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Object.h" />
     <ClInclude Include="src\GLContext.h" />
     <ClInclude Include="src\input\callbacks.h" />
@@ -179,12 +187,94 @@
     <ClInclude Include="src\tests\TestClearColor.h" />
     <ClInclude Include="src\tests\TestLight.h" />
     <ClInclude Include="src\tests\TestLight_Spotlight.h" />
+    <ClInclude Include="src\tests\TestModelImport.h" />
     <ClInclude Include="src\tests\TestObject3D.h" />
     <ClInclude Include="src\tests\TestTexture2D.h" />
     <ClInclude Include="src\tests\TestTransform2D.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\VAO.h" />
     <ClInclude Include="src\VBO.h" />
+    <ClInclude Include="src\vendor\assimp\aabb.h" />
+    <ClInclude Include="src\vendor\assimp\ai_assert.h" />
+    <ClInclude Include="src\vendor\assimp\anim.h" />
+    <ClInclude Include="src\vendor\assimp\Base64.hpp" />
+    <ClInclude Include="src\vendor\assimp\BaseImporter.h" />
+    <ClInclude Include="src\vendor\assimp\Bitmap.h" />
+    <ClInclude Include="src\vendor\assimp\BlobIOSystem.h" />
+    <ClInclude Include="src\vendor\assimp\ByteSwapper.h" />
+    <ClInclude Include="src\vendor\assimp\camera.h" />
+    <ClInclude Include="src\vendor\assimp\cexport.h" />
+    <ClInclude Include="src\vendor\assimp\cfileio.h" />
+    <ClInclude Include="src\vendor\assimp\cimport.h" />
+    <ClInclude Include="src\vendor\assimp\ColladaMetaData.h" />
+    <ClInclude Include="src\vendor\assimp\color4.h" />
+    <ClInclude Include="src\vendor\assimp\commonMetaData.h" />
+    <ClInclude Include="src\vendor\assimp\Compiler\poppack1.h" />
+    <ClInclude Include="src\vendor\assimp\Compiler\pstdint.h" />
+    <ClInclude Include="src\vendor\assimp\Compiler\pushpack1.h" />
+    <ClInclude Include="src\vendor\assimp\CreateAnimMesh.h" />
+    <ClInclude Include="src\vendor\assimp\DefaultIOStream.h" />
+    <ClInclude Include="src\vendor\assimp\DefaultIOSystem.h" />
+    <ClInclude Include="src\vendor\assimp\DefaultLogger.hpp" />
+    <ClInclude Include="src\vendor\assimp\defs.h" />
+    <ClInclude Include="src\vendor\assimp\Exceptional.h" />
+    <ClInclude Include="src\vendor\assimp\Exporter.hpp" />
+    <ClInclude Include="src\vendor\assimp\fast_atof.h" />
+    <ClInclude Include="src\vendor\assimp\GenericProperty.h" />
+    <ClInclude Include="src\vendor\assimp\GltfMaterial.h" />
+    <ClInclude Include="src\vendor\assimp\Hash.h" />
+    <ClInclude Include="src\vendor\assimp\Importer.hpp" />
+    <ClInclude Include="src\vendor\assimp\importerdesc.h" />
+    <ClInclude Include="src\vendor\assimp\IOStream.hpp" />
+    <ClInclude Include="src\vendor\assimp\IOStreamBuffer.h" />
+    <ClInclude Include="src\vendor\assimp\IOSystem.hpp" />
+    <ClInclude Include="src\vendor\assimp\light.h" />
+    <ClInclude Include="src\vendor\assimp\LineSplitter.h" />
+    <ClInclude Include="src\vendor\assimp\LogAux.h" />
+    <ClInclude Include="src\vendor\assimp\Logger.hpp" />
+    <ClInclude Include="src\vendor\assimp\LogStream.hpp" />
+    <ClInclude Include="src\vendor\assimp\material.h" />
+    <ClInclude Include="src\vendor\assimp\MathFunctions.h" />
+    <ClInclude Include="src\vendor\assimp\matrix3x3.h" />
+    <ClInclude Include="src\vendor\assimp\matrix4x4.h" />
+    <ClInclude Include="src\vendor\assimp\MemoryIOWrapper.h" />
+    <ClInclude Include="src\vendor\assimp\mesh.h" />
+    <ClInclude Include="src\vendor\assimp\metadata.h" />
+    <ClInclude Include="src\vendor\assimp\NullLogger.hpp" />
+    <ClInclude Include="src\vendor\assimp\ObjMaterial.h" />
+    <ClInclude Include="src\vendor\assimp\ParsingUtils.h" />
+    <ClInclude Include="src\vendor\assimp\pbrmaterial.h" />
+    <ClInclude Include="src\vendor\assimp\port\AndroidJNI\AndroidJNIIOSystem.h" />
+    <ClInclude Include="src\vendor\assimp\port\AndroidJNI\BundledAssetIOSystem.h" />
+    <ClInclude Include="src\vendor\assimp\postprocess.h" />
+    <ClInclude Include="src\vendor\assimp\Profiler.h" />
+    <ClInclude Include="src\vendor\assimp\ProgressHandler.hpp" />
+    <ClInclude Include="src\vendor\assimp\qnan.h" />
+    <ClInclude Include="src\vendor\assimp\quaternion.h" />
+    <ClInclude Include="src\vendor\assimp\RemoveComments.h" />
+    <ClInclude Include="src\vendor\assimp\scene.h" />
+    <ClInclude Include="src\vendor\assimp\SceneCombiner.h" />
+    <ClInclude Include="src\vendor\assimp\SGSpatialSort.h" />
+    <ClInclude Include="src\vendor\assimp\SkeletonMeshBuilder.h" />
+    <ClInclude Include="src\vendor\assimp\SmallVector.h" />
+    <ClInclude Include="src\vendor\assimp\SmoothingGroups.h" />
+    <ClInclude Include="src\vendor\assimp\SpatialSort.h" />
+    <ClInclude Include="src\vendor\assimp\StandardShapes.h" />
+    <ClInclude Include="src\vendor\assimp\StreamReader.h" />
+    <ClInclude Include="src\vendor\assimp\StreamWriter.h" />
+    <ClInclude Include="src\vendor\assimp\StringComparison.h" />
+    <ClInclude Include="src\vendor\assimp\StringUtils.h" />
+    <ClInclude Include="src\vendor\assimp\Subdivision.h" />
+    <ClInclude Include="src\vendor\assimp\texture.h" />
+    <ClInclude Include="src\vendor\assimp\TinyFormatter.h" />
+    <ClInclude Include="src\vendor\assimp\types.h" />
+    <ClInclude Include="src\vendor\assimp\vector2.h" />
+    <ClInclude Include="src\vendor\assimp\vector3.h" />
+    <ClInclude Include="src\vendor\assimp\version.h" />
+    <ClInclude Include="src\vendor\assimp\Vertex.h" />
+    <ClInclude Include="src\vendor\assimp\XmlParser.h" />
+    <ClInclude Include="src\vendor\assimp\XMLTools.h" />
+    <ClInclude Include="src\vendor\assimp\ZipArchiveIOSystem.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_vector_relational.hpp" />
@@ -492,6 +582,16 @@
     <None Include="res\shaders\test_object3D_frag.shader" />
     <None Include="res\shaders\test_object3D_vert.shader" />
     <None Include="res\shaders\vertex.shader" />
+    <None Include="src\vendor\assimp\.editorconfig" />
+    <None Include="src\vendor\assimp\color4.inl" />
+    <None Include="src\vendor\assimp\config.h.in" />
+    <None Include="src\vendor\assimp\material.inl" />
+    <None Include="src\vendor\assimp\matrix3x3.inl" />
+    <None Include="src\vendor\assimp\matrix4x4.inl" />
+    <None Include="src\vendor\assimp\quaternion.inl" />
+    <None Include="src\vendor\assimp\SmoothingGroups.inl" />
+    <None Include="src\vendor\assimp\vector2.inl" />
+    <None Include="src\vendor\assimp\vector3.inl" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />

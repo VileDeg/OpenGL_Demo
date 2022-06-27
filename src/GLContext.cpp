@@ -19,7 +19,7 @@ void GLContext::default_fb_size_callback(GLFWwindow* window, int width, int heig
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
-    GLContext::getTnstance().SetViewport(width, height);
+    reinterpret_cast<GLContext*>(glfwGetWindowUserPointer(window))->SetViewport(width, height);
 }
 
 void GLContext::SetFBSizeCallback(fb_size_callback fbcb)
@@ -38,38 +38,6 @@ static float quad2D[20]
     dist, dist, 0.0f,    1.0f, 1.0f, 
     -dist, dist, 0.0f,    0.0f, 1.0f
 };                      
-//void GLContext::DrawCursorSetup()
-//{
-//
-//    m_CursorData.shader = new Shader("cursor_vert.shader", "cursor_frag.shader");
-//    m_CursorData.vao = new VAO;
-//    m_CursorData.vbo = new VBO(quad2D, sizeof(quad2D), 4);
-//    static VertexLayout layout;
-//    layout.Push<float>(3);
-//    m_CursorData.vao->AddBuffer(*m_CursorData.vbo, layout);
-//    
-//    m_CursorData.data = quad2D;
-//}
-//
-//void GLContext::DrawCursor()
-//{
-//    
-//    Object cursorObj({ quad2D, sizeof(quad2D), 4, 3, 0, 0, 2 }, { "awesomeface.png" }, "cursor_vert.shader", "cursor_frag.shader");
-//    //Object obj({quad2D, sizeof(quad2D), 8, 2, 0, 0, 0}, {}, vertShaderPath)
-//
-//    cursorObj.SetProjMat(glm::ortho(0, m_SCR_WIDTH, 0, m_SCR_HEIGHT));
-//    cursorObj.DrawNoIndex();
-//
-//    /*m_CursorData.shader->Bind();
-//    m_CursorData.vao->Bind();
-//    float x, y;
-//    InputManager::getInstance().GetCursor(x, y);
-//    m_CursorData.shader->setFloat("cursorX", x);
-//    m_CursorData.shader->setFloat("cursorY", y);
-//    m_CursorData.shader->setFloat("cursorSize", 20.0f);
-//    glDrawArrays(GL_TRIANGLES, 0, m_CursorData.vao->Count());*/
-//    std::cout << "Drawing cursor.\n";
-//}
 
 void GLContext::SetParams(const unsigned width, const unsigned height, const std::string& name, fb_size_callback callback)
 {
@@ -79,7 +47,24 @@ void GLContext::SetParams(const unsigned width, const unsigned height, const std
     SetFBSizeCallback(callback);
 }
 
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    GLContext* user = reinterpret_cast<GLContext*>(glfwGetWindowUserPointer(window));
+    for (const auto kb : user->Keybinds())
+    {
+        if (key == kb->GlId() && action == kb->GlType())
+            kb->Command(window, key, scancode, action, mode);
+    }
+}
 
+void GLContext::ProcessInput() const
+{
+    for (auto keyBind : m_CameraKeybinds)
+    {
+        if (glfwGetKey(m_WINDOW, keyBind->GlId()) == keyBind->GlType())
+            keyBind->Command();
+    }
+}
 
 GLContext::GLContext(const unsigned width, const unsigned height,
     const std::string& name, fb_size_callback callback)
@@ -88,6 +73,8 @@ GLContext::GLContext(const unsigned width, const unsigned height,
 {
     Init();
     OpenWindow();
+    glfwSetWindowUserPointer(m_WINDOW, reinterpret_cast<void*>(this));
+    glfwSetKeyCallback(m_WINDOW, key_callback);
     SetFBSizeCallback(default_fb_size_callback);
     SetGlobalSettings();
     //DrawCursorSetup();

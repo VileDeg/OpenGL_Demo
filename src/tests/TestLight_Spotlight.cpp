@@ -75,6 +75,7 @@ namespace test
         float shininess;
 
         float cutOff;
+        float outerCutOff;
     } LightParams;
 
     static glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
@@ -88,7 +89,7 @@ namespace test
         m_DiffuseTexture("container2.png"), m_SpecularTexture("container2_specular.png")
     {
         {
-            m_ObjPositions.emplace_back(glm::vec3(1.f, 1.0f, 1.f));
+            m_ObjPositions.emplace_back(glm::vec3(0.f, 0.0f, 0.f));
             m_ObjPositions.emplace_back(glm::vec3(2.0f, 5.0f, -15.0f));
             m_ObjPositions.emplace_back(glm::vec3(-1.5f, -2.2f, -2.5f));
             m_ObjPositions.emplace_back(glm::vec3(-3.8f, -2.0f, -12.3f));
@@ -105,9 +106,9 @@ namespace test
         
         {
             LightParams.lightPos = lightPos;
-            LightParams.ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-            LightParams.diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
-            LightParams.specular = glm::vec3(1.f, 1.f, 1.f);
+            LightParams.ambient = glm::vec3(0.2f);
+            LightParams.diffuse = glm::vec3(0.7f);
+            LightParams.specular = glm::vec3(1.f);
             LightParams.shininess = 32.0f;
             
             LightParams.constant = 1.0f;
@@ -115,6 +116,7 @@ namespace test
             LightParams.quadratic = 0.032f;
 
             LightParams.cutOff = glm::cos(glm::radians(12.5f));
+            LightParams.outerCutOff = glm::cos(glm::radians(17.5f));
         }
         
         m_LightSource.Scale(glm::vec3(0.2f));
@@ -135,6 +137,7 @@ namespace test
         contSh.setFloat3("light.position",  m_Camera.Position());
         contSh.setFloat3("light.direction", m_Camera.Front());
         contSh.setFloat ("light.cutOff",    LightParams.cutOff);
+        contSh.setFloat ("light.outerCutOff", LightParams.outerCutOff);
         contSh.setFloat3("viewPos",         m_Camera.Position());
 
         contSh.setFloat3("light.ambient",   LightParams.ambient);
@@ -147,7 +150,7 @@ namespace test
         contSh.setFloat("material.shininess", 32.0f);
 
         m_Container.WatchedBy(m_Camera);
-        m_LightSource.WatchedBy(m_Camera);
+        //m_LightSource.WatchedBy(m_Camera);
 
         contSh.Bind();
         m_DiffuseTexture.Bind(0);
@@ -162,10 +165,10 @@ namespace test
             float angle = 50.0f;
             m_Container.Rotate((float)glfwGetTime() * glm::radians(angle),
                 glm::vec3(1.0f, 0.3f, 0.5f));
-            m_LightSource.MoveTo(LightParams.lightPos);
+            //m_LightSource.MoveTo(LightParams.lightPos);
             
             m_Container.DrawNoIndex();
-            m_LightSource.DrawNoIndex();
+            //m_LightSource.DrawNoIndex();
         }
 	}
 
@@ -196,6 +199,9 @@ namespace test
 
         static float cutOff = LightParams.cutOff;
         ImGui::SliderFloat("CutOff", &cutOff, min, 180.0f);
-        LightParams.cutOff = glm::cos(glm::radians(cutOff));
+        LightParams.cutOff = cutOff;
+        static float outerCutOff = LightParams.outerCutOff;
+        ImGui::SliderFloat("OuterCutOff", &outerCutOff, min, 180.0f);
+        LightParams.outerCutOff = outerCutOff;
 	}
 }
