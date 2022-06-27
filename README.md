@@ -8,4 +8,5 @@ GLFW: https://www.glfw.org/ </br>
 GLAD: https://glad.dav1d.de/ </br>
 GLM: https://github.com/g-truc/glm </br>
 stb_image: https://github.com/nothings/stb/blob/master/stb_image.h </br>
+assimp: https://github.com/assimp/assimp </br>
 ImGui: https://github.com/ocornut/imgui </br>
