@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "InputManager.h"
 //#include <thread>
 #include "GLContext.h"
@@ -11,35 +12,18 @@ KeybindCamera::~KeybindCamera()
 
 void KeybindCamera::Command()
 {
-	if (cam && !context.CursorVisible())
+	if (cam) // && !context.CursorVisible()
 		Action();
 	else
 		cam = InputManager::getInstance().GetCamera();
 }
 
 
-//void KeybindDelayed::DelayTimer()
-//{
-//	while (m_DelayTimer < m_Delay)
-//	{
-//		std::cout << m_DelayTimer << "  :  " << m_Delay << '\n';
-//		m_DelayTimer += context.DeltaTime();
-//	}
-//}
 
 void KeybindDelayed::Command(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	Action();
-	//m_DelayTimer = 0;
-	//if (m_DelayTimer >= m_Delay)
-	//{
-	//	
-	//}
-	//else
-	//{
-	//	/*std::thread timer([this]{ this->DelayTimer(); });
-	//	timer.detach();*/
-	//}
+
 }
 
 void Keybind_CloseWindow::Action()
@@ -59,8 +43,3 @@ void Keybind_ToggleCursor::Action()
 }
 
 
-//void Keybind_Left::Action()
-//{
-//	while (context.GetKey(m_GlId) == GLFW_PRESS)
-//		cam->MoveLeft(); 
-//}

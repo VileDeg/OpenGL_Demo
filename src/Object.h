@@ -1,4 +1,6 @@
 #pragma once
+
+#include "pch.h"
 #include "VAO.h"
 #include "shader/Shader.h"
 #include "math_headers.h"
@@ -6,11 +8,13 @@
 #include "Renderer.h"
 #include "Camera.h"
 
-#include <memory>
-
 class Object
 {
 public:
+	enum class ObjectType
+	{
+		NO_TDATA = -1, DEFAULT = 0
+	};
 	struct VertexData
 	{
 		const void* data;
@@ -21,21 +25,24 @@ public:
 		unsigned char colorCoordsCount;
 		unsigned char textureCoordsCount;
 	};
+	struct TextureData
+	{
+		const char* diffusePath;
+		const char* specularPath;
+	};
 
 public:
-	Object(const VertexData& vData, const unsigned* indices,
+	/*Object(const VertexData& vData, const unsigned* indices,
 		std::size_t indices_size, const std::vector<Texture>& textures,
 		const char* vertShaderPath, const char* fragShaderPath,
-		const glm::vec3& position = glm::vec3(0.0f) );
-	//const std::vector<Texture>& textures
-	//const std::vector<const char*>& texturePaths
-	Object(const VertexData& vData, const std::vector<const char*>& texturePaths,
-		const char* vertShaderPath, const char* fragShaderPath,
-		const glm::vec3& position = glm::vec3(0.0f));
+		const glm::vec3& position = glm::vec3(0.0f) );*/
+	
+	Object(const VertexData& vData, 
+		const Shader shader, const TextureData& tData = {"@#none#@", "@#none#@"},
+		const glm::vec3 position = glm::vec3(0.0f),
+		ObjectType type = ObjectType::DEFAULT);
 
-	//Object(const VAO* vao, const VBO* vbo, const Shader* shader);
 
-	//Object() {}
 	~Object() {}
 
 	inline void MoveBy(glm::vec3 by) { m_Model = glm::translate(m_Model, by); }
@@ -49,7 +56,7 @@ public:
 
 	void WatchedBy(const Camera& camera);
 
-	void Draw();
+	//void Draw();
 	void DrawNoIndex();
 	inline void ResetTransform() { m_Model = glm::mat4(1.0f); };
 	inline const glm::vec3& Position() { return m_Model[3]; }
@@ -57,21 +64,27 @@ public:
 	inline Shader& GetShader() { return *m_Shader; }
 	
 private:
+	void SetModelMat(const glm::mat4 modelMat);
+
 	std::unique_ptr<Shader> m_Shader;
 	std::unique_ptr<VAO> m_VAO;
 	std::unique_ptr<VBO> m_VBO;
 	std::unique_ptr<EBO> m_EBO;
 
-	std::vector< std::unique_ptr<Texture> > m_Textures;
+	//std::vector< std::unique_ptr<Texture> > m_Textures;
+	std::unique_ptr<Texture> m_DiffuseTex;
+	std::unique_ptr<Texture> m_SpecularTex;
 
 	glm::mat4 m_Model;
 	
-	int m_TextureCount;
+	int m_TextureSlot;
 	Renderer m_Renderer;
 
-	static const std::string textureUniformName;
-	static const std::string modelMatUniformName;
-	static const std::string projMatUniformName;
-	static const std::string viewMatUniformName;
+	static constexpr const char* DIFFUSE_TEX_UNIFORM_NAME  = "material.diffuse";
+	static constexpr const char* SPECULAR_TEX_UNIFORM_NAME = "material.specular";
+
+	static constexpr const char* MODEL_MAT_UNIFORM_NAME    = "u_ModelMat";
+	static constexpr const char* PROJ_MAT_UNIFORM_NAME     = "u_ProjMat";
+	static constexpr const char* VIEW_MAT_UNIFORM_NAME     = "u_ViewMat";
 };
 

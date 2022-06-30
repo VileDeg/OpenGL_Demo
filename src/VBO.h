@@ -1,7 +1,7 @@
 #pragma once
 
+#include "pch.h"
 #include "glad/glad.h"
-#include <cstddef>
 
 class VBO
 {

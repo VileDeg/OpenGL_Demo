@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
-#include <map>
-#include <typeinfo>
+#include "pch.h"
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"

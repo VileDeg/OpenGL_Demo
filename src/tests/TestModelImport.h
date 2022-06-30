@@ -2,7 +2,7 @@
 #include "Test.h"
 
 #include "Object.h"
-#include "Model.h"
+#include "assimp_import/Model.h"
 
 namespace test
 {
@@ -19,6 +19,7 @@ namespace test
     private:
         Model m_Model;
         Camera m_Camera;
-        Object m_LightSource;
+        float m_CamSpeed;
+        //Object m_LightSource;
     };
 }

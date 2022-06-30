@@ -1,6 +1,7 @@
+#include "pch.h"
 #include "InputManager.h"
 #include "GLContext.h"
-#include <iostream>
+
 
 InputManager& InputManager::getInstance()
 {

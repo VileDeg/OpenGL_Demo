@@ -6,9 +6,6 @@
 
 #include "Object.h"
 
-#include <memory>
-#include <vector>
-
 namespace test
 {
 

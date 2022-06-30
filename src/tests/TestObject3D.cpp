@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "TestObject3D.h"
 
 #include "GLFW/glfw3.h"

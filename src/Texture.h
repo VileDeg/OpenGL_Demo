@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "pch.h"
 
 class Texture
 {
@@ -14,7 +14,7 @@ public:
 	Texture(const std::string& path);
 	~Texture();
 
-	void Bind(int slot = 0) const;
+	void Bind(int slot) const;
 	void Unbind() const;
 };
 

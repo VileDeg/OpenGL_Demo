@@ -1,4 +1,4 @@
-#include <iostream>
+#include "pch.h"
 
 #include "GLContext.h"
 
@@ -9,18 +9,19 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
 
-#include "tests/TestClearColor.h"
-#include "tests/TestTexture2D.h"
-#include "tests/TestObject3D.h"
-#include "tests/TestCamera.h"
-#include "tests/TestLight.h"
-#include "tests/TestLight_Spotlight.h"
-#include "tests/TestModelImport.h"
+//#include "tests/TestClearColor.h"
+//#include "tests/TestTexture2D.h"
+//#include "tests/TestObject3D.h"
+//#include "tests/TestCamera.h"
+//#include "tests/TestLight.h"
+//#include "tests/TestLight_Spotlight.h"
+//#include "tests/TestModelImport.h"
+#include "tests/TestOutline.h"
 
 #include "input/InputManager.h"
 
-const unsigned int SCR_WIDTH = 1280;
-const unsigned int SCR_HEIGHT = 720;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 900;
 
 void SetKeybinds(GLContext& context)
 {
@@ -69,13 +70,13 @@ int main()
     test::TestMenu* testMenu = new test::TestMenu(currentTest);
     currentTest = testMenu;
 
-    testMenu->RegisterTest<test::TestClearColor>("Clear Color");
-    testMenu->RegisterTest<test::TestTexture2D> ("2D Texture");
-    testMenu->RegisterTest<test::TestObject3D>  ("3D Object");//, SCR_WIDTH/SCR_HEIGHT
-    testMenu->RegisterTest<test::TestCamera>    ("Camera");
-    testMenu->RegisterTest<test::TestLight>     ("Light");
-    testMenu->RegisterTest<test::TestSpotlight> ("Spotlight");
-    testMenu->RegisterTest<test::TestModelImport> ("Model Import");
+    //testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+    //testMenu->RegisterTest<test::TestTexture2D> ("2D Texture");
+    //testMenu->RegisterTest<test::TestObject3D>  ("3D Object");//, SCR_WIDTH/SCR_HEIGHT
+    //testMenu->RegisterTest<test::TestCamera>    ("Camera");
+    testMenu->RegisterTest<test::TestOutline>     ("Outline");
+    /*testMenu->RegisterTest<test::TestSpotlight> ("Spotlight");
+    testMenu->RegisterTest<test::TestModelImport> ("Model Import");*/
     
     while (!glfwWindowShouldClose(context.Window()))
     {

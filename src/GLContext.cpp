@@ -1,10 +1,8 @@
+#include "pch.h"
 #include "GLContext.h"
 #include "input/InputManager.h"
 
 #include "Object.h"
-
-#include <iostream>
-
 
 
 GLContext& GLContext::getTnstance(const unsigned width, const unsigned height,
@@ -16,8 +14,6 @@ GLContext& GLContext::getTnstance(const unsigned width, const unsigned height,
 
 void GLContext::default_fb_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
     reinterpret_cast<GLContext*>(glfwGetWindowUserPointer(window))->SetViewport(width, height);
 }
@@ -30,15 +26,7 @@ void GLContext::SetFBSizeCallback(fb_size_callback fbcb)
         m_FBSIZE_CALLBACK = default_fb_size_callback;
     glfwSetFramebufferSizeCallback(m_WINDOW, m_FBSIZE_CALLBACK);
 }
-static float dist = 200.f;
-static float quad2D[20]
-{
-    -dist, -dist, 0.0f,    0.0f, 0.0f,
-    dist, -dist, 0.0f,    1.0f, 0.0f,
-    dist, dist, 0.0f,    1.0f, 1.0f, 
-    -dist, dist, 0.0f,    0.0f, 1.0f
-};                      
-
+                   
 void GLContext::SetParams(const unsigned width, const unsigned height, const std::string& name, fb_size_callback callback)
 {
     m_SCR_WIDTH = width;
@@ -59,6 +47,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 void GLContext::ProcessInput() const
 {
+    if (m_CursorVisible)
+        return;
+
     for (auto keyBind : m_CameraKeybinds)
     {
         if (glfwGetKey(m_WINDOW, keyBind->GlId()) == keyBind->GlType())
@@ -126,12 +117,3 @@ void GLContext::SetGlobalSettings()
     
 }
 
-//void GLContext::DeltaTimer()
-//{
-//    while (!glfwWindowShouldClose(m_WINDOW))
-//    {
-//        float currentFrame = glfwGetTime();
-//        m_DeltaTime = currentFrame - m_LastFrame;
-//        m_LastFrame = currentFrame;
-//    }
-//}

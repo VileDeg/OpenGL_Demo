@@ -1,115 +1,78 @@
+#include "pch.h"
 #include "Object.h"
 
-const std::string Object::textureUniformName = "u_Texture";
-
-const std::string Object::modelMatUniformName = "u_ModelMat";
-const std::string Object::projMatUniformName = "u_ProjMat";
-const std::string Object::viewMatUniformName = "u_ViewMat";
-
-
-
-
-//Object::Object(const VertexData& vData, const unsigned* indices,
-//	std::size_t indices_size, const std::vector<Texture>& textures,
-//	const char* vertShaderPath, const char* fragShaderPath,
-//	const glm::vec3& position)
-//	: m_Shader(vertShaderPath, fragShaderPath), 
-//	m_Model(glm::translate(glm::mat4(1.0f),position)),
-//	m_VAO(), m_VBO(vData.data, vData.size, vData.vertexCount), 
-//	m_EBO(indices, indices_size), m_TextureCount(0)
-//{
-//	VBO vbo(vData.data, vData.size, vData.vertexCount);
-//	VertexLayout layout;
-//	layout.Push<float>(vData.vertexCoordsCount);
-//	layout.Push<float>(vData.colorCoordsCount);
-//	for (auto texture : textures)
-//	{
-//		layout.Push<float>(vData.textureCoordsCount);
-//	}
-//	m_VAO.AddBuffer(vbo, layout);
-//	m_EBO.Bind();
-//	m_Shader.Bind();
-//	for (auto texture : textures)
-//	{
-//		m_Shader.setInt(Object::textureUniformName + std::to_string(m_TextureCount), m_TextureCount);
-//		texture.Bind();
-//		++m_TextureCount;
-//	}
-//	
-//}
-//const std::vector<Texture>& textures
-Object::Object(const VertexData& vData, const std::vector<const char*>& texturePaths,
-	const char* vertShaderPath, const char* fragShaderPath,
-	const glm::vec3& position)
-	: m_TextureCount(0),
+Object::Object(const VertexData& vData,
+	const Shader shader, const TextureData& tData = { "@#none#@", "@#none#@" },
+	const glm::vec3 position = glm::vec3(0.0f),
+	ObjectType type = ObjectType::DEFAULT)
+	: m_TextureSlot(0),
 	m_Model(glm::translate(glm::mat4(1.0f), position)),
-	m_Shader(std::make_unique<Shader>(vertShaderPath, fragShaderPath)),
+	m_Shader(std::make_unique<Shader>(shader)),
 	m_VAO(std::make_unique<VAO>()),
-	m_VBO(std::make_unique<VBO>(vData.data, vData.size, vData.vertexCount))	
+	m_VBO(std::make_unique<VBO>(vData.data, vData.size, vData.vertexCount))	,
+	m_DiffuseTex(
+		type == ObjectType::DEFAULT ?
+		std::make_unique<Texture>(Texture(tData.diffusePath)) : nullptr
+	),
+	m_SpecularTex(
+		type == ObjectType::DEFAULT ?
+		std::make_unique<Texture>(Texture(tData.specularPath)) : nullptr
+	)
 {
-	for (int i = 0; i < texturePaths.size(); ++i)
-	{
-		m_Textures.push_back(std::make_unique<Texture>(texturePaths[i]));
-	}
-	
+		
 	VertexLayout layout;
 	layout.Push<float>(vData.vertexCoordsCount);
 	layout.Push<float>(vData.normalCoordsCount);
-	layout.Push<float>(vData.colorCoordsCount);
-	
-	/*for (std::size_t i = 0; i < m_Textures.size(); ++i)
-	{*/
-		layout.Push<float>(vData.textureCoordsCount);
-	//}
+	layout.Push<float>(vData.colorCoordsCount);	
+	layout.Push<float>(vData.textureCoordsCount);
+
 	m_VAO->AddBuffer(*m_VBO, layout);
 
 	m_Shader->Bind();
 
-	for (std::size_t i = 0; i < m_Textures.size(); ++i)
-	{
-		m_Shader->setInt(Object::textureUniformName + std::to_string(m_TextureCount), m_TextureCount);
-		m_Textures[i]->Bind();
-		++m_TextureCount;
-	}
+	m_Shader->setInt(DIFFUSE_TEX_UNIFORM_NAME + std::to_string(m_TextureSlot), 0);
+	m_DiffuseTex->Bind(0);
+
+	m_Shader->setInt(DIFFUSE_TEX_UNIFORM_NAME + std::to_string(m_TextureSlot), 1);
+	m_SpecularTex->Bind(1);
 }
 
 
-//Object::Object(const VAO* vao, const VBO* vbo, const Shader* shader)
-//	: m_VAO(std::make_unique<VAO>(vao)), m_VBO(std::make_unique<VBO>(vbo)),
-//	m_Shader(std::make_unique<Shader>(shader))
+//void Object::Draw()
 //{
-//
+//	m_Shader->Bind();
+//	m_Shader->setMat4f(modelMatUniformName, m_Model);
+//	m_Renderer.Draw(*m_VAO, *m_EBO, *m_Shader);
 //}
-
-void Object::Draw()
-{
-	m_Shader->Bind();
-	m_Shader->setMat4f(modelMatUniformName, m_Model);
-	m_Renderer.Draw(*m_VAO, *m_EBO, *m_Shader);
-}
 
 void Object::DrawNoIndex()
 {
 	m_Shader->Bind();
-	m_Shader->setMat4f(modelMatUniformName, m_Model);
+	m_Shader->setMat4f(MODEL_MAT_UNIFORM_NAME, m_Model);
 	m_Renderer.DrawNoIndex(*m_VAO, *m_Shader);
+}
+
+void Object::SetModelMat(const glm::mat4 modelMat)
+{
+	m_Shader->Bind();
+	m_Shader->setMat4f(MODEL_MAT_UNIFORM_NAME, modelMat);
 }
 
 void Object::SetProjMat(const glm::mat4 projMat)
 {
 	m_Shader->Bind();
-	m_Shader->setMat4f(Object::projMatUniformName, projMat);
+	m_Shader->setMat4f(PROJ_MAT_UNIFORM_NAME, projMat);
 }
 
 void Object::SetViewMat(const glm::mat4 viewMat)
 {
 	m_Shader->Bind();
-	m_Shader->setMat4f(Object::viewMatUniformName, viewMat);
+	m_Shader->setMat4f(VIEW_MAT_UNIFORM_NAME, viewMat);
 }
 
 void Object::WatchedBy(const Camera& camera)
 {
 	m_Shader->Bind();
-	m_Shader->setMat4f(Object::projMatUniformName, camera.GetProjMat());
-	m_Shader->setMat4f(Object::viewMatUniformName, camera.GetViewMat());
+	m_Shader->setMat4f(PROJ_MAT_UNIFORM_NAME, camera.GetProjMat());
+	m_Shader->setMat4f(VIEW_MAT_UNIFORM_NAME, camera.GetViewMat());
 }

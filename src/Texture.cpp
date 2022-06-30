@@ -1,7 +1,8 @@
+#include "pch.h"
 #include "Texture.h"
 #include "glad/glad.h"
 #include "stb_image/stb_image.h"
-#include <iostream>
+
 
 Texture::Texture(const std::string& filePath)
 	: id(0), path(texture_path + filePath), buffer(nullptr), width(0), height(0)
@@ -36,7 +37,7 @@ Texture::~Texture()
 	glDeleteTextures(1, &id);
 }
 
-void Texture::Bind(int slot /*= 0*/) const
+void Texture::Bind(int slot) const
 {
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, id);

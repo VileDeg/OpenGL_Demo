@@ -1,9 +1,6 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <functional>
-#include <string>
+
 
 namespace test
 {

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "TestLight_Spotlight.h"
 
 #include "GLFW/glfw3.h"
@@ -83,9 +84,9 @@ namespace test
     TestSpotlight::TestSpotlight()
         : m_Camera(glm::vec3(0.0f, 0.0f, 3.0f)),
         m_Container({ vertices, sizeof(vertices), 36, 3, 3, 0, 2 },
-            {}, "material_vert.shader", "spotLight_frag.shader"),
+            {}, Shader("material_vert.shader", "spotLight_frag.shader")),
         m_LightSource({ vertices, sizeof(vertices), 36, 3, 3, 0, 2 },
-            {}, "material_vert.shader", "plainWhite_frag.shader", lightPos),
+            {}, Shader("material_vert.shader", "plainWhite_frag.shader"), lightPos),
         m_DiffuseTexture("container2.png"), m_SpecularTexture("container2_specular.png")
     {
         {

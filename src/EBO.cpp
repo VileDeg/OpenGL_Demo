@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "EBO.h"
 
 EBO::EBO(const unsigned int* data, unsigned int count) : count(count)

@@ -1,11 +1,10 @@
 #pragma once
 
 #include "math_headers.h"
-//#include "GLContext.h"
 
 static const float YAW = -90.0f;
 static const float PITCH = 0.0f;
-static const float SPEED = 2.5f;
+static const float SPEED = 8.0f;
 static const float SENSITIVITY = 0.1f;
 static const float ZOOM = 45.0f;
 static const float NEAR_PLANE = 0.1f;
@@ -39,6 +38,9 @@ public:
 	inline void MoveBackward() { m_Position -= m_Front * Velocity(); }
 	inline void MoveLeft() { m_Position -= m_Right * Velocity(); }
 	inline void MoveRight() { m_Position += m_Right * Velocity(); }
+	inline const float Speed() const { return m_MovementSpeed; }
+
+	inline void SetSpeed(const float spd) { m_MovementSpeed = spd; }
 
 	inline const glm::mat4 GetViewMat() const
 	{
@@ -61,6 +63,7 @@ public:
 private:
 	void updateCameraVectors();
 	const float Velocity() const;
+
 
 	//std::unique_ptr<GLContext> m_Context;
 	//GLContext& m_Context;

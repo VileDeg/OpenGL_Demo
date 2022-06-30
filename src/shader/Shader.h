@@ -1,19 +1,19 @@
 #pragma once
 
-#include <glad/glad.h>
 
-#include <string>
+#include "glad/glad.h"
 
-#include <unordered_map>
 #include "math_headers.h"
 
 class Shader
 {
 public:
 	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader(const char* vertNFragPath);
 	Shader() {}
 
 	void Parse(const char* vertexPath, const char* fragmentPath);
+	void Parse(const char* vertNFragPath);
 	void Compile();
 	
 	void Link();
@@ -35,12 +35,12 @@ public:
 
 
 private:
-	static constexpr const char* shader_path = "res/shaders/";
+	static constexpr const char* BASE_SHADER_PATH = "res/shaders/";
 
-	std::string vertexCode;
-	std::string fragmentCode;
-    std::string vertFullPath;
-    std::string fragFullPath;
+	std::string m_VertexCode;
+	std::string m_FragmentCode;
+    std::string m_VertFullPath;
+    std::string m_FragFullPath;
 	unsigned int ID;
 	unsigned int vShader;
 	unsigned int fShader;

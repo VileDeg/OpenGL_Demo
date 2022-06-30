@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-
 #include "GLContext.h"
 #include "Keybind.h"
 #include "Camera.h"

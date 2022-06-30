@@ -1,11 +1,9 @@
 #pragma once
+
 #include "Test.h"
 
 #include "Renderer.h"
 #include "Texture.h"
-
-#include <memory>
-#include <vector>
 
 namespace test
 {

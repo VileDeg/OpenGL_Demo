@@ -1,10 +1,5 @@
+#include "pch.h"
 #include "Shader.h"
-
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-//std::string Shader::shader_path = "res/shaders/";
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -13,6 +8,74 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	Link();
 }
 
+Shader::Shader(const char* vertNFragPath)
+{
+	Parse(vertNFragPath);
+	Compile();
+	Link();
+}
+
+void Shader::Parse(const char* vertNFragPath)
+{
+	std::ifstream shaderFile;
+	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+	try
+	{
+		
+		std::string path = BASE_SHADER_PATH;
+		path += vertNFragPath;
+		m_VertFullPath = path;
+		shaderFile.open(path);
+
+		enum class ShaderType
+		{
+			NONE = -1, VERTEX = 0, FRAGMENT = 1
+		};
+		ShaderType type = ShaderType::NONE;
+		std::string line;
+		std::stringstream ss[2];
+		while (getline(shaderFile, line))
+		{
+			if (line.find("#shader") != std::string::npos)
+			{
+				if (line.find("vertex") != std::string::npos)
+				{
+					type = ShaderType::VERTEX;
+				}
+				else if (line.find("fragment") != std::string::npos)
+				{
+					type = ShaderType::FRAGMENT;
+				}
+				else
+				{
+					std::cout << "ERROR::SHADER::TYPE_NOT_SPECIFIED: " << line << std::endl;
+					shaderFile.close();
+					return;
+				}
+			}
+			else
+			{
+				if (type == ShaderType::NONE)
+				{
+					std::cout << "ERROR::SHADER::INVALID_SHADER_TYPE: " << line << std::endl;
+					shaderFile.close();
+					return;
+				}
+				ss[(int)type] << line << '\n';
+			}
+		}
+		
+		shaderFile.close();
+	
+		m_VertexCode   = ss[(int)ShaderType::VERTEX].str();
+		m_FragmentCode = ss[(int)ShaderType::FRAGMENT].str();
+	}
+	catch (std::ifstream::failure& e)
+	{
+		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
+	}
+}
 
 void Shader::Parse(const char* vertexPath, const char* fragmentPath)
 {
@@ -21,19 +84,18 @@ void Shader::Parse(const char* vertexPath, const char* fragmentPath)
 	// ensure ifstream objects can throw exceptions:
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	using namespace std;
 
 	try
 	{
 		// open files
-		std::string path = shader_path;
+		std::string path = BASE_SHADER_PATH;
 		path += vertexPath;
-        vertFullPath = path;
+        m_VertFullPath = path;
 		vShaderFile.open(path);
 
-		path = shader_path;
+		path = BASE_SHADER_PATH;
 		path += fragmentPath;
-        fragFullPath = path;
+        m_FragFullPath = path;
 		fShaderFile.open(path);
 		std::stringstream vShaderStream, fShaderStream;
 		// read file's buffer contents into streams
@@ -43,8 +105,8 @@ void Shader::Parse(const char* vertexPath, const char* fragmentPath)
 		vShaderFile.close();
 		fShaderFile.close();
 		// convert stream into string
-		vertexCode = vShaderStream.str();
-		fragmentCode = fShaderStream.str();
+		m_VertexCode = vShaderStream.str();
+		m_FragmentCode = fShaderStream.str();
 	}
 	catch (std::ifstream::failure& e)
 	{
@@ -54,8 +116,8 @@ void Shader::Parse(const char* vertexPath, const char* fragmentPath)
 
 void Shader::Compile()
 {
-	const char* vShaderCode = vertexCode.c_str();
-	const char* fShaderCode = fragmentCode.c_str();
+	const char* vShaderCode = m_VertexCode.c_str();
+	const char* fShaderCode = m_FragmentCode.c_str();
 	// 2. compile shaders
 
 	// vertex shader
@@ -145,7 +207,7 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type)
 		{
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
 			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type
-            << ".\nPATH: " << vertFullPath << " " << fragFullPath
+            << ".\nPATH: " << m_VertFullPath << " " << m_FragFullPath
             << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 		}
 	}
@@ -156,7 +218,7 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type)
 		{
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
 			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type
-            << ".\nPATH: " << vertFullPath << " " << fragFullPath
+            << ".\nPATH: " << m_VertFullPath << " " << m_FragFullPath
             << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 		}
 	}
