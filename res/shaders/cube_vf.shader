@@ -22,16 +22,14 @@ void main()
     gl_Position = u_ProjMat * u_ViewMat * vec4(FragPos, 1.0);
 }
 
-
-
 #shader fragment
 #version 330 core
 
 out vec4 FragColor;
 
 struct Material {
-    sampler2D diffuse;
-    sampler2D specular;
+    sampler2D diffuse0;
+    sampler2D specular0;
     float shininess;
 };
 
@@ -61,19 +59,19 @@ uniform Light light;
 void main()
 {
     // ambient
-    vec3 ambient = light.ambient * texture(material.diffuse, TexCoords).rgb;
+    vec3 ambient = light.ambient * texture(material.diffuse0, TexCoords).rgb;
 
     // diffuse 
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoords).rgb;
+    vec3 diffuse = light.diffuse * diff * texture(material.diffuse0, TexCoords).rgb;
 
     // specular
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * spec * texture(material.specular, TexCoords).rgb;
+    vec3 specular = light.specular * spec * texture(material.specular0, TexCoords).rgb;
 
     // spotlight (soft edges)
     float theta = dot(lightDir, normalize(-light.direction));

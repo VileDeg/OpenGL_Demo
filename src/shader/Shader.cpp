@@ -18,7 +18,7 @@ Shader::Shader(const char* vertNFragPath)
 void Shader::Parse(const char* vertNFragPath)
 {
 	std::ifstream shaderFile;
-	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	//shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
 	try
 	{
@@ -35,6 +35,9 @@ void Shader::Parse(const char* vertNFragPath)
 		ShaderType type = ShaderType::NONE;
 		std::string line;
 		std::stringstream ss[2];
+		
+
+		
 		while (getline(shaderFile, line))
 		{
 			if (line.find("#shader") != std::string::npos)
@@ -64,6 +67,7 @@ void Shader::Parse(const char* vertNFragPath)
 				}
 				ss[(int)type] << line << '\n';
 			}
+			//std::cout << line << "\n";
 		}
 		
 		shaderFile.close();
@@ -190,6 +194,10 @@ void Shader::setFloat3(const std::string& name, const glm::vec3& vec)
 void Shader::setFloat4(const std::string& name, float v0, float v1, float v2, float v3)
 {
 	glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
+}
+void Shader::setFloat4(const std::string& name, const glm::vec4& vec)
+{
+	glUniform4f(GetUniformLocation(name), vec.x, vec.y, vec.z, vec.w);
 }
 void Shader::setMat4f(const std::string& name, const glm::mat4& matrix)
 {

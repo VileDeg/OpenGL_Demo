@@ -2,7 +2,7 @@
 #include "GLContext.h"
 #include "input/InputManager.h"
 
-#include "Object.h"
+
 
 
 GLContext& GLContext::getTnstance(const unsigned width, const unsigned height,

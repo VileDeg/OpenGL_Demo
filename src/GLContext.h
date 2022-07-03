@@ -4,7 +4,7 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "VAO.h"
+#include "Buffer.h"
 #include "shader/Shader.h"
 #include "input/Keybind.h"
 

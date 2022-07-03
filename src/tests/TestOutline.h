@@ -23,6 +23,7 @@ namespace test
         static constexpr const int CUBE_COUNT = 4;
 
         std::vector<Cube*> m_Cubes;
+        Cube m_FloorBox;
         Camera m_Camera;
         float m_CamSpeed;
     };
