@@ -1,0 +1,21 @@
+[submodule "src/vendor/GLFW"]
+	path = src/vendor/GLFW
+	url = https://github.com/glfw/glfw
+[submodule "src/vendor/GLAD"]
+	path = src/vendor/GLAD
+	url = https://github.com/Dav1dde/glad
+[submodule "src/vendor/GLM"]
+	path = src/vendor/GLM
+	url = https://github.com/g-truc/glm
+[submodule "src/vendor/spdlog"]
+	path = src/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "src/vendor/assimp"]
+	path = src/vendor/assimp
+	url = https://github.com/assimp/assimp
+[submodule "src/vendor/ImGui"]
+	path = src/vendor/ImGui
+	url = https://github.com/ocornut/imgui
+[submodule "OpenGL_Demo/vendor/GLM"]
+	path = OpenGL_Demo/vendor/GLM
+	url = https://github.com/g-truc/glm
