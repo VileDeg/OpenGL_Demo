@@ -363,4 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Personal additions
-bin-int/
+/bin-int
+!/vendor
