@@ -9,20 +9,21 @@ namespace test
     class TestOutline : public Test
     {
     public:
-        TestOutline();
+        TestOutline(Window& window);
         ~TestOutline()
         {
             for (auto x : m_Cubes)
                 delete x;
         }
 
-        void OnUpdate(float deltaTime) override {}
+        void OnUpdate(float deltaTime) override;
         void OnRender() override;
         void OnImGuiRender() override;
     private:
         static constexpr const int CUBE_COUNT = 4;
 
         std::vector<Cube*> m_Cubes;
+        Cube m_OutlineCube;
         Cube m_FloorBox;
         Camera m_Camera;
         float m_CamSpeed;

@@ -106,7 +106,6 @@
     <ClInclude Include="src\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="src\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="src\input\InputManager.h" />
     <ClInclude Include="src\input\Keybind.h" />
     <ClInclude Include="src\math_headers.h" />
     <ClInclude Include="src\pch.h" />
@@ -543,8 +542,6 @@
     <ClCompile Include="src\geometry\Cube.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="src\input\InputManager.cpp" />
-    <ClCompile Include="src\input\Keybind.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -552,7 +549,6 @@
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\Texture.cpp" />
     <ClCompile Include="src\shader\Shader.cpp" />
-    <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\tests\TestOutline.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />

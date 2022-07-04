@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "GLContext.h"
 
+std::unique_ptr<GLContext> GLContext::s_Instance = nullptr;
+
+
 GLContext::GLContext()
 
 {
@@ -13,7 +16,8 @@ GLContext& GLContext::Create()
     if (s_Instance != nullptr)
         return Get();
 
-    s_Instance = new GLContext;
+    s_Instance.reset(new GLContext);
+    return *s_Instance;
 }
 
 GLFWwindow* GLContext::OpenWindow(const unsigned width, const unsigned height, const std::string& name)
@@ -28,7 +32,16 @@ GLFWwindow* GLContext::OpenWindow(const unsigned width, const unsigned height, c
     }
     glfwMakeContextCurrent(handle);
 
+    if (!m_GladInit)
+    {
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        {
+            std::cout << "Failed to initialize GLAD" << std::endl;
+        }
+    }
+    
     m_Window.reset(new Window(handle, name));
+    m_Window->SetKeybinds(m_Keybinds);
     return handle;
 }
 
@@ -43,27 +56,27 @@ void GLContext::Init()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-    }
+   
 }
 
-void GLContext::UpdateWindowDelayedKeybinds()
-{
-    m_Window->SetDelayedKeybinds(&m_DelayedKeybinds);
-}
-void GLContext::UpdateWindowCameraKeybinds()
-{
-    m_Window->SetCameraKeybinds(&m_CameraKeybinds);
-}
+//void GLContext::UpdateWindowDelayedKeybinds()
+//{
+//    m_Window->SetDelayedKeybinds(&m_DelayedKeybinds);
+//}
+//void GLContext::UpdateWindowCameraKeybinds()
+//{
+//    m_Window->SetCameraKeybinds(&m_CameraKeybinds);
+//}
 
 void GLContext::SetKeybinds()
 {
-    RegisterCameraKeybind <Keybind_Forward>     (GLFW_KEY_W     );
-    RegisterCameraKeybind <Keybind_Backward>    (GLFW_KEY_S     );
-    RegisterCameraKeybind <Keybind_Left>        (GLFW_KEY_A     );
-    RegisterCameraKeybind <Keybind_Right>       (GLFW_KEY_D     );
-    RegisterDelayedKeybind<Keybind_CloseWindow> (GLFW_KEY_ESCAPE);
-    RegisterDelayedKeybind<Keybind_ToggleCursor>(GLFW_KEY_C     );
+   /* m_Keybinds{ { KeyActionType::CameraForward  , Keybind(GLFW_KEY_W, GLFW_PRESS)},
+    }*/
+    m_Keybinds.insert({ KeyActionType::CameraForward  , Keybind(GLFW_KEY_W, GLFW_PRESS)      });
+    m_Keybinds.insert({ KeyActionType::CameraBackward , Keybind(GLFW_KEY_S, GLFW_PRESS)      });
+    m_Keybinds.insert({ KeyActionType::CameraRight    , Keybind(GLFW_KEY_D, GLFW_PRESS)      });
+    m_Keybinds.insert({ KeyActionType::CameraLeft     , Keybind(GLFW_KEY_A, GLFW_PRESS)      });
+    m_Keybinds.insert({ KeyActionType::WindowClose    , Keybind(GLFW_KEY_ESCAPE, GLFW_PRESS) });
+    m_Keybinds.insert({ KeyActionType::CursorToggle   , Keybind(GLFW_KEY_C, GLFW_PRESS)      });
 }
+

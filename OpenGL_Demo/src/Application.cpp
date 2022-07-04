@@ -10,7 +10,6 @@
 
 #include "tests/TestOutline.h"
 
-#include "input/InputManager.h"
 
 const unsigned int SCR_WIDTH = 1600;
 const unsigned int SCR_HEIGHT = 900;
@@ -30,10 +29,10 @@ int main()
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
     test::Test* currentTest = nullptr;
-    test::TestMenu* testMenu = new test::TestMenu(currentTest);
+    test::TestMenu* testMenu = new test::TestMenu(context.GetWindow(),currentTest);
     currentTest = testMenu;
 
-    testMenu->RegisterTest<test::TestOutline>     ("Outline");
+    testMenu->RegisterTest<test::TestOutline>(context.GetWindow(), "Outline");
 
     
     while (!glfwWindowShouldClose(window))
@@ -50,13 +49,14 @@ int main()
         
         if (currentTest)
         {
-            currentTest->OnUpdate(0.0f);
+            currentTest->OnUpdate(context.GetWindow().DeltaTime());
             currentTest->OnRender();
             ImGui::Begin("Test");
             if (currentTest != testMenu && ImGui::Button("<-"))
             {
                 delete currentTest;
                 currentTest = testMenu;
+                context.GetWindow().ShowCursor();
             }
             currentTest->OnImGuiRender();
             ImGui::End();

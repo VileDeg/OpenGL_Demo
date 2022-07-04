@@ -2,42 +2,58 @@
 
 #include "math_headers.h"
 
-static const float YAW = -90.0f;
-static const float PITCH = 0.0f;
-static const float SPEED = 8.0f;
-static const float SENSITIVITY = 0.1f;
-static const float ZOOM = 45.0f;
-static const float NEAR_PLANE = 0.1f;
-static const float FAR_PLANE = 100.0f;
+//class Window;
 
 class Camera
 {
 public:
-	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+	struct ScreenParams
+	{
+		int width;
+		int height;
+	};
+public:
+	Camera(ScreenParams& params, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
-		: m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
+		: m_Params(params),
+		m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
 		m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
 		m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch),
 		m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE)
 	{
 		updateCameraVectors();
 	}
-	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ,
-		float yaw, float pitch)
-		: m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED), 
-		m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
-		m_Position(glm::vec3(posX, posY, posZ)), m_WorldUp(glm::vec3(upX, upY, upZ)), 
-		m_Yaw(yaw), m_Pitch(pitch),
-		m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE)
+	
+	void OnUpdate()
 	{
-		
 		updateCameraVectors();
 	}
-	
-	inline void MoveForward() { m_Position += m_Front * Velocity(); }
-	inline void MoveBackward() { m_Position -= m_Front * Velocity(); }
-	inline void MoveLeft() { m_Position -= m_Right * Velocity(); }
-	inline void MoveRight() { m_Position += m_Right * Velocity(); }
+
+	/*void MoveForward (float deltaTime) { m_Position += 
+		m_Front * m_MovementSpeed * m_Window.DeltaTime(); }
+	void MoveBackward(float deltaTime) { m_Position -= 
+		m_Front * m_MovementSpeed * m_Window.DeltaTime(); }
+	void MoveLeft    (float deltaTime) { m_Position -= 
+		m_Right * m_MovementSpeed * m_Window.DeltaTime(); }
+	void MoveRight   (float deltaTime) { m_Position += 
+		m_Right * m_MovementSpeed * m_Window.DeltaTime(); }*/
+	void MoveForward(float* deltaTime) {
+		m_Position +=
+			m_Front * m_MovementSpeed * *deltaTime;
+	}
+	void MoveBackward(float* deltaTime) {
+		m_Position -=
+			m_Front * m_MovementSpeed * *deltaTime;
+	}
+	void MoveLeft(float* deltaTime) {
+		m_Position -=
+			m_Right * m_MovementSpeed * *deltaTime;
+	}
+	void MoveRight(float* deltaTime) {
+		m_Position +=
+			m_Right * m_MovementSpeed * *deltaTime;
+	}
+
 	inline const float Speed() const { return m_MovementSpeed; }
 
 	inline void SetSpeed(const float spd) { m_MovementSpeed = spd; }
@@ -62,11 +78,9 @@ public:
 	~Camera() {}
 private:
 	void updateCameraVectors();
-	const float Velocity() const;
 
-
-	//std::unique_ptr<GLContext> m_Context;
-	//GLContext& m_Context;
+	//Window& m_Window;
+	ScreenParams m_Params;
 
 	glm::vec3 m_Position;
 	glm::vec3 m_Up;
@@ -83,5 +97,13 @@ private:
 	
 	float m_NearPlane;
 	float m_FarPlane;
+
+	static constexpr const float YAW = -90.0f;
+	static constexpr const float PITCH = 0.0f;
+	static constexpr const float SPEED = 8.0f;
+	static constexpr const float SENSITIVITY = 0.1f;
+	static constexpr const float ZOOM = 45.0f;
+	static constexpr const float NEAR_PLANE = 0.1f;
+	static constexpr const float FAR_PLANE = 100.0f;
 };
 

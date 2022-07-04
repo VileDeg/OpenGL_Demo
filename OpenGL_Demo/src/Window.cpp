@@ -10,24 +10,27 @@ Window::Window(GLFWwindow* handle, const std::string& name)
     glfwGetWindowSize(handle, &m_Params.width, &m_Params.height);
     glfwSetWindowUserPointer(handle, (void*)&m_Params);
     glfwSetFramebufferSizeCallback(handle, s_fbSizeCallback);
-
+   
+    glfwSetKeyCallback(handle, s_keyCallback);
 }
 
 void Window::OnUpdate()
 {
     CalcDeltaTime();
-    ProcessCameraInput();
+    if (m_Params.camera)
+    {
+        if (!m_Params.cursorVisible)
+            ProcessCameraInput();
+        m_Params.camera->OnUpdate();
+    }
 }
 
 void Window::ProcessCameraInput() const
 {
-    if (m_Params.cursorVisible)
-        return;
-
-    for (auto keyBind : *s_CameraKeybinds)
+    for (auto key : m_CamKeys)
     {
-        if (glfwGetKey(m_WindowHandle, keyBind->GlId()) == keyBind->GlType())
-            keyBind->Command();
+        if (glfwGetKey(m_WindowHandle, key.GlId()) == key.GlType())
+            key.Exec();
     }
 }
 
@@ -44,8 +47,42 @@ void Window::SetCamera(Camera* cam)
     if (!m_Params.camera)
         SetCameraCallbacks(cam != nullptr);
     m_Params.camera = cam;
+    glfwSetCursorPosCallback(m_WindowHandle, s_cursorPosCallback);
+    glfwSetScrollCallback(m_WindowHandle, s_scrollCallback);
 }
 
+void Window::SetKeybinds(std::unordered_map<KeyActionType, Keybind>& kbs)
+{
+    /*kbs[KeyActionType::CameraForward].BindAction(
+        std::bind([=](Camera* cam) {cam->MoveForward(); },
+            m_Params.camera));*/
+    kbs[KeyActionType::CameraForward].BindAction(
+        [&](){ m_Params.camera->MoveForward (&m_DeltaTime); });
+    kbs[KeyActionType::CameraBackward].BindAction(
+        [&](){ m_Params.camera->MoveBackward(&m_DeltaTime); });
+    kbs[KeyActionType::CameraRight].BindAction(
+        [&]() { m_Params.camera->MoveRight  (&m_DeltaTime); });
+    kbs[KeyActionType::CameraLeft].BindAction(
+        [&]() { m_Params.camera->MoveLeft   (&m_DeltaTime); });
+    kbs[KeyActionType::WindowClose].BindAction(
+        [&]() {if (!m_Params.cursorVisible)
+                ShowCursor();
+            else
+                Close();});
+    kbs[KeyActionType::CursorToggle].BindAction(
+            [&](){if (m_Params.cursorVisible)
+                    HideCursor();
+                else
+                    ShowCursor();});
+
+    for (auto& [type, keybind] : kbs)
+    {
+        if (type > KeyActionType::Camera)
+            m_CamKeys.push_back(keybind);
+        else if (type < KeyActionType::Camera)
+            m_Params.keys.push_back(keybind);
+    }
+}
 
 
 
@@ -65,9 +102,6 @@ void Window::SetCameraCallbacks(bool cameraActive)
     }
     
 }
-
-
-
 
 void Window::s_fbSizeCallback(GLFWwindow* window, int width, int height)
 {
@@ -113,8 +147,6 @@ void Window::s_cursorPosCallback(GLFWwindow* window, double xposIn, double yposI
     inp.yoffset = yoffset;*/
 }
 
-
-
 void Window::s_scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
     WindowParams& params =
@@ -131,9 +163,9 @@ void Window::s_keyCallback(GLFWwindow* window, int key, int scancode, int action
     WindowParams& params =
         *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));
 
-    for (const auto kb : *params.keybinds)
+    for (auto kb : params.keys)
     {
-        if (key == kb->GlId() && action == kb->GlType())
-            kb->Command(window, key, scancode, action, mode);
+        if (key == kb.GlId() && action == kb.GlType())
+            kb.Exec();
     }
 }

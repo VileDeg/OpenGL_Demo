@@ -6,15 +6,9 @@
 
 #include "math_headers.h"
 #include "GLContext.h"
-#include "input/InputManager.h"
-
 
 namespace test
 {
-    static GLContext& context = GLContext::getTnstance();
-    static InputManager& inputManager = InputManager::getInstance();
-
-
     static struct
     {
         glm::vec3 lightPos;
@@ -34,8 +28,6 @@ namespace test
     } LightParams;
 
     static glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
-
-
      
     static struct
     {
@@ -45,8 +37,6 @@ namespace test
         glm::vec3 rotationAxis = glm::vec3(0.f, 1.f, 0.f);
         int outlineBorderWidth = 1;
     } s_configs;
-
-    
 
 #define OUTLINE(x)\
     do {\
@@ -64,20 +54,18 @@ namespace test
         }\
     } while (0);
 
-    static Cube outlineCube(Shader("material_vert.shader", "color_frag.shader"));
-    
-    
-    
-    TestOutline::TestOutline()
-        :  m_Camera(glm::vec3(0.0f, 0.0f, 10.0f)),
+
+    TestOutline::TestOutline(Window& window)
+        : Test(window),
+        m_Camera(window.GetDimensions(), glm::vec3(0.0f, 0.0f, 10.0f)),
         m_FloorBox(Shader("material_vert.shader", "color_frag.shader"),
-            glm::vec3(0.f, -60.f, 0.f))
+            glm::vec3(0.f, -60.f, 0.f)),
+        m_OutlineCube(Shader("material_vert.shader", "color_frag.shader"))
     {
 
-        inputManager.SetCamera(&m_Camera);
-        context.HideCursor();
+        m_Window.SetCamera(&m_Camera);
         
-        
+
         for (int i = 0; i < CUBE_COUNT; i++)
         {
             m_Cubes.emplace_back(new Cube("container2.png", "container2_specular.png",
@@ -113,9 +101,9 @@ namespace test
             glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
             glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
             )
-        outlineCube.GetShader().Bind();
-        outlineCube.GetShader().setFloat4("u_Color", glm::vec4(1.f, 0.f, 0.f, 1.f));
-        outlineCube.TranslateTo(glm::vec3(5.f));
+        m_OutlineCube.GetShader().Bind();
+        m_OutlineCube.GetShader().setFloat4("u_Color", glm::vec4(1.f, 0.f, 0.f, 1.f));
+        m_OutlineCube.TranslateTo(glm::vec3(5.f));
         
 	}
 
@@ -123,76 +111,79 @@ namespace test
 
 	void TestOutline::OnRender()
 	{
+        
+	}
+    void TestOutline::OnUpdate(float deltaTime)
+    {
         OUTLINE(glStencilMask(0x00);)
         m_FloorBox.WatchedBy(m_Camera);
         m_FloorBox.Draw();
         N_OUTLINE(
-            outlineCube.WatchedBy(m_Camera);
-            outlineCube.Draw();
-            
+            m_OutlineCube.WatchedBy(m_Camera);
+            m_OutlineCube.Draw();
         )
 
-        for (auto& cube : m_Cubes)
-        {
-            Shader& cubeSh = cube->GetShader();
-            cubeSh.Bind();
-
-            cubeSh.setFloat3("light.position", m_Camera.Position());
-            cubeSh.setFloat3("light.direction", m_Camera.Front());
-            cubeSh.setFloat("light.cutOff", LightParams.cutOff);
-            cubeSh.setFloat("light.outerCutOff", LightParams.outerCutOff);
-            cubeSh.setFloat3("viewPos", m_Camera.Position());
-
-            cubeSh.setFloat3("light.ambient", LightParams.ambient);
-            cubeSh.setFloat3("light.diffuse", LightParams.diffuse);
-            cubeSh.setFloat3("light.specular", LightParams.specular);
-            cubeSh.setFloat("light.constant", LightParams.constant);
-            cubeSh.setFloat("light.linear", LightParams.linear);
-            cubeSh.setFloat("light.quadratic", LightParams.quadratic);
-
-            cubeSh.setFloat("material.shininess", 32.0f);
-
-            OUTLINE
-            (
-                
-                glStencilFunc(GL_ALWAYS, 1, 0xFF);
-                glStencilMask(0xFF);
-            )
-            cube->WatchedBy(m_Camera);
-            /*if (s_configs.enableRotation)
+            for (auto& cube : m_Cubes)
             {
-                cube->Rotate(1.f * s_configs.rotationSpeed * GLContext::getTnstance().DeltaTime(),
-                    s_configs.rotationAxis);
-            }*/
-            cube->Draw();
-            OUTLINE
-            (
-                glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-                glStencilMask(0x00);
-                glDisable(GL_DEPTH_TEST);
-                
-                outlineCube.ScaleTo((1.f + 0.1f * s_configs.outlineBorderWidth));
-                outlineCube.TranslateTo(cube->GetPosition());
-                if (s_configs.enableRotation)
-                {
-                    outlineCube.Rotate(1.f*s_configs.rotationSpeed*GLContext::getTnstance().DeltaTime(),
-                        s_configs.rotationAxis);
-                }
-                outlineCube.WatchedBy(m_Camera);
-                outlineCube.Draw();
-                /*outlineCube.ReportPosition();
-                outlineCube.ReportScale();*/
+                Shader& cubeSh = cube->GetShader();
+                cubeSh.Bind();
+
+                cubeSh.setFloat3("light.position", m_Camera.Position());
+                cubeSh.setFloat3("light.direction", m_Camera.Front());
+                cubeSh.setFloat("light.cutOff", LightParams.cutOff);
+                cubeSh.setFloat("light.outerCutOff", LightParams.outerCutOff);
+                cubeSh.setFloat3("viewPos", m_Camera.Position());
+
+                cubeSh.setFloat3("light.ambient", LightParams.ambient);
+                cubeSh.setFloat3("light.diffuse", LightParams.diffuse);
+                cubeSh.setFloat3("light.specular", LightParams.specular);
+                cubeSh.setFloat("light.constant", LightParams.constant);
+                cubeSh.setFloat("light.linear", LightParams.linear);
+                cubeSh.setFloat("light.quadratic", LightParams.quadratic);
+
+                cubeSh.setFloat("material.shininess", 32.0f);
+
+                OUTLINE
+                (
+
+                    glStencilFunc(GL_ALWAYS, 1, 0xFF);
                 glStencilMask(0xFF);
-                glStencilFunc(GL_ALWAYS, 1, 0xFF);
-                glEnable(GL_DEPTH_TEST);
-            )
-            
-        }
-        
+                )
+                    cube->WatchedBy(m_Camera);
+                /*if (s_configs.enableRotation)
+                {
+                    cube->Rotate(1.f * s_configs.rotationSpeed * GLContext::getTnstance().DeltaTime(),
+                        s_configs.rotationAxis);
+                }*/
+                cube->Draw();
+                OUTLINE
+                (
+                    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+                    glStencilMask(0x00);
+                    glDisable(GL_DEPTH_TEST);
+
+                    m_OutlineCube.ScaleTo((1.f + 0.1f * s_configs.outlineBorderWidth));
+                    m_OutlineCube.TranslateTo(cube->GetPosition());
+                    if (s_configs.enableRotation)
+                    {
+                        m_OutlineCube.Rotate(1.f * s_configs.rotationSpeed * deltaTime,
+                            s_configs.rotationAxis);
+                    }
+                    m_OutlineCube.WatchedBy(m_Camera);
+                    m_OutlineCube.Draw();
+                    /*outlineCube.ReportPosition();
+                    outlineCube.ReportScale();*/
+                    glStencilMask(0xFF);
+                    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+                    glEnable(GL_DEPTH_TEST);
+                )
+
+            }
+
 
         m_Camera.SetSpeed(m_CamSpeed);
-        
-	}
+
+    }
 
 	void TestOutline::OnImGuiRender()
 	{

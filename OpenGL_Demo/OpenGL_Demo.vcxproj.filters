@@ -87,9 +87,6 @@
     <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h">
       <Filter>src\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\input\InputManager.h">
-      <Filter>src\input</Filter>
-    </ClInclude>
     <ClInclude Include="src\input\Keybind.h">
       <Filter>src\input</Filter>
     </ClInclude>
@@ -1392,12 +1389,6 @@
     <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp">
       <Filter>src\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\input\InputManager.cpp">
-      <Filter>src\input</Filter>
-    </ClCompile>
-    <ClCompile Include="src\input\Keybind.cpp">
-      <Filter>src\input</Filter>
-    </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1412,9 +1403,6 @@
     </ClCompile>
     <ClCompile Include="src\shader\Shader.cpp">
       <Filter>src\shader</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tests\Test.cpp">
-      <Filter>src\tests</Filter>
     </ClCompile>
     <ClCompile Include="src\tests\TestOutline.cpp">
       <Filter>src\tests</Filter>
