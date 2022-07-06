@@ -63,6 +63,9 @@
     <ClInclude Include="src\Transform.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Window.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="src\assimp_import\Mesh.h">
       <Filter>src\assimp_import</Filter>
     </ClInclude>
@@ -1362,7 +1365,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -1375,6 +1377,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Transform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\core\Log.cpp">
@@ -1410,6 +1415,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
 </Project>
