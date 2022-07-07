@@ -1,27 +1,38 @@
 #include "pch.h"
 #include "Window.h"
-
-
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+#include "imgui.h"
 
 
 Window::Window(GLFWwindow* handle, const std::string& name)
     :m_WindowHandle(handle), m_Name(name)
 {
+    SetGlobalSettings();
+
     glfwGetWindowSize(handle, &m_Params.width, &m_Params.height);
     glfwSetWindowUserPointer(handle, (void*)&m_Params);
+
     glfwSetFramebufferSizeCallback(handle, s_fbSizeCallback);
-   
     glfwSetKeyCallback(handle, s_keyCallback);
+    glfwSetWindowIconifyCallback(handle, s_iconifyCallback);
+
+    glfwSetCursorPosCallback(m_WindowHandle, s_cursorPosCallback);
+    glfwSetScrollCallback(m_WindowHandle, s_scrollCallback);
 }
 
 void Window::OnUpdate()
 {
+    //if (m_Params.paused)
+    //    return;
     CalcDeltaTime();
     if (m_Params.camera)
     {
         if (!m_Params.cursorVisible)
+        {
             ProcessCameraInput();
-        m_Params.camera->OnUpdate();
+            m_Params.camera->OnUpdate();
+        }
     }
 }
 
@@ -44,13 +55,26 @@ void Window::CalcDeltaTime()
 
 void Window::SetCamera(Camera* cam)
 {
-    if (!m_Params.camera)
-        SetCameraCallbacks(cam != nullptr);
     m_Params.camera = cam;
-    glfwSetCursorPosCallback(m_WindowHandle, s_cursorPosCallback);
-    glfwSetScrollCallback(m_WindowHandle, s_scrollCallback);
 }
 
+bool Window::IsOpen() const
+{
+    return !glfwWindowShouldClose(m_WindowHandle);
+}
+
+void Window::HideCursor() {
+    glfwSetInputMode(m_WindowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    m_Params.cursorVisible = false;
+}
+void Window::ShowCursor() {
+    glfwSetInputMode(m_WindowHandle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    m_Params.cursorVisible = true;
+}
+void Window::Close()
+{
+    glfwSetWindowShouldClose(m_WindowHandle, true);
+}
 void Window::SetKeybinds(std::unordered_map<KeyActionType, Keybind>& kbs)
 {
     /*kbs[KeyActionType::CameraForward].BindAction(
@@ -84,22 +108,18 @@ void Window::SetKeybinds(std::unordered_map<KeyActionType, Keybind>& kbs)
     }
 }
 
-
-
-
-
 void Window::SetCameraCallbacks(bool cameraActive)
 {
-    if (cameraActive)
-    {
-        glfwSetCursorPosCallback(m_WindowHandle, s_cursorPosCallback);
-        glfwSetScrollCallback(m_WindowHandle, s_scrollCallback);
-    }
+    /*if (cameraActive)
+    {*/
+    glfwSetCursorPosCallback(m_WindowHandle, s_cursorPosCallback);
+    glfwSetScrollCallback(m_WindowHandle, s_scrollCallback);
+    /*}
     else
     {
         glfwSetCursorPosCallback(m_WindowHandle, [](GLFWwindow*,double, double){});
         glfwSetScrollCallback(m_WindowHandle, [](GLFWwindow*, double, double) {});
-    }
+    }*/
     
 }
 
@@ -108,8 +128,24 @@ void Window::s_fbSizeCallback(GLFWwindow* window, int width, int height)
     WindowParams& params = 
         *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));
 
+    glViewport(0, 0, width, height);
     params.width = width;
     params.height = height;
+}
+
+void Window::s_iconifyCallback(GLFWwindow* window, int minimized)
+{
+    WindowParams& params =
+        *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));
+
+    if (minimized)
+    {
+        params.paused = true;
+    }
+    else
+    {
+        params.paused = false;
+    }
 }
 
 void Window::s_cursorPosCallback(GLFWwindow* window, double xposIn, double yposIn)
@@ -117,8 +153,8 @@ void Window::s_cursorPosCallback(GLFWwindow* window, double xposIn, double yposI
     WindowParams& params =
         *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));
 
-   /* if (!params.camera)
-        return;*/
+    if (!params.camera)
+        return;
     static bool firstMouseUse = true;
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
@@ -143,6 +179,8 @@ void Window::s_cursorPosCallback(GLFWwindow* window, double xposIn, double yposI
     else
         firstMouseUse = true;
 
+    /*ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = { xpos , ypos};*/
     /*inp.xoffset = xoffset;
     inp.yoffset = yoffset;*/
 }
@@ -168,4 +206,9 @@ void Window::s_keyCallback(GLFWwindow* window, int key, int scancode, int action
         if (key == kb.GlId() && action == kb.GlType())
             kb.Exec();
     }
+}
+
+void Window::SetGlobalSettings()
+{
+    glEnable(GL_DEPTH_TEST);
 }

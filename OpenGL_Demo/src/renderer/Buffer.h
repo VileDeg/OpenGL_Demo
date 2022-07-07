@@ -1,5 +1,5 @@
 #pragma once
-#include "glad/glad.h"
+
 
 
 /////////////////////////////////////////////////////////
@@ -13,38 +13,22 @@ class VertexLayout
 public:
     struct VertexAttribute
     {
-        unsigned type = GL_FLOAT;
-        unsigned count = 0;
-        unsigned normalized = GL_FALSE;
+        unsigned type;
+        unsigned count;
+        unsigned normalized;
 
-        const unsigned GetTypeSize() const
-        {
-            switch (type)
-            {
-            case GL_FLOAT:         return sizeof(GLfloat);
-            case GL_UNSIGNED_INT:  return sizeof(GLuint);
-            case GL_UNSIGNED_BYTE: return sizeof(GLbyte);
-            }
-
-            return 0;
-        }
+        const unsigned GetTypeSize() const;
+        
     };
 
 public:
-    VertexLayout(const std::initializer_list<VertexAttribute>& list)
-        : stride(0), attribs(list)
-    {
-        for (auto& attrib : list)
-        {
-            attribs.push_back({ GL_FLOAT, attrib.count, GL_FALSE });
-            stride += attrib.count * sizeof(attrib.GetTypeSize());
-        }
-    }
+    VertexLayout(const std::initializer_list<VertexAttribute>& list);
+   
     VertexLayout()
         : stride(0) {}
     ~VertexLayout() {}
 
-    template<typename T>
+    /*template<typename T>
     void Push(unsigned count)
     {
         ENGINE_ASSERT("Push<T> called\n");
@@ -70,7 +54,7 @@ public:
         if (count == 0) return;
         attribs.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
         stride += count * sizeof(GLbyte);
-    }
+    }*/
 
     inline const auto& Attribs() const { return attribs; }
     inline unsigned Stride() const { return stride; }

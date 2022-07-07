@@ -2,7 +2,7 @@
 
 #include "math_headers.h"
 
-//class Window;
+class Window;
 
 class Camera
 {
@@ -13,9 +13,9 @@ public:
 		int height;
 	};
 public:
-	Camera(ScreenParams& params, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+	Camera(Window& window, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
-		: m_Params(params),
+		: m_Window(window),
 		m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
 		m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
 		m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch),
@@ -79,8 +79,8 @@ public:
 private:
 	void updateCameraVectors();
 
-	//Window& m_Window;
-	ScreenParams m_Params;
+	Window& m_Window;
+	//ScreenParams m_Params;
 
 	glm::vec3 m_Position;
 	glm::vec3 m_Up;

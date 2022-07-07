@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "GLContext.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
 std::unique_ptr<GLContext> GLContext::s_Instance = nullptr;
 
@@ -8,6 +10,7 @@ GLContext::GLContext()
 
 {
     Init();
+
     SetKeybinds();
 }
 
@@ -59,19 +62,9 @@ void GLContext::Init()
    
 }
 
-//void GLContext::UpdateWindowDelayedKeybinds()
-//{
-//    m_Window->SetDelayedKeybinds(&m_DelayedKeybinds);
-//}
-//void GLContext::UpdateWindowCameraKeybinds()
-//{
-//    m_Window->SetCameraKeybinds(&m_CameraKeybinds);
-//}
 
 void GLContext::SetKeybinds()
 {
-   /* m_Keybinds{ { KeyActionType::CameraForward  , Keybind(GLFW_KEY_W, GLFW_PRESS)},
-    }*/
     m_Keybinds.insert({ KeyActionType::CameraForward  , Keybind(GLFW_KEY_W, GLFW_PRESS)      });
     m_Keybinds.insert({ KeyActionType::CameraBackward , Keybind(GLFW_KEY_S, GLFW_PRESS)      });
     m_Keybinds.insert({ KeyActionType::CameraRight    , Keybind(GLFW_KEY_D, GLFW_PRESS)      });
@@ -80,3 +73,30 @@ void GLContext::SetKeybinds()
     m_Keybinds.insert({ KeyActionType::CursorToggle   , Keybind(GLFW_KEY_C, GLFW_PRESS)      });
 }
 
+void GLContext::Clear(std::bitset<3> bufferBits) const
+{
+    int buffers = 0;
+    if (bufferBits[0])
+    {
+        buffers |= GL_COLOR_BUFFER_BIT;
+    }
+    if (bufferBits[1])
+    {
+        buffers |= GL_DEPTH_BUFFER_BIT;
+    }
+    if (bufferBits[2])
+    {
+        buffers |= GL_STENCIL_BUFFER_BIT;
+    }
+    glClear(buffers);
+}
+void GLContext::Terminate() const
+{
+    glfwTerminate();
+}
+void GLContext::SetClearColors(float r, float g, float b, float a)
+{
+    glClearColor(r, g, b, a);
+}
+void GLContext::SwapBuffers() const { glfwSwapBuffers(m_Window->Handle()); }
+void GLContext::PollEvents() const { glfwPollEvents(); }

@@ -11,13 +11,11 @@ public:
 	GLFWwindow* OpenWindow(const unsigned width = 800, const unsigned height = 600,
 		const std::string& name = "Window");
 
-	void Clear(int buffers) const { glClear(buffers); }
-	void SetClearColors(float r, float g, float b, float a)
-	{
-		glClearColor(r,g,b,a);
-	}
-	void SwapBuffers() const { glfwSwapBuffers(m_Window->Handle()); }
-	void PollEvents() const { glfwPollEvents(); }
+	void Clear(std::bitset<3> bufferBits) const;
+	void Terminate() const;
+	void SetClearColors(float r, float g, float b, float a);
+	void SwapBuffers() const;
+	void PollEvents() const;
 	void UpdateWindows()
 	{
 		m_Window->OnUpdate();
@@ -32,6 +30,7 @@ public:
 private:
 	void Init();
 	void SetKeybinds();
+
 	/*void UpdateWindowDelayedKeybinds();
 	void UpdateWindowCameraKeybinds();*/
 

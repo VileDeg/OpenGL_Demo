@@ -1,18 +1,18 @@
 #include "pch.h"
 #include "Camera.h"
-#include "GLContext.h"
-
-
-
+#include "Window.h"
 
 const glm::mat4 Camera::GetProjMat() const
 {
-    //return glm::perspective(glm::radians(m_Zoom),
-    //    (float)(m_Window.Width()) / m_Window.Height(),
-    //    m_NearPlane, m_FarPlane);
+    //if (m_Window.Width() == 0 || m_Window.Height() == 0)
+    //    abort();
+
     return glm::perspective(glm::radians(m_Zoom),
-        (float)(m_Params.width) / m_Params.height,
+        (float)(m_Window.Width()) / m_Window.Height(),
         m_NearPlane, m_FarPlane);
+   /* return glm::perspective(glm::radians(m_Zoom),
+        (float)(m_Params.width) / m_Params.height,
+        m_NearPlane, m_FarPlane);*/
 }
 
 void Camera::updateCameraVectors()

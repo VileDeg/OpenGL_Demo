@@ -1,6 +1,7 @@
 #include "pch.h"
-#include "renderer/Buffer.h"
 
+#include "Buffer.h"
+#include "glad/glad.h"
 
 
 /////////////////////////////////////////////////////////
@@ -41,6 +42,28 @@ void VBO::Unbind() const
 /////////////////////////////////////////////////////////
 //Layout////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
+
+const unsigned VertexLayout::VertexAttribute::GetTypeSize() const
+{
+	switch (type)
+	{
+	case GL_FLOAT:         return sizeof(GLfloat);
+	case GL_UNSIGNED_INT:  return sizeof(GLuint);
+	case GL_UNSIGNED_BYTE: return sizeof(GLbyte);
+	}
+
+	return 0;
+}
+
+VertexLayout::VertexLayout(const std::initializer_list<VertexAttribute>& list)
+: stride(0), attribs(list)
+{
+	for (auto& attrib : list)
+	{
+		attribs.push_back({ GL_FLOAT, attrib.count, GL_FALSE });
+		stride += attrib.count * sizeof(attrib.GetTypeSize());
+	}
+}
 
 void VertexLayout::Enable() const
 {

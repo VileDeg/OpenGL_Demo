@@ -54,13 +54,13 @@ namespace test
         }\
     } while (0);
 
-
+    //Shader("material_vert.shader", "color_frag.shader")
     TestOutline::TestOutline(Window& window)
         : Test(window),
-        m_Camera(window.GetDimensions(), glm::vec3(0.0f, 0.0f, 10.0f)),
-        m_FloorBox(Shader("material_vert.shader", "color_frag.shader"),
+        m_Camera(window, glm::vec3(0.0f, 0.0f, 10.0f)),
+        m_FloorBox(Primitive::Cube,
             glm::vec3(0.f, -60.f, 0.f)),
-        m_OutlineCube(Shader("material_vert.shader", "color_frag.shader"))
+        m_OutlineCube(Primitive::Cube)
     {
 
         m_Window.SetCamera(&m_Camera);
@@ -68,8 +68,8 @@ namespace test
 
         for (int i = 0; i < CUBE_COUNT; i++)
         {
-            m_Cubes.emplace_back(new Cube("container2.png", "container2_specular.png",
-                Shader("cube_vf.shader"), glm::vec3(3.f*i, 0.f, 3.f*i)));
+            m_Cubes.emplace_back(new Object(Primitive::Cube, "container2.png", "container2_specular.png",
+                glm::vec3(3.f*i, 0.f, 3.f*i)));
         }
         
 
@@ -88,8 +88,8 @@ namespace test
             LightParams.outerCutOff = glm::cos(glm::radians(17.5f));
         }
         
-        m_FloorBox.GetShader().Bind();
-        m_FloorBox.GetShader().setFloat4("u_Color", glm::vec4(0.92f, 0.86f, 0.68f, 0.8));
+        //m_FloorBox.GetShader().Bind();
+        //m_FloorBox.GetShader().setFloat4("u_Color", glm::vec4(0.92f, 0.86f, 0.68f, 0.8));
         m_FloorBox.Scale(100.f);
         m_CamSpeed = m_Camera.Speed();
 
@@ -187,8 +187,10 @@ namespace test
 
 	void TestOutline::OnImGuiRender()
 	{
-       
-        static float min = 0.0f;
+        //ImGui::ShowDemoWindow();
+        ImGui::Begin("LevelMenu");
+        ImGui::End();
+        /*static float min = 0.0f;
 
         ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
         ImGui::Checkbox   ("Outline ON",   &s_configs.enableOutline         );
@@ -201,6 +203,6 @@ namespace test
                 ImGui::SliderInt("Rotation Speed", &s_configs.rotationSpeed, 0, 10);
                 ImGui::SliderFloat3("Rotation Axis", glm::value_ptr(s_configs.rotationAxis), 0.0f, 45.f);
             }
-        }
+        }*/
 	}
 }

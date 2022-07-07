@@ -1,8 +1,5 @@
 #pragma once
 
-
-#include "glad/glad.h"
-
 #include "math_headers.h"
 
 class Shader
@@ -10,7 +7,7 @@ class Shader
 public:
 	Shader(const char* vertexPath, const char* fragmentPath);
 	Shader(const char* vertNFragPath);
-	Shader() {}
+
 
 	void Parse(const char* vertexPath, const char* fragmentPath);
 	void Parse(const char* vertNFragPath);

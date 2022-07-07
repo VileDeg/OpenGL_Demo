@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Shader.h"
 
+#include "glad/glad.h"
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
 	Parse(vertexPath, fragmentPath);
@@ -54,6 +56,7 @@ void Shader::Parse(const char* vertNFragPath)
 				{
 					std::cout << "ERROR::SHADER::TYPE_NOT_SPECIFIED: " << line << std::endl;
 					shaderFile.close();
+					abort();
 					return;
 				}
 			}
@@ -63,6 +66,7 @@ void Shader::Parse(const char* vertNFragPath)
 				{
 					std::cout << "ERROR::SHADER::INVALID_SHADER_TYPE: " << line << std::endl;
 					shaderFile.close();
+					abort();
 					return;
 				}
 				ss[(int)type] << line << '\n';
@@ -78,6 +82,7 @@ void Shader::Parse(const char* vertNFragPath)
 	catch (std::ifstream::failure& e)
 	{
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
+		abort();
 	}
 }
 
@@ -115,6 +120,7 @@ void Shader::Parse(const char* vertexPath, const char* fragmentPath)
 	catch (std::ifstream::failure& e)
 	{
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
+		abort();
 	}
 }
 
@@ -217,6 +223,7 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type)
 			std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type
             << ".\nPATH: " << m_VertFullPath << " " << m_FragFullPath
             << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			abort();
 		}
 	}
 	else
@@ -228,6 +235,7 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type)
 			std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type
             << ".\nPATH: " << m_VertFullPath << " " << m_FragFullPath
             << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			abort();
 		}
 	}
 }

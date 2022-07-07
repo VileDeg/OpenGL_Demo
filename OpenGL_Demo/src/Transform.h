@@ -10,8 +10,8 @@ public:
 		const float rotAngle = 0.0f,
 		const glm::vec3 rotAxis = WORLD_UP,
 		const float scale = 1.0f)
-		: m_Model(MAT4_IDENTITY), m_Position(0.0f),
-		m_Scale(1.0f)
+		: m_Model(MAT4_IDENTITY), m_Position(pos),
+		m_Scale(scale)
 	{
 		TranslateTo(pos);
 		//Rotate(rotAngle, rotAxis);
