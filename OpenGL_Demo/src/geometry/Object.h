@@ -9,12 +9,7 @@
 class Object : public Transform
 {
 public:
-	//struct TexturePack
-	//{
-	//	const char* diffuse;
-	//	const char* specular;
-	//	//const char* normal;
-	//};
+
 	enum class ObjectType
 	{
 		NO_TEXTURES=-1, DIFFUSE_ONLY=0, BOTH_TEXTURES=1
@@ -22,7 +17,6 @@ public:
 public:
 	Object(Primitive primType,
 		const char* diffuse, const char* specular,
-		//Shader shader,
 		const glm::vec3 pos = glm::vec3(0.0f),
 		const float rotAngle = 0.0f,
 		const glm::vec3 rotAxis = Transform::WORLD_UP,
@@ -39,7 +33,6 @@ public:
 	
 	Object(Primitive primType,
 		const char* diffuse, 
-		//Shader shader,
 		const glm::vec3 pos = glm::vec3(0.0f),
 		const float rotAngle = 0.0f,
 		const glm::vec3 rotAxis = Transform::WORLD_UP,
@@ -54,7 +47,6 @@ public:
 		Init(ObjectType::DIFFUSE_ONLY);
 	}
 	Object(Primitive primType,
-		//Shader shader,
 		const glm::vec3 pos = glm::vec3(0.0f),
 		const float rotAngle = 0.0f,
 		const glm::vec3 rotAxis = Transform::WORLD_UP,
@@ -69,23 +61,16 @@ public:
 		Init(ObjectType::NO_TEXTURES);
 	}
 
-	/*void SetModelMat(const glm::mat4 modelMat);
-	void SetViewMat(const glm::mat4 viewMat);
-	void SetProjMat(const glm::mat4 projMat);
 
-	void WatchedBy(const Camera& camera);*/
 	void DrawColor(const glm::vec4& color);
 	void Draw();
-	
-	//inline Shader& GetShader() { return *m_Shader; }
 
 	~Object() {}
 private:
 	void Init(ObjectType type);
 private:
 	std::pair<const float*, std::size_t> m_Data;
-	//unsigned int vao, vbo;
-	//std::shared_ptr<Shader> m_Shader;
+
 	std::shared_ptr<VAO> m_VAO;
 	std::shared_ptr<VBO> m_VBO;
 	//std::unique_ptr<EBO> m_EBO;

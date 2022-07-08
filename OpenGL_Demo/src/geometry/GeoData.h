@@ -7,7 +7,7 @@ enum class Primitive
 
 namespace GeoData
 {
-
+	
 	static constexpr const float CUBE_DATA[] =
 	{
 		// positions          // normals           // texture coords

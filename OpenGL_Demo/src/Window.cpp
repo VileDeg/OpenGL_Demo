@@ -211,4 +211,5 @@ void Window::s_keyCallback(GLFWwindow* window, int key, int scancode, int action
 void Window::SetGlobalSettings()
 {
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 }

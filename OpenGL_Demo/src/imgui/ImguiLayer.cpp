@@ -2,8 +2,8 @@
 #include "ImguiLayer.h"
 
 #include "imgui.h"
-#include "imgui/imgui_impl_opengl3.h"
-#include "imgui/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.cpp"
+#include "backends/imgui_impl_glfw.cpp"
 #include "GLFW/glfw3.h"
 
 

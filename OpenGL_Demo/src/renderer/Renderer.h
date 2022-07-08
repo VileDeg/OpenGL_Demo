@@ -27,9 +27,13 @@ class Renderer
 	{
 		Ref<VAO> VertexBuffer;
 		std::unordered_map<ShaderType, Ref<Shader>> Shader;
+		glm::mat4 ViewProjMat;
+		std::vector<ShaderType> ShaderQueue;
+		std::vector<std::function<void(void)>> DrawCalls;
 	};
 
 public:
+	static void Submit(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
 	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
 	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse);
 	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse, const Ref<Texture> specular);

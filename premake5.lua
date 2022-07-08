@@ -1,6 +1,6 @@
 workspace "OpenGL_Demo"
 	architecture "x64"
-	startproject "OpenGL_Demo"
+	startproject "Sandbox"
 
 	configurations
 	{
@@ -26,9 +26,10 @@ group ""
 
 project "OpenGL_Demo"
 	location "OpenGL_Demo"
-	kind "ConsoleApp"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
+	staticruntime "on"
 
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -94,3 +95,45 @@ project "OpenGL_Demo"
 		runtime "Release"
 		optimize "on"
 
+
+project "Sandbox"
+	location "Sandbox"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs
+	{
+		"OpenGL_Demo/vendor/spdlog/include",
+		"OpenGL_Demo/src",
+		"OpenGL_Demo/vendor",
+		"%{IncludeDir.GLM}"
+	}
+
+	links
+	{
+		"OpenGL_Demo"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+		
+	filter "configurations:Debug"
+		defines "HZ_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "HZ_RELEASE"
+		runtime "Release"
+		optimize "on"

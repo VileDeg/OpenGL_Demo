@@ -1,6 +1,6 @@
 #pragma once
 #include "Window.h"
-#include "imgui.h"
+
 
 namespace test
 {
@@ -25,18 +25,7 @@ namespace test
 		
 		~TestMenu() {}
 
-		void OnImGuiRender() override
-		{
-			for (auto& test : m_Tests)
-			{
-				if (ImGui::Button(test.first.c_str()))
-				{
-					m_CurrentTest = test.second();
-					m_Window.HideCursor();
-				}
-
-			}
-		}
+		void OnImGuiRender() override;
 
 		template<typename T>
 		void RegisterTest(Window& window, const std::string& name)
