@@ -1,12 +1,13 @@
 #pragma once
 
+#include "math_headers.h"
 #include "Buffer.h"
 
 #include "Shader.h"
 #include "Camera.h"
 #include "geometry/GeoData.h"
 #include "Texture.h"
-#include "math_headers.h"
+#include "Light.h"
 
 template<typename T>
 using Ref = std::shared_ptr<T>;
@@ -18,10 +19,14 @@ constexpr Ref<T> CreateRef(Args&& ... args)
 
 class Renderer
 {
+public:
+	
+
 	enum class ShaderType
 	{
 		None=-1, Skybox, Color, Diffuse, DiffNSpec
 	};
+private:
 
 	/*enum class TextureType
 	{
@@ -54,7 +59,8 @@ class Renderer
 	};
 
 public:
-	static void SetUniformBuffer(const Ref<UBO> ubo, const short slot);
+	static void SetUniformBuffer(const Ref<UBO> ubo, const short slot,
+		std::vector<ShaderType> shTypes);
 
 	//static void Submit(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
 	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
@@ -63,7 +69,7 @@ public:
 	
 	static void DrawSkybox();
 
-	static void BindShader(const Ref<Shader> shader);
+	static bool BindShader(const Ref<Shader> shader);
 	static void BindVAO(const Ref<VAO> vao);
 	static void BindTexture(const Ref<Texture> tex, const short slot);
 

@@ -8,9 +8,14 @@ void Object::DrawColor(const glm::vec4& color)
 	Renderer::Draw(m_Model, m_VAO, color);
 }
 
-void Object::Draw()
+void Object::DrawDiffuse()
 {
 	Renderer::Draw(m_Model, m_VAO, m_DiffuseTex);
+}
+
+void Object::DrawSpecular()
+{
+	Renderer::Draw(m_Model, m_VAO, m_DiffuseTex, m_SpecularTex);
 }
 
 void Object::Init(ObjectType type)

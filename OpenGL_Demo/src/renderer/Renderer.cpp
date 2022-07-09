@@ -15,17 +15,16 @@ static constexpr short SPEC_TEX_SLOT = 1;
 
 static constexpr short SKYBOX_TEX_SLOT = 8;
 
-void Renderer::SetUniformBuffer(const Ref<UBO> ubo, const short slot)
+void Renderer::SetUniformBuffer(const Ref<UBO> ubo, const short slot,
+	std::vector<ShaderType> shTypes)
 {
-	
 	ubo->Bind(slot);
-	for (auto& shader : s_Data->Shader)
+	for (ShaderType type : shTypes)
 	{
-		if (shader.first == ShaderType::Skybox)
-			return;
-		unsigned index = glGetUniformBlockIndex(shader.second->Id(), ubo->Name());
+		auto shader = s_Data->Shader[type];
+		unsigned index = glGetUniformBlockIndex(shader->Id(), ubo->Name());
 		ASSERT(index != GL_INVALID_INDEX, "Uniform buffer not found");
-		glUniformBlockBinding(shader.second->Id(), index, slot);
+		glUniformBlockBinding(shader->Id(), index, slot);
 	}
 }
 
@@ -36,12 +35,15 @@ void Renderer::Init()
 
 	s_Data->Shader[ShaderType::Diffuse] = CreateRef<Shader>("diffuse.shader");
 	s_Data->Shader[ShaderType::Diffuse]->Bind();
-	s_Data->Shader[ShaderType::Diffuse]->setInt("u_DiffuseTex", DIFF_TEX_SLOT);
+	s_Data->Shader[ShaderType::Diffuse]->setInt  ("material.diffuse", DIFF_TEX_SLOT);
+	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.specular", 0.5f);
+	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.shininess", 32.0f);
 
 	s_Data->Shader[ShaderType::DiffNSpec] = CreateRef<Shader>("diffNSpec.shader");
-	s_Data->Shader[ShaderType::Diffuse]->Bind();
+	s_Data->Shader[ShaderType::DiffNSpec]->Bind();
 	s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.diffuse", DIFF_TEX_SLOT);
 	s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.specular", SPEC_TEX_SLOT);
+	s_Data->Shader[ShaderType::DiffNSpec]->setFloat("material.shininess", 32.0f);
 
 	s_Data->Shader[ShaderType::Skybox] = CreateRef<Shader>("skybox.shader");
 	s_Data->Shader[ShaderType::Skybox]->Bind();
@@ -61,41 +63,10 @@ void Renderer::Init()
 	
 }
 
-void Renderer::DrawSkybox()
-{
-	glDepthFunc(GL_LEQUAL);
-	Ref<Shader> sh = s_Data->Shader[ShaderType::Skybox];
-	BindShader(sh);
-	//s_Data->Shader[ShaderType::Skybox]->setInt("u_SkyboxTex", SKYBOX_TEX_SLOT);
-	s_Data->Shader[ShaderType::Skybox]->setMat4f("u_ProjMat", s_Data->ProjMat);
-	s_Data->Shader[ShaderType::Skybox]->setMat4f("u_ViewMat",
-		glm::mat4(glm::mat3(s_Data->ViewMat)));
-		
-	BindTexture(s_Data->skyboxData.SkyboxTex, SKYBOX_TEX_SLOT);
-	BindVAO(s_Data->skyboxData.SkyboxVAO);
-	
-	glDrawArrays(GL_TRIANGLES, 0, s_Data->skyboxData.SkyboxVAO->Count());
-	glDepthFunc(GL_LESS);
-}
-
-void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color)
-{
-	Ref<Shader> sh = s_Data->Shader[ShaderType::Color];
-	sh->Bind();
-	sh->setMat4f("u_ModelMat", modelMat);
-	//sh->setMat4f("u_ViewProjMat", s_Data->ViewProjMat);
-
-	sh->setFloat4("u_Color", color);
-
-	vao->Bind();
-	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-}
-
 void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
 	const Ref<Texture> diffuse)
 {
 	Ref<Shader> sh = s_Data->Shader[ShaderType::Diffuse];
-	//sh->Bind();
 	BindShader(sh);
 	sh->setMat4f("u_ModelMat", modelMat);
 
@@ -105,28 +76,58 @@ void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
 	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
 }
 
-//void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
-//	const Ref<Texture> diffuse, const Ref<Texture> specular)
-//{
-//	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
-//	sh->Bind();
-//	sh->setMat4f("u_ModelMat", modelMat);
-//	//sh->setMat4f("u_ViewProjMat", s_Data->ViewProjMat);
-//
-//	BindTexture(diffuse, );
-//	BindTexture(specular);
-//
-//	vao->Bind();
-//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-//}
+void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
+	const Ref<Texture> diffuse, const Ref<Texture> specular)
+{
+	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
+	BindShader(sh);
+	sh->setMat4f("u_ModelMat", modelMat);
 
-void Renderer::BindShader(const Ref<Shader> shader)
+	BindTexture(diffuse, DIFF_TEX_SLOT);
+	BindTexture(specular, SPEC_TEX_SLOT);
+	BindVAO(vao);
+
+	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+}
+
+void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color)
+{
+	Ref<Shader> sh = s_Data->Shader[ShaderType::Color];
+	BindShader(sh);
+	sh->setMat4f("u_ModelMat", modelMat);
+
+	sh->setFloat4("u_Color", color);
+
+	BindVAO(vao);
+	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+}
+
+void Renderer::DrawSkybox()
+{
+	glDepthFunc(GL_LEQUAL);
+	Ref<Shader> sh = s_Data->Shader[ShaderType::Skybox];
+	BindShader(sh);
+	//s_Data->Shader[ShaderType::Skybox]->setInt("u_SkyboxTex", SKYBOX_TEX_SLOT);
+	sh->setMat4f("u_ProjMat", s_Data->ProjMat);
+	sh->setMat4f("u_ViewMat",
+		glm::mat4(glm::mat3(s_Data->ViewMat)));
+
+	BindTexture(s_Data->skyboxData.SkyboxTex, SKYBOX_TEX_SLOT);
+	BindVAO(s_Data->skyboxData.SkyboxVAO);
+
+	glDrawArrays(GL_TRIANGLES, 0, s_Data->skyboxData.SkyboxVAO->Count());
+	glDepthFunc(GL_LESS);
+}
+
+bool Renderer::BindShader(const Ref<Shader> shader)
 {
 	if (s_Data->boundShaderId != shader->Id())
 	{
 		shader->Bind();
 		s_Data->boundShaderId = shader->Id();
+		return true;
 	}
+	return false;
 }
 
 void Renderer::BindVAO(const Ref<VAO> vao)

@@ -63,7 +63,8 @@ public:
 
 
 	void DrawColor(const glm::vec4& color);
-	void Draw();
+	void DrawDiffuse();
+	void DrawSpecular();
 
 	~Object() {}
 private:

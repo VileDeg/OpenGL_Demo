@@ -10,9 +10,7 @@ struct Material {
 struct Light {
     vec3 position;
     vec3 direction;
-    float cutOff;
-    float outerCutOff;
-
+    
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -20,6 +18,8 @@ struct Light {
     float constant;
     float linear;
     float quadratic;
+    float cutOff;
+    float outerCutOff;
 };
 
 in vec3 FragPos;
