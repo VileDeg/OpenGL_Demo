@@ -6,7 +6,11 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoords;
 
 uniform mat4 u_ModelMat;
-uniform mat4 u_ViewProjMat;
+
+layout(std140) uniform ProjViewMat
+{
+    uniform mat4 u_ProjViewMat;
+};
 
 out vec3 FragPos;
 out vec3 Normal;
@@ -18,7 +22,7 @@ void main()
     Normal = mat3(transpose(inverse(u_ModelMat))) * aNormal;
     TexCoords = aTexCoords;
 
-    gl_Position = u_ViewProjMat * vec4(FragPos, 1.0);
+    gl_Position = u_ProjViewMat * vec4(FragPos, 1.0);
 }
 
 #shader fragment
@@ -31,6 +35,7 @@ struct Material {
     float shininess;
 };
 
+
 struct Light {
     vec3 position;
 
@@ -39,13 +44,17 @@ struct Light {
     vec3 specular;
 };
 
+
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
 uniform vec3 viewPos;
 uniform Material material;
-uniform Light light;
+
+layout(std140) uniform LightParams{
+    uniform Light light;
+};
 
 void main()
 {

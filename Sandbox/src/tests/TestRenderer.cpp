@@ -1,12 +1,11 @@
 #include "pch.h"
 #include "TestRenderer.h"
-
-
 #include "imgui/imgui.h"
 
 #include "math_headers.h"
 #include "Window.h"
-#include "renderer/Renderer.h"
+
+//#include "..\..\OpenGL_Demo\vendor\GLAD\include\glad\glad.h"
 
 namespace test
 {
@@ -29,25 +28,16 @@ namespace test
     } LightParams;
 
     static glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
-
-    //static struct
-    //{
-    //    bool enableOutline = true;
-    //    bool enableRotation = false;
-    //    int rotationSpeed = 1;
-    //    glm::vec3 rotationAxis = glm::vec3(0.f, 1.f, 0.f);
-    //    int outlineBorderWidth = 1;
-    //} s_configs;
+    //static UBO lightBuffer;
+    //unsigned ubo;
 
 
-
-    //Shader("material_vert.shader", "color_frag.shader")
     TestRenderer::TestRenderer(Window& window)
         : Test(window),
         m_Camera(window, glm::vec3(0.0f, 0.0f, 10.0f)),
         m_Cube(Primitive::Cube, "container2.png"),
-        m_CamSpeed(8.0f)
-        //m_OutlineCube(Primitive::Cube)
+        m_CamSpeed(8.0f),
+        m_CameraUbo(CreateRef<UBO>("ProjViewMat", (const void*)NULL, sizeof(glm::mat4)))
     {
 
         m_Window.SetCamera(&m_Camera);
@@ -67,8 +57,9 @@ namespace test
             LightParams.outerCutOff = glm::cos(glm::radians(17.5f));
         }
 
-      
-        Renderer::Init();
+        m_CameraUbo->Upload(
+            glm::value_ptr(m_Camera.GetProjViewMat()), sizeof(glm::mat4), 0);
+        Renderer::SetUniformBuffer(m_CameraUbo, 0);
     }
 
 
@@ -81,28 +72,34 @@ namespace test
     {
         Renderer::BeginScene(m_Camera);
 
-       /* m_Cube.TranslateTo({ 0.f, 0.f, 0.f });
-        m_Cube.DrawColor({ 1.f,1.f,1.f,1.f });*/
-        //m_Cube.Translate({0.f,0.f,0.1f*deltaTime});
-        
-        //m_Cube.TranslateTo({5.f, 0.f, 5.f});
-        m_Cube.Draw();
-           
-    
-   
+        m_CameraUbo->Upload(
+            glm::value_ptr(m_Camera.GetProjViewMat()), sizeof(glm::mat4), 0);
 
-        
-        m_Camera.SetSpeed(m_CamSpeed);
+        int num = 10;
+        for (int j = 0; j < num; ++j)
+        {
+            for (int i = 0; i < num; ++i)
+            {
+                for (int k = 0; k < num; ++k)
+                {
+                    m_Cube.TranslateTo(glm::vec3(i * 2.f, k * 2.f, j * 2.f));
+                    m_Cube.Draw();
+                }
+            }
+        }
+        Renderer::DrawSkybox();
+
+        //m_Camera.SetSpeed(m_CamSpeed);
         Renderer::EndScene();
     }
 
     void TestRenderer::OnImGuiRender()
     {
         //ImGui::ShowDemoWindow();
-        ImGui::Begin("LevelMenu");
+        /*ImGui::Begin("LevelMenu");
         static float min = 0.0f;
         ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
-        ImGui::End();
+        ImGui::End();*/
         /*static float min = 0.0f;
 
         

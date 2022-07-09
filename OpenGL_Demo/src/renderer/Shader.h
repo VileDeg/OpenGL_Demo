@@ -31,7 +31,7 @@ public:
 
 	void setMat4f(const std::string& name, const glm::mat4& matrix);
 
-
+	const unsigned Id() const { return ID; }
 private:
 	static constexpr const char* BASE_SHADER_PATH = "res/shaders/";
 

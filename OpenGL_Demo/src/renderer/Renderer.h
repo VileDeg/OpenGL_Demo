@@ -20,24 +20,52 @@ class Renderer
 {
 	enum class ShaderType
 	{
-		None=-1, Color, Diffuse, DiffNSpec
+		None=-1, Skybox, Color, Diffuse, DiffNSpec
+	};
+
+	/*enum class TextureType
+	{
+		None=-1, Diffuse, Specular, Skybox
+	};*/
+	
+	struct SkyboxData
+	{
+		Ref<VAO> SkyboxVAO;
+		Ref<VBO> SkyboxVBO;
+		Ref<Texture> SkyboxTex;
 	};
 
 	struct RenderData
 	{
-		Ref<VAO> VertexBuffer;
 		std::unordered_map<ShaderType, Ref<Shader>> Shader;
-		glm::mat4 ViewProjMat;
-		std::vector<ShaderType> ShaderQueue;
-		std::vector<std::function<void(void)>> DrawCalls;
+		//glm::mat4 ViewProjMat = glm::mat4(1.f);
+		glm::mat4 ViewMat = glm::mat4(1.f);
+		glm::mat4 ProjMat = glm::mat4(1.f);
+		//std::vector<ShaderType> ShaderQueue;
+		//std::vector<std::function<void(void)>> DrawCalls;
+		//unsigned NextTexSlot;
+		std::unordered_map<unsigned, unsigned> TexSlotId; //(key,value) = (slot, id)
+		unsigned boundVaoId;
+		unsigned boundShaderId;
+		SkyboxData skyboxData;
+		/*RenderData(const std::string& folderName, const std::vector<std::string> faces)
+			: SkyboxTex(CreateRef<Texture>(folderName, faces))
+		{}*/
 	};
 
 public:
-	static void Submit(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
+	static void SetUniformBuffer(const Ref<UBO> ubo, const short slot);
+
+	//static void Submit(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
 	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
 	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse);
 	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse, const Ref<Texture> specular);
-	//static void DrawPrimitiveIndexed();
+	
+	static void DrawSkybox();
+
+	static void BindShader(const Ref<Shader> shader);
+	static void BindVAO(const Ref<VAO> vao);
+	static void BindTexture(const Ref<Texture> tex, const short slot);
 
 	static void Init();
 	static void BeginScene(const Camera& camera);

@@ -4,11 +4,14 @@
 layout(location = 0) in vec3 aPos;
 
 uniform mat4 u_ModelMat;
-uniform mat4 u_ViewProjMat;
+layout(std140) uniform ProjViewMat
+{
+	uniform mat4 u_ProjViewMat;
+};
 
 void main()
 {
-	gl_Position = u_ViewProjMat * u_ModelMat * vec4(aPos,1);
+	gl_Position = u_ProjViewMat * u_ModelMat * vec4(aPos,1);
 }
 
 #shader fragment

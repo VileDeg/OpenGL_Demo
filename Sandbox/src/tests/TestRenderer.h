@@ -2,6 +2,7 @@
 #include "Test.h"
 
 #include "geometry/Object.h"
+#include "renderer/Renderer.h"
 
 namespace test
 {
@@ -19,5 +20,6 @@ namespace test
         Object m_Cube;
         Camera m_Camera;
         float m_CamSpeed;
+        Ref<UBO> m_CameraUbo;
     };
 }

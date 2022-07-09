@@ -58,9 +58,8 @@ const unsigned VertexLayout::VertexAttribute::GetTypeSize() const
 VertexLayout::VertexLayout(const std::initializer_list<VertexAttribute>& list)
 : stride(0), attribs(list)
 {
-	for (auto& attrib : list)
+	for (auto& attrib : attribs)
 	{
-		attribs.push_back({ GL_FLOAT, attrib.count, GL_FALSE });
 		stride += attrib.count * sizeof(attrib.GetTypeSize());
 	}
 }
@@ -140,3 +139,38 @@ void EBO::Unbind()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+/////////////////////////////////////////////////////////
+//UBO////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+
+UBO::UBO(const char* name, const void* data, const std::size_t size)
+	: m_Name(name)
+{
+	glGenBuffers(1, &m_Id);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_Id);
+	glBufferData(GL_UNIFORM_BUFFER, size, data, GL_STATIC_DRAW);
+}
+
+UBO::~UBO()
+{
+	glDeleteBuffers(1, &m_Id);
+}
+
+
+void UBO::Upload(const void* data, const std::size_t size, const unsigned offset)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, m_Id);
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+}
+
+void UBO::Bind(unsigned bindingPoint)
+{
+	glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, m_Id);
+}
+
+void UBO::Unbind()
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}

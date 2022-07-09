@@ -5,10 +5,12 @@
 #define ENABLE_ASSERTS
 #ifdef ENABLE_ASSERTS
 
-#define ENGINE_ASSERT(x, ...) { if(!(x)) { ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+#define ASSERT(x,msg) do{ if(!(x)) { LOG_ERROR("Assertion Failed");\
+	std::cerr << '\t' << msg << ".\n";\
+__debugbreak(); } }while(0)
 #else
 
-#define ENGINE_ASSERT(x, ...)
+#define ASSERT(msg)
 #endif
 
 

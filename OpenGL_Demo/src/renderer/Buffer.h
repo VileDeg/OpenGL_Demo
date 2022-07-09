@@ -1,12 +1,8 @@
 #pragma once
 
-
-
 /////////////////////////////////////////////////////////
 //Layout/////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
-
-
 
 class VertexLayout
 {
@@ -27,34 +23,6 @@ public:
     VertexLayout()
         : stride(0) {}
     ~VertexLayout() {}
-
-    /*template<typename T>
-    void Push(unsigned count)
-    {
-        ENGINE_ASSERT("Push<T> called\n");
-
-    }
-    template<>
-    void Push<float>(unsigned count)
-    {
-        if (count == 0) return;
-        attribs.push_back({ GL_FLOAT, count, GL_FALSE });
-        stride += count * sizeof(GLfloat);
-    }
-    template<>
-    void Push<unsigned>(unsigned count)
-    {
-        if (count == 0) return;
-        attribs.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
-        stride += count * sizeof(GLuint);
-    }
-    template<>
-    void Push<unsigned char>(unsigned count)
-    {
-        if (count == 0) return;
-        attribs.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
-        stride += count * sizeof(GLbyte);
-    }*/
 
     inline const auto& Attribs() const { return attribs; }
     inline unsigned Stride() const { return stride; }
@@ -136,3 +104,27 @@ public:
     const unsigned int Count() const { return count; }
 };
 
+/////////////////////////////////////////////////////////
+//UBO////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+
+class UBO
+{
+public:
+    UBO(const char* name, const void* data, const std::size_t size);
+    ~UBO();
+
+
+    void Upload(const void* data, const std::size_t size, const unsigned offset);
+    const char* Name() const { return m_Name.c_str(); }
+
+    void Bind(unsigned bindingPoint);
+    void Unbind();
+
+    const unsigned Id() const { return m_Id; }
+private:
+    std::string m_Name;
+    unsigned m_Id;
+    unsigned m_BindingPoint;
+    //unsigned m_Offset;
+};

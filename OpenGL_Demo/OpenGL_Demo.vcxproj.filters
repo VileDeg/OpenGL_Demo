@@ -1371,9 +1371,6 @@
     <ClCompile Include="src\Window.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\Log.cpp">
-      <Filter>src\core</Filter>
-    </ClCompile>
     <ClCompile Include="src\geometry\Object.cpp">
       <Filter>src\geometry</Filter>
     </ClCompile>

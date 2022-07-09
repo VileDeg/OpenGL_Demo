@@ -104,6 +104,9 @@
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\tests\TestRenderer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\skybox.shader" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

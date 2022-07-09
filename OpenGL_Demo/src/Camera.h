@@ -29,14 +29,6 @@ public:
 		updateCameraVectors();
 	}
 
-	/*void MoveForward (float deltaTime) { m_Position += 
-		m_Front * m_MovementSpeed * m_Window.DeltaTime(); }
-	void MoveBackward(float deltaTime) { m_Position -= 
-		m_Front * m_MovementSpeed * m_Window.DeltaTime(); }
-	void MoveLeft    (float deltaTime) { m_Position -= 
-		m_Right * m_MovementSpeed * m_Window.DeltaTime(); }
-	void MoveRight   (float deltaTime) { m_Position += 
-		m_Right * m_MovementSpeed * m_Window.DeltaTime(); }*/
 	void MoveForward(float* deltaTime) {
 		m_Position +=
 			m_Front * m_MovementSpeed * *deltaTime;
@@ -61,6 +53,10 @@ public:
 	inline const glm::mat4 GetViewMat() const
 	{
 		return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+	}
+	inline const glm::mat4 GetProjViewMat() const
+	{
+		return GetProjMat() * GetViewMat();
 	}
 
 	inline const glm::vec3& Position() const { return m_Position; }

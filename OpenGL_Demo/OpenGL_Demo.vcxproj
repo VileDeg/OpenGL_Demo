@@ -540,7 +540,6 @@
     <ClCompile Include="src\renderer\Light.cpp" />
     <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\core\Log.cpp" />
     <ClCompile Include="src\geometry\Object.cpp" />
     <ClCompile Include="src\imgui\ImguiBuild.cpp" />
     <ClCompile Include="src\imgui\ImguiLayer.cpp" />

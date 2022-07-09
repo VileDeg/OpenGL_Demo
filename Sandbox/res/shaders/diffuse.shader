@@ -6,14 +6,17 @@ layout(location = 1) in vec2 aNormal;
 layout(location = 2) in vec2 aTexCoords;
 
 uniform mat4 u_ModelMat;
-uniform mat4 u_ViewProjMat;
+layout(std140) uniform ProjViewMat
+{
+    uniform mat4 u_ProjViewMat;
+};
 
 out vec2 TexCoords;
 
 void main()
 {
     TexCoords = aTexCoords;
-    gl_Position = u_ViewProjMat * u_ModelMat * vec4(aPos, 1);
+    gl_Position = u_ProjViewMat * u_ModelMat * vec4(aPos, 1);
 }
 
 #shader fragment

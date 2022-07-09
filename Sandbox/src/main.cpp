@@ -5,6 +5,7 @@
 
 #include "tests/TestRenderer.h"
 
+
 const unsigned int SCR_WIDTH = 1600;
 const unsigned int SCR_HEIGHT = 900;
 
@@ -22,7 +23,7 @@ int main()
 
     testMenu->RegisterTest<test::TestRenderer>(window, "TestRenderer");
 
-
+    Renderer::Init();
     while (window.IsOpen())
     {
         context.PollEvents();
