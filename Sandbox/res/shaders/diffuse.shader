@@ -6,7 +6,7 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoords;
 
 uniform mat4 u_ModelMat;
-layout(std140) uniform ProjViewMat
+layout(std140) uniform SceneData
 {
     uniform mat4 u_ProjViewMat;
 };

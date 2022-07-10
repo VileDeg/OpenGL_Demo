@@ -4,7 +4,7 @@
 layout(location = 0) in vec3 aPos;
 
 uniform mat4 u_ModelMat;
-layout(std140) uniform ProjViewMat
+layout(std140) uniform SceneData
 {
 	uniform mat4 u_ProjViewMat;
 };

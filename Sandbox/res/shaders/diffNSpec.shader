@@ -6,9 +6,10 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoords;
 
 uniform mat4 u_ModelMat;
-layout(std140) uniform ProjViewMat
+layout(std140) uniform SceneData
 {
     uniform mat4 u_ProjViewMat;
+    uniform vec3 u_ViewPos;
 };
 
 
@@ -38,23 +39,26 @@ struct Material {
 
 struct Light {
     vec3 position;
-    vec3 direction;
-    vec3 viewPos;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-
     float constant;
+    vec3 direction;
     float linear;
+    vec3 ambient;
     float quadratic;
-
+    vec3 diffuse;
     float cutOff;
+    vec3 specular;
     float outerCutOff;
 };
 
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
+
+layout(std140) uniform SceneData
+{
+    uniform mat4 u_ProjViewMat;
+    uniform vec3 u_ViewPos;
+};
 
 layout(std140) uniform LightParams
 {
@@ -75,7 +79,7 @@ void main()
     vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoords).rgb;
 
     // specular
-    vec3 viewDir = normalize(light.viewPos - FragPos);
+    vec3 viewDir = normalize(u_ViewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * texture(material.specular, TexCoords).rgb;

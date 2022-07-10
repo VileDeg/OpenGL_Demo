@@ -111,11 +111,13 @@ public:
 class UBO
 {
 public:
-    UBO(const char* name, const void* data, const std::size_t size);
+    UBO(const char* name, const void* data,
+        const std::size_t size, const unsigned type);
     ~UBO();
 
 
-    void Upload(const void* data, const std::size_t size, const unsigned offset);
+    void Upload(const void* data, const std::size_t size,
+        const unsigned offset);
     const char* Name() const { return m_Name.c_str(); }
 
     void Bind(unsigned bindingPoint);
@@ -126,5 +128,5 @@ private:
     std::string m_Name;
     unsigned m_Id;
     unsigned m_BindingPoint;
-    //unsigned m_Offset;
+    unsigned m_Type;
 };

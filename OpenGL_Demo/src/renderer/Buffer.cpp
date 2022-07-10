@@ -143,12 +143,13 @@ void EBO::Unbind()
 //UBO////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-UBO::UBO(const char* name, const void* data, const std::size_t size)
-	: m_Name(name)
+UBO::UBO(const char* name, const void* data,
+	const std::size_t size, const unsigned type = GL_UNIFORM_BUFFER)
+	: m_Name(name), m_Type(type)
 {
 	glGenBuffers(1, &m_Id);
-	glBindBuffer(GL_UNIFORM_BUFFER, m_Id);
-	glBufferData(GL_UNIFORM_BUFFER, size, data, GL_STATIC_DRAW);
+	glBindBuffer(m_Type, m_Id);
+	glBufferData(m_Type, size, data, GL_STATIC_DRAW);
 }
 
 UBO::~UBO()
@@ -159,18 +160,17 @@ UBO::~UBO()
 
 void UBO::Upload(const void* data, const std::size_t size, const unsigned offset)
 {
-	glBindBuffer(GL_UNIFORM_BUFFER, m_Id);
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
+	glBindBuffer(m_Type, m_Id);
+	glBufferSubData(m_Type, offset, size, data);
+	glBindBuffer(m_Type, 0);
 }
 
 void UBO::Bind(unsigned bindingPoint)
 {
-	glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, m_Id);
+	glBindBufferBase(m_Type, bindingPoint, m_Id);
 }
 
 void UBO::Unbind()
 {
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBuffer(m_Type, 0);
 }

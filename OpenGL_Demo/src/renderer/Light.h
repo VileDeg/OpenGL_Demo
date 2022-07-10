@@ -1,36 +1,38 @@
 #pragma once
 #include "math_headers.h"
 
-namespace Light
+struct PointLight
 {
-	struct LightBase
-	{
-		glm::vec3 ambient;
-		glm::vec3 diffuse;
-		glm::vec3 specular;
+	glm::vec3 position;
+	float constant;
+	glm::vec3 ambient;
+	float linear;
+	glm::vec3 diffuse;
+	float quadratic;
+	glm::vec3 specular;
+};
 
-		float constant;
-		float linear;
-		float quadratic;
+struct DirectionalLight
+{
+	glm::vec3 direction;
+	float constant;
+	glm::vec3 ambient;
+	float linear;
+	glm::vec3 diffuse;
+	float quadratic;
+	glm::vec3 specular;
+};
 
-		virtual ~LightBase() = 0;
-	};
-
-	
-
-	struct PointLight : virtual public LightBase
-	{
-		glm::vec3 position;
-	};
-
-	struct DirectionalLight : virtual public LightBase
-	{
-		glm::vec3 direction;
-	};
-
-	struct SpotLight : public PointLight, public DirectionalLight
-	{
-		float cutOff;
-		float outerCutOff;
-	};
-}
+struct Spotlight
+{
+	glm::vec3 position;
+	float constant;
+	glm::vec3 direction;
+	float linear;
+	glm::vec3 ambient;
+	float quadratic;
+	glm::vec3 diffuse;
+	float cutOff;
+	glm::vec3 specular;
+	float outerCutOff;
+};
