@@ -10,7 +10,7 @@ static constexpr short DIFF_TEX_SLOT = 0;
 static constexpr short SPEC_TEX_SLOT = 1;
 static constexpr short SKYBOX_TEX_SLOT = 2;
 
-void Renderer::SetUniformBuffer(const Ref<UBO> ubo, const short slot,
+void Renderer::SetUniformBuffer(const Ref<ShaderBlock> ubo, const short slot,
 	std::vector<ShaderType> shTypes)
 {
 	ubo->Bind(slot);
@@ -18,10 +18,93 @@ void Renderer::SetUniformBuffer(const Ref<UBO> ubo, const short slot,
 	{
 		auto shader = s_Data->Shader[type];
 		unsigned index = glGetUniformBlockIndex(shader->Id(), ubo->Name());
-		ASSERT(index != GL_INVALID_INDEX, "Uniform buffer not found");
+
+		ASSERT(index != GL_INVALID_INDEX, "UBO not found");
+
 		glUniformBlockBinding(shader->Id(), index, slot);
 	}
 }
+
+void Renderer::SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short slot,
+	std::vector<ShaderType> shTypes)
+{
+	ssbo->Bind(slot);
+	for (ShaderType type : shTypes)
+	{
+		auto shader = s_Data->Shader[type];
+		unsigned index = glGetProgramResourceIndex(
+			shader->Id(), GL_SHADER_STORAGE_BLOCK, ssbo->Name());
+
+		ASSERT(index != GL_INVALID_INDEX, "SSBO not found");
+
+		glShaderStorageBlockBinding(shader->Id(), index, slot);
+	}
+}
+
+void Renderer::Init()
+{
+	s_Data = new RenderData();
+
+	CreateShaders();
+	CreateSkybox();
+
+	s_Data->SceneUBO = CreateRef<ShaderBlock>(
+		"SceneData", (const void*)NULL,
+		sizeof(glm::mat4) + sizeof(glm::vec3) + sizeof(unsigned),
+		GL_UNIFORM_BUFFER);
+
+	SetUniformBuffer(s_Data->SceneUBO, 0,
+		{ ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::Color });
+
+	int lightsCount = 1;
+	std::size_t dirSize = 16 * 4;
+	std::size_t spotSize = 16 * 5;
+	std::size_t pointSize = 16 * 4;
+	s_Data->LightSSBO = CreateRef<ShaderBlock>(
+		"LightData", (const void*)NULL,
+		dirSize + spotSize + pointSize * lightsCount,
+		GL_SHADER_STORAGE_BUFFER);
+
+	SetShaderStorageBuffer(s_Data->LightSSBO, 0,
+		{ ShaderType::DiffNSpec });
+
+
+}
+
+//void Renderer::BindShaderBlock(const Ref<ShaderBlock> block,
+//	const short slot, std::vector<ShaderType> shTypes)
+//{
+//	block->Bind(slot);
+//	if (block->Type() == ShaderBlock::Type::UBO)
+//	{
+//		for (ShaderType type : shTypes)
+//		{
+//			auto shader = s_Data->Shader[type];
+//			unsigned index = glGetUniformBlockIndex(shader->Id(), block->Name());
+//
+//			ASSERT(index != GL_INVALID_INDEX, "UBO not found");
+//
+//			glUniformBlockBinding(shader->Id(), index, slot);
+//		}
+//	}
+//	else if (block->Type() == ShaderBlock::Type::SSBO)
+//	{
+//		for (ShaderType type : shTypes)
+//		{
+//			auto shader = s_Data->Shader[type];
+//			unsigned index = glGetProgramResourceIndex(
+//				shader->Id(), GL_SHADER_STORAGE_BUFFER, block->Name());
+//
+//			ASSERT(index != GL_INVALID_INDEX, "SSBO not found");
+//
+//			glShaderStorageBlockBinding(shader->Id(), index, slot);
+//		}
+//	}
+//	else
+//	{
+//		LOG_ERROR("Invalid ShaderBlock type");
+//	}
+//}
 
 
 void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
@@ -83,31 +166,7 @@ void Renderer::DrawSkybox()
 
 
 
-void Renderer::Init()
-{
-	s_Data = new RenderData();
 
-	CreateShaders();
-	CreateSkybox();
-
-	s_Data->SceneUBO = CreateRef<UBO>(
-		"SceneData", (const void*)NULL,
-		sizeof(glm::mat4) + sizeof(glm::vec3));
-
-	SetUniformBuffer(s_Data->SceneUBO, 0,
-		{ ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::Color });
-
-	int lightsCount = 1;
-	std::size_t dirSize = 12 * 4;
-	std::size_t pointSize = 12 * 4 + 4*3;
-	std::size_t spotSize = 12 * 5 + 4 * 5;
-	s_Data->LightSSBO = CreateRef<UBO>(
-		"LightData", (const void*)NULL,
-		dirSize + spotSize + pointSize * lightsCount, GL_SHADER_STORAGE_BUFFER);
-
-	SetUniformBuffer(s_Data->SceneUBO, 0,
-		{ ShaderType::DiffNSpec });
-}
 
 void Renderer::CreateShaders()
 {
@@ -145,14 +204,40 @@ void Renderer::CreateSkybox()
 	s_Data->skyboxData.SkyboxTex = CreateRef<Texture>("skybox", SKYBOX_FACES);
 }
 
-
-void Renderer::UploadSpotlightData(const Spotlight& light)
+std::pair<unsigned, unsigned> Renderer::GetSizeOffset(const LightType type)
 {
-	glBindBuffer(, s_Data->LightSSBO->Id());
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(light), &light);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	unsigned size   = 0;
+	unsigned offset = 0;
+	switch (type)
+	{
+	case LightType::Directional:
+		size = SSBO_SPOTLIGHT_OFFSET - SSBO_DIRLIGHT_OFFSET;
+		offset = SSBO_DIRLIGHT_OFFSET;
+		break;
+	case LightType::Spot:
+		size = SSBO_POINTLIGHT_OFFSET - SSBO_SPOTLIGHT_OFFSET;
+		offset = SSBO_SPOTLIGHT_OFFSET;
+		break;
+	case LightType::Point:
+		size = SSBO_POINTLIGHT_SIZE;
+		offset = SSBO_POINTLIGHT_OFFSET;
+		break;
+	}
+	return std::pair<unsigned, unsigned>(size, offset);
 }
 
+void Renderer::UploadLightData(const LightType type, const void* data)
+{
+	auto offsetSize = GetSizeOffset(type);
+	s_Data->LightSSBO->Upload(data, offsetSize.first, offsetSize.second);
+}
+
+void Renderer::UpdateLightData(const LightType type, 
+	const void* data, unsigned size, unsigned offset)
+{
+	auto offsetSize = GetSizeOffset(type);
+	s_Data->LightSSBO->Upload(data, size, offsetSize.second + offset);
+}
 bool Renderer::BindShader(const Ref<Shader> shader)
 {
 	if (s_Data->boundShaderId != shader->Id())
@@ -188,6 +273,9 @@ void Renderer::BeginScene(const Camera& camera)
 		glm::value_ptr(camera.GetProjViewMat()), sizeof(glm::mat4), 0);
 	s_Data->SceneUBO->Upload(
 		glm::value_ptr(camera.Position()), sizeof(glm::vec3), 64);
+	s_Data->LightsCount = 1;
+	s_Data->SceneUBO->Upload(
+		&s_Data->LightsCount, 4, 76);
 
 	s_Data->ViewMat = camera.GetViewMat();
 	s_Data->ProjMat = camera.GetProjMat();

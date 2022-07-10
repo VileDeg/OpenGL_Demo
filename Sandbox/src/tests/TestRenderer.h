@@ -17,13 +17,15 @@ namespace test
         void OnRender() override {}
         void OnImGuiRender() override;
     private:
+        void SetLightParams();
+    private:
         Object m_Cube;
         Object m_LightCube;
         Camera m_Camera;
         float m_CamSpeed;
-        //Ref<UBO> m_CameraUbo;
-        Ref<UBO> m_LightSSBO;
-
-        //glm::vec3 m_LightPos;
+        glm::vec3 m_LightPositions[3];
+        DirectionalLight m_DirLightParams;
+        Spotlight m_SpotLightParams;
+        PointLight m_PointLightParams;
     };
 }

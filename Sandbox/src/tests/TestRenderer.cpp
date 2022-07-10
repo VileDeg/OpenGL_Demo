@@ -9,7 +9,56 @@
 
 namespace test
 {
-    static Spotlight LightParams;
+    void test::TestRenderer::SetLightParams()
+    {
+        glm::vec3 ambient = glm::vec3(0.3f);
+        glm::vec3 diffuse = glm::vec3(0.8f);
+        glm::vec3 specular = glm::vec3(1.f);
+
+        float constant = 0.3f / 2;
+        float linear = 0.09f / 2;
+        float quadratic = 0.032f / 2;
+
+        float cutOff = 20.f;
+        //float outerCutOff = 12.5f;
+            
+        m_LightPositions[0] = { 10.0f, -3.0f, 0.0 };
+        m_LightPositions[1] = { 0.0f, 5.0f, 0.0f };
+        
+        
+        {
+            m_DirLightParams.direction = glm::vec3(1.f, -1.f, 0.f);
+            m_DirLightParams.ambient   = ambient;
+            m_DirLightParams.diffuse   = diffuse;
+            m_DirLightParams.specular  = specular;
+        }
+
+        {
+            m_SpotLightParams.position    = m_LightPositions[0];
+            m_SpotLightParams.direction   = glm::vec3(-1.0f, 0.0f, 0.0f);;
+            m_SpotLightParams.ambient     = ambient;
+            m_SpotLightParams.diffuse     = diffuse;
+            m_SpotLightParams.specular    = specular;
+                                          
+            m_SpotLightParams.constant    = constant;
+            m_SpotLightParams.linear      = linear;
+            m_SpotLightParams.quadratic   = quadratic;
+
+            m_SpotLightParams.cutOff      = glm::cos(glm::radians(cutOff));
+            m_SpotLightParams.outerCutOff = glm::cos(glm::radians(cutOff+5));
+        }
+
+        {
+            m_PointLightParams.position  = m_LightPositions[1];
+            m_PointLightParams.ambient   = ambient;
+            m_PointLightParams.diffuse   = diffuse;
+            m_PointLightParams.specular  = specular;
+
+            m_PointLightParams.constant  = constant;
+            m_PointLightParams.linear    = linear;
+            m_PointLightParams.quadratic = quadratic;
+        }
+    }
 
     TestRenderer::TestRenderer(Window& window)
         : Test(window),
@@ -21,43 +70,15 @@ namespace test
 
         m_Window.SetCamera(&m_Camera);
 
-        {
-            LightParams.position = m_Camera.Position();
-            //LightParams.viewPos = m_Camera.Position();
-            LightParams.direction = m_Camera.Front();
-            LightParams.ambient = glm::vec3(0.3f);
-            LightParams.diffuse = glm::vec3(0.9f);
-            LightParams.specular = glm::vec3(1.f);
-
-            LightParams.constant = 0.3f/2;
-            LightParams.linear = 0.09f/2;
-            LightParams.quadratic = 0.032f/2;
-
-            LightParams.cutOff = glm::cos(glm::radians(12.5f));
-            LightParams.outerCutOff = glm::cos(glm::radians(17.5f));
-        }
-        /*m_LightUbo = CreateRef<UBO>(
-            "LightParams", (const void*)&LightParams, 5 * 12 + 5 * 4);*/
-        //Renderer::UploadSpotlightData(LightParams, m_LightUbo);
-
-        int lightsCount = 1;
-        std::size_t dirSize = 12 * 4;
-        std::size_t pointSize = 12 * 4 + 4 * 3;
-        std::size_t spotSize = 12 * 5 + 4 * 5;
-        m_LightSSBO = CreateRef<UBO>(
-            "LightData", (const void*)NULL,
-            dirSize + spotSize + pointSize * lightsCount);
-
-        
+        SetLightParams();
 
         {
-            using Type = Renderer::ShaderType;
-
-            Renderer::SetUniformBuffer(m_LightSSBO, 1, { Type::DiffNSpec });
-
-            //Renderer::SetUniformBuffer(m_LightUbo,  1, { Type::DiffNSpec });
+            using Type = Renderer::LightType;
+            Renderer::UploadLightData(Type::Directional, &m_DirLightParams);
+            Renderer::UploadLightData(Type::Spot, &m_SpotLightParams);
+            Renderer::UploadLightData(Type::Point, &m_PointLightParams);
         }
-        
+
         m_LightCube.ScaleTo(0.2f);
     }
 
@@ -69,26 +90,36 @@ namespace test
         Renderer::BeginScene(m_Camera);
 
             {
-                m_LightSSBO->Upload(glm::value_ptr(m_Camera.Position()), 12, 0 );
-                m_LightSSBO->Upload(glm::value_ptr(m_Camera.Front()   ), 12, 16);
+                /*Renderer::UpdateLightData(Renderer::LightType::Spot,
+                    glm::value_ptr(m_Camera.Position()), 12, 0);
+
+                Renderer::UpdateLightData(Renderer::LightType::Spot,
+                    glm::value_ptr(m_Camera.Front())   , 12, 16);*/
+                /*m_LightSSBO->Upload(glm::value_ptr(m_Camera.Position()), 12, 0 );
+                m_LightSSBO->Upload(glm::value_ptr(m_Camera.Front()   ), 12, 16);*/
                 //m_LightUbo->Upload(glm::value_ptr(m_Camera.Position()), 16, 32);
             }
             
             int num = 10;
-            for (int j = 0; j < num; ++j)
+            int h = num / 2;
+            for (int j = 0; j < num; j += 2)
             {
-                for (int i = 0; i < num; ++i)
+                for (int i = 0; i < num; i += 2)
                 {
-                    for (int k = 0; k < num; ++k)
+                    for (int k = 0; k < num; k += 2)
                     {
-                        m_Cube.TranslateTo(glm::vec3(i * 2.f, k * 2.f, j * 2.f));
+                        m_Cube.TranslateTo(glm::vec3(i-h, k- h, j- h));
                         m_Cube.DrawSpecular();
                     }
                 }
             }
-            m_LightCube.TranslateTo(LightParams.position);
-            m_LightCube.DrawColor(glm::vec4(1.f));
-
+            
+            m_LightCube.TranslateTo(m_LightPositions[0]);
+            m_LightCube.DrawColor(glm::vec4(1.0f, 0.f, 0.f, 1.f));
+            m_LightCube.TranslateTo(m_LightPositions[1]);
+            m_LightCube.DrawColor(glm::vec4(0.0f, 1.f, 0.f, 1.f));
+            
+            
             Renderer::DrawSkybox();
 
             m_Camera.SetSpeed(m_CamSpeed);

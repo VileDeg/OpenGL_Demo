@@ -108,17 +108,26 @@ public:
 //UBO////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-class UBO
+#define GL_UNIFORM_BUFFER 0x8A11
+#define GL_SHADER_STORAGE_BUFFER 0x92E6
+
+class ShaderBlock
 {
 public:
-    UBO(const char* name, const void* data,
+    /*enum class Type : unsigned
+    {
+        UBO = GL_UNIFORM_BUFFER, SSBO = GL_SHADER_STORAGE_BUFFER
+    };*/
+public:
+    ShaderBlock(const char* name, const void* data,
         const std::size_t size, const unsigned type);
-    ~UBO();
+    ~ShaderBlock();
 
 
     void Upload(const void* data, const std::size_t size,
         const unsigned offset);
     const char* Name() const { return m_Name.c_str(); }
+    const unsigned Type() const { return m_TypeUInt; }
 
     void Bind(unsigned bindingPoint);
     void Unbind();
@@ -127,6 +136,6 @@ public:
 private:
     std::string m_Name;
     unsigned m_Id;
-    unsigned m_BindingPoint;
-    unsigned m_Type;
+    //enum Type m_Type;
+    unsigned m_TypeUInt;
 };

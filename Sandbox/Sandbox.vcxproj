@@ -91,6 +91,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\tests\Test.h" />
+    <ClInclude Include="src\tests\TestRenderer.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\tests\TestRenderer.cpp" />
@@ -99,13 +103,6 @@
     <ProjectReference Include="..\OpenGL_Demo\OpenGL_Demo.vcxproj">
       <Project>{8E4A9462-FAFF-0C58-83F4-062FEFA8035C}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\tests\Test.h" />
-    <ClInclude Include="src\tests\TestRenderer.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\shaders\skybox.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

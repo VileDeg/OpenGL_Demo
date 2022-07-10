@@ -20,10 +20,13 @@ constexpr Ref<T> CreateRef(Args&& ... args)
 class Renderer
 {
 public:
-
+	enum class LightType
+	{
+		None = -1, Directional, Point, Spot
+	};
 	enum class ShaderType
 	{
-		None=-1, Skybox, Color, Diffuse, DiffNSpec
+		None = -1, Skybox, Color, Diffuse, DiffNSpec
 	};
 private:
 
@@ -37,19 +40,24 @@ private:
 	struct RenderData
 	{
 		std::unordered_map<ShaderType, Ref<Shader>> Shader;
-		Ref<UBO> SceneUBO;
-		Ref<UBO> LightSSBO;
+		Ref<ShaderBlock> SceneUBO;
+		Ref<ShaderBlock> LightSSBO;
 		glm::mat4 ViewMat = glm::mat4(1.f);
 		glm::mat4 ProjMat = glm::mat4(1.f);
 		
 		std::unordered_map<unsigned, unsigned> TexSlotId;
+		unsigned LightsCount;
 		unsigned boundVaoId;
 		unsigned boundShaderId;
 		SkyboxData skyboxData;
 	};
 
 public:
-	static void SetUniformBuffer(const Ref<UBO> ubo, const short slot,
+	/*static void BindShaderBlock(const Ref<ShaderBlock> block, const short slot,
+		std::vector<ShaderType> shTypes);*/
+	static void SetUniformBuffer(const Ref<ShaderBlock> ssbo, const short slot,
+		std::vector<ShaderType> shTypes);
+	static void SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short slot,
 		std::vector<ShaderType> shTypes);
 
 	//static void Submit(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
@@ -59,8 +67,9 @@ public:
 	
 	static void DrawSkybox();
 
-	static void UploadDirLightData(const DirectionalLight& light, Ref<UBO> ubo);
-	static void UploadSpotlightData(const Spotlight& light, Ref<UBO> ubo);	
+	static void UploadLightData(const LightType type, const void* data);
+	static void UpdateLightData(const LightType type,
+		const void* data, unsigned size, unsigned offset);
 
 	static void Init();
 	static void CreateShaders();
@@ -74,9 +83,15 @@ public:
 	static void BindVAO(const Ref<VAO> vao);
 	static void BindTexture(const Ref<Texture> tex, const short slot);
 private:
+	static std::pair<unsigned, unsigned> GetSizeOffset(const LightType type);
+private:
 	static RenderData* s_Data;
 
+	static constexpr const unsigned SSBO_DIRLIGHT_OFFSET   = 0;
+	static constexpr const unsigned SSBO_SPOTLIGHT_OFFSET  = SSBO_DIRLIGHT_OFFSET + 64;
+	static constexpr const unsigned SSBO_POINTLIGHT_OFFSET = SSBO_SPOTLIGHT_OFFSET + 80;
 
+	static constexpr const unsigned SSBO_POINTLIGHT_SIZE = 16*4;
 
 	/*static constexpr const char* DIFFUSE_TEX_UNIFORM_NAME = "material.diffuse";
 	static constexpr const char* SPECULAR_TEX_UNIFORM_NAME = "material.specular";

@@ -100,7 +100,6 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\GLContext.h" />
     <ClInclude Include="src\OpenGL_Demo.h" />
-    <ClInclude Include="src\renderer\Light.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\assimp_import\Mesh.h" />
@@ -114,6 +113,7 @@
     <ClInclude Include="src\math_headers.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\renderer\Buffer.h" />
+    <ClInclude Include="src\renderer\Light.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\Shader.h" />
     <ClInclude Include="src\renderer\Texture.h" />
