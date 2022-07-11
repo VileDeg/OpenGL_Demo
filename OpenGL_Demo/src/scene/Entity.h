@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Scene.h"
-
 #include "entt.hpp"
-
 
 class Entity
 {
@@ -39,9 +37,9 @@ public:
 		m_Scene->m_Registry.remove<T>(m_EntityHandle);
 	}
 
-	//operator bool() const { return m_EntityHandle != 0; }
+	operator bool() const { return m_EntityHandle != entt::null; }
 private:
-	entt::entity m_EntityHandle{ 0 };
+	entt::entity m_EntityHandle{ entt::null };
 	Scene* m_Scene = nullptr;
 };
 

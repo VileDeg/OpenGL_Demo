@@ -58,7 +58,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;HZ_BUILD_DLL;GLFW_INCLUDE_NONE;HZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\stb_image;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\stb_image;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;HZ_BUILD_DLL;GLFW_INCLUDE_NONE;HZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\stb_image;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\entt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\stb_image;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -100,9 +100,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\GLContext.h" />
     <ClInclude Include="src\OpenGL_Demo.h" />
-    <ClInclude Include="src\scene\Components.h" />
-    <ClInclude Include="src\scene\Entity.h" />
-    <ClInclude Include="src\scene\Scene.h" />
+    <ClInclude Include="src\renderer\Mesh.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\assimp_import\Mesh.h" />
@@ -110,7 +108,6 @@
     <ClInclude Include="src\core\Core.h" />
     <ClInclude Include="src\core\Log.h" />
     <ClInclude Include="src\geometry\GeoData.h" />
-    <ClInclude Include="src\geometry\Object.h" />
     <ClInclude Include="src\imgui\ImguiLayer.h" />
     <ClInclude Include="src\input\Keybind.h" />
     <ClInclude Include="src\math_headers.h" />
@@ -120,6 +117,9 @@
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\Shader.h" />
     <ClInclude Include="src\renderer\Texture.h" />
+    <ClInclude Include="src\scene\Components.h" />
+    <ClInclude Include="src\scene\Entity.h" />
+    <ClInclude Include="src\scene\Scene.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -540,11 +540,11 @@
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\GLContext.cpp" />
-    <ClCompile Include="src\scene\Entity.cpp" />
-    <ClCompile Include="src\scene\Scene.cpp" />
+    <ClCompile Include="src\renderer\Mesh.cpp" />
     <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\geometry\Object.cpp" />
+    <ClCompile Include="src\assimp_import\Mesh.cpp" />
+    <ClCompile Include="src\assimp_import\Model.cpp" />
     <ClCompile Include="src\imgui\ImguiBuild.cpp" />
     <ClCompile Include="src\imgui\ImguiLayer.cpp" />
     <ClCompile Include="src\pch.cpp">
@@ -554,6 +554,8 @@
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
     <ClCompile Include="src\renderer\Texture.cpp" />
+    <ClCompile Include="src\scene\Entity.cpp" />
+    <ClCompile Include="src\scene\Scene.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -565,6 +567,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\ImGui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\assimp\assimp.vcxproj">
+      <Project>{724885F2-5EEA-AFC8-47A5-C31C33E63619}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

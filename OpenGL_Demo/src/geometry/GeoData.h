@@ -1,5 +1,12 @@
 #pragma once
 
+struct VBOData
+{
+	const void* data;
+	const std::size_t size;
+	const unsigned count;
+};
+
 enum class Primitive
 {
 	None=-1, Cube
@@ -7,7 +14,6 @@ enum class Primitive
 
 namespace GeoData
 {
-	
 	static constexpr const float CUBE_DATA[] =
 	{
 		// Back face
@@ -99,15 +105,16 @@ namespace GeoData
 		-1.0f, -1.0f,  1.0f,
 		 1.0f, -1.0f,  1.0f
 	};
-	static std::pair<const float*,std::size_t> GetData(Primitive primType)
+	static VBOData GetData(Primitive primType)
 	{
 		switch (primType)
 		{			
 		case Primitive::Cube:
-			return {CUBE_DATA, sizeof(CUBE_DATA)};
+			return {CUBE_DATA, sizeof(CUBE_DATA), 36};
+		default:
+			return{ nullptr, 0, 0 };
 		}
-		return{ nullptr,0 };
+		ASSERT(false, "GetData error.");
 	}
-
 }
 

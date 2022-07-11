@@ -1,4 +1,4 @@
-version: zip-0.1.15.{build}
+version: 1.0.{build}
 build_script:
 - cmd: >-
     cd c:\projects\zip

@@ -1,13 +1,6 @@
 #include "pch.h"
 #include "OpenGL_Demo.h"
 #include "TestRenderer.h"
-#include "imgui/imgui.h"
-
-#include "math_headers.h"
-
-
-
-//#include "..\..\OpenGL_Demo\vendor\GLAD\include\glad\glad.h"
 
 namespace test
 {
@@ -65,11 +58,16 @@ namespace test
     TestRenderer::TestRenderer(Window& window)
         : Test(window),
         m_Camera(window, glm::vec3(0.0f, 0.0f, 10.0f)),
-        m_Cube(Primitive::Cube, "container2.png", "container2_specular.png"),
-        m_LightCube(Primitive::Cube),
+        m_Scene(CreateRef<Scene>()),
+        m_CubeMesh(GeoData::GetData(Primitive::Cube).data,
+            GeoData::GetData(Primitive::Cube).size, 
+            GeoData::GetData(Primitive::Cube).count,
+            { 
+                {TexType::Diffuse, "container2.png"},
+                {TexType::Specular, "container2_specular.png"} 
+            }),
         m_CamSpeed(8.0f)
     {
-
         m_Window.SetCamera(&m_Camera);
 
         SetLightParams();
@@ -81,7 +79,33 @@ namespace test
             Renderer::UploadLightData(Type::Point, &m_PointLightParams);
         }
 
-        m_LightCube.ScaleTo(0.2f);
+        int num = 10;
+        int h = num / 2;
+        for (int j = 0; j < num; j += 2)
+        {
+            for (int i = 0; i < num; i += 2)
+            {
+                for (int k = 0; k < num; k += 2)
+                {
+                    m_Cubes[i + j + k] = m_Scene->CreateEntity("Cube" + std::to_string(i));
+                    m_Cubes[i + j + k].AddComponent<MeshComponent>(&m_CubeMesh);
+                    m_Cubes[i + j + k].GetComponent<TransformComponent>().
+                        TranslateTo(glm::vec3(i - h, k - h, j - h));
+                    
+                }
+            }
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            m_LightCubes[i] = m_Scene->CreateEntity("LightCube" + std::to_string(0));
+            m_LightCubes[i].AddComponent<MeshComponent>(&m_CubeMesh);
+
+            m_LightCubes[i].GetComponent<MeshComponent>().HasTextures = false;
+            m_LightCubes[i].GetComponent<MeshComponent>().Color = { 1.f, 1.f, 1.f, 1.f };
+
+            m_LightCubes[i].GetComponent<TransformComponent>().TranslateTo(m_LightPositions[i]);
+            m_LightCubes[i].GetComponent<TransformComponent>().ScaleTo(0.2f);
+        }
     }
 
     static float DeltaTime = 0.f;
@@ -91,42 +115,10 @@ namespace test
         DeltaTime = deltaTime;
         Renderer::BeginScene(m_Camera);
 
-            {
-                /*Renderer::UpdateLightData(Renderer::LightType::Spot,
-                    glm::value_ptr(m_Camera.Position()), 12, 0);
-
-                Renderer::UpdateLightData(Renderer::LightType::Spot,
-                    glm::value_ptr(m_Camera.Front())   , 12, 16);*/
-                /*m_LightSSBO->Upload(glm::value_ptr(m_Camera.Position()), 12, 0 );
-                m_LightSSBO->Upload(glm::value_ptr(m_Camera.Front()   ), 12, 16);*/
-                //m_LightUbo->Upload(glm::value_ptr(m_Camera.Position()), 16, 32);
-            }
-            
-            int num = 10;
-            int h = num / 2;
-            for (int j = 0; j < num; j += 2)
-            {
-                for (int i = 0; i < num; i += 2)
-                {
-                    for (int k = 0; k < num; k += 2)
-                    {
-                        m_Cube.TranslateTo(glm::vec3(i-h, k- h, j- h));
-                        m_Cube.DrawSpecular();
-                    }
-                }
-            }
-            
-            m_LightCube.TranslateTo(m_LightPositions[0]);
-            m_LightCube.DrawColor(glm::vec4(1.0f, 0.f, 0.f, 1.f));
-            m_LightCube.TranslateTo(m_LightPositions[1]);
-            m_LightCube.DrawColor(glm::vec4(0.0f, 1.f, 0.f, 1.f));
-            
-            
-            Renderer::DrawSkybox();
-
-            m_Camera.SetSpeed(m_CamSpeed);
+            m_Scene->OnUpdate(deltaTime);
 
         Renderer::EndScene();
+        m_Camera.SetSpeed(m_CamSpeed);
     }
 
     void TestRenderer::OnImGuiRender()

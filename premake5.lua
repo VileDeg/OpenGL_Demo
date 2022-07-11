@@ -17,11 +17,13 @@ IncludeDir["GLAD"] = "OpenGL_Demo/vendor/GLAD/include"
 IncludeDir["ImGui"] = "OpenGL_Demo/vendor/imgui"
 IncludeDir["GLM"] = "OpenGL_Demo/vendor/GLM"
 IncludeDir["entt"] = "OpenGL_Demo/vendor/entt"
+IncludeDir["assimp"] = "OpenGL_Demo/vendor/assimp/include"
 
 group "Dependencies"
 	include "OpenGL_Demo/vendor/GLFW"
 	include "OpenGL_Demo/vendor/GLAD"
 	include "OpenGL_Demo/vendor/ImGui"
+	include "OpenGL_Demo/vendor/assimp"
 
 group ""
 
@@ -66,7 +68,8 @@ project "OpenGL_Demo"
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.GLM}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.assimp}"
 	}
 
 	links 
@@ -74,6 +77,7 @@ project "OpenGL_Demo"
 		"GLFW",
 		"GLAD",
 		"ImGui",
+		"assimp",
 		"opengl32.lib"
 	}
 
@@ -120,7 +124,8 @@ project "Sandbox"
 		"OpenGL_Demo/src",
 		"OpenGL_Demo/vendor",
 		"%{IncludeDir.GLM}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.assimp}"
 	}
 
 	links

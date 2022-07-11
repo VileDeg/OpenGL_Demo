@@ -22,6 +22,9 @@
     <Filter Include="src\renderer">
       <UniqueIdentifier>{936D1A48-7FD0-A9EC-2856-E2A21498756F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\scene">
+      <UniqueIdentifier>{2A1615B6-9680-C92C-DFBE-7AD24B68A781}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -78,9 +81,6 @@
     <ClInclude Include="src\geometry\GeoData.h">
       <Filter>src\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\geometry\Object.h">
-      <Filter>src\geometry</Filter>
-    </ClInclude>
     <ClInclude Include="src\imgui\ImguiLayer.h">
       <Filter>src\imgui</Filter>
     </ClInclude>
@@ -107,6 +107,15 @@
     </ClInclude>
     <ClInclude Include="src\renderer\Texture.h">
       <Filter>src\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Components.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Entity.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Scene.h">
+      <Filter>src\scene</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1356,9 +1365,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\Components.h" />
-    <ClInclude Include="src\scene\Entity.h" />
-    <ClInclude Include="src\scene\Scene.h" />
+    <ClInclude Include="src\renderer\Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp">
@@ -1373,8 +1380,11 @@
     <ClCompile Include="src\Window.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\geometry\Object.cpp">
-      <Filter>src\geometry</Filter>
+    <ClCompile Include="src\assimp_import\Mesh.cpp">
+      <Filter>src\assimp_import</Filter>
+    </ClCompile>
+    <ClCompile Include="src\assimp_import\Model.cpp">
+      <Filter>src\assimp_import</Filter>
     </ClCompile>
     <ClCompile Include="src\imgui\ImguiBuild.cpp">
       <Filter>src\imgui</Filter>
@@ -1397,10 +1407,15 @@
     <ClCompile Include="src\renderer\Texture.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\Entity.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Scene.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\Entity.cpp" />
-    <ClCompile Include="src\scene\Scene.cpp" />
+    <ClCompile Include="src\renderer\Mesh.cpp" />
   </ItemGroup>
 </Project>
