@@ -2,7 +2,7 @@
 #include "Test.h"
 
 #include "geometry/Object.h"
-#include "renderer/Renderer.h"
+
 
 namespace test
 {

@@ -16,6 +16,7 @@ IncludeDir["GLFW"] = "OpenGL_Demo/vendor/GLFW/include"
 IncludeDir["GLAD"] = "OpenGL_Demo/vendor/GLAD/include"
 IncludeDir["ImGui"] = "OpenGL_Demo/vendor/imgui"
 IncludeDir["GLM"] = "OpenGL_Demo/vendor/GLM"
+IncludeDir["entt"] = "OpenGL_Demo/vendor/entt"
 
 group "Dependencies"
 	include "OpenGL_Demo/vendor/GLFW"
@@ -64,7 +65,8 @@ project "OpenGL_Demo"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.GLM}"
+		"%{IncludeDir.GLM}",
+		"%{IncludeDir.entt}"
 	}
 
 	links 
@@ -117,7 +119,8 @@ project "Sandbox"
 		"OpenGL_Demo/vendor/spdlog/include",
 		"OpenGL_Demo/src",
 		"OpenGL_Demo/vendor",
-		"%{IncludeDir.GLM}"
+		"%{IncludeDir.GLM}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
