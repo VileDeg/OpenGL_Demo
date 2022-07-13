@@ -80,7 +80,8 @@ public:
 		
 	static void DrawSkybox();
 
-	static void UploadLightData(const void* data);
+	static const unsigned UploadLightData(const void* data);
+	static void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
 
 	/*static void UploadLightData(const LightType type, const void* data);
 	static void UpdateLightData(const LightType type,

@@ -25,10 +25,10 @@ Entity Scene::CreateEntity(const std::string& name)
 
 void Scene::RenderScene()
 {
-	auto& group = m_Registry.view<TransformComponent, MeshComponent>();
-	for (auto& entity : group)
+	auto& view = m_Registry.view<TransformComponent, MeshComponent>();
+	for (auto& entity : view)
 	{
-		auto& [transform, mesh] = group.get(entity);
+		auto& [transform, mesh] = view.get(entity);
 		if (mesh.FlipNormals)
 		{
 			Renderer::DrawInside(transform, mesh.Mesh_->Vao(),
@@ -46,10 +46,10 @@ void Scene::RenderScene()
 
 void Scene::RenderSceneDepth()
 {
-	auto& group = m_Registry.view<TransformComponent, MeshComponent>();
-	for (auto& entity : group)
+	auto& view = m_Registry.view<TransformComponent, MeshComponent>();
+	for (auto& entity : view)
 	{
-		auto& [transform, mesh] = group.get(entity);
+		auto& [transform, mesh] = view.get(entity);
 		if (mesh.FlipNormals)
 		{
 			Renderer::DrawDepthInside(transform, mesh.Mesh_->Vao());
@@ -61,10 +61,15 @@ void Scene::RenderSceneDepth()
 
 void Scene::RenderShadow()
 {
-	auto& group = m_Registry.view<TransformComponent, LightComponent>();
-	for (auto& entity : group)
+	auto& view = m_Registry.view<TransformComponent, LightComponent>();
+	for (auto& entity : view)
 	{
-		auto& [transform, light] = group.get(entity);
+		auto& [transform, light] = view.get(entity);
+
+		//Update dynamic light position
+		if (light.IsDynamic)
+			light.UpdatePosition(transform.Position());
+
 		Renderer::SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		Renderer::Clear(0b111);
 

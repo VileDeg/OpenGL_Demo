@@ -272,11 +272,20 @@ std::pair<unsigned, unsigned> Renderer::GetSizeOffset(const LightType type)
 	return std::pair<unsigned, unsigned>(size, offset);
 }
 
-void Renderer::UploadLightData(const void* data)
+void Renderer::UpdateLightPosition(const float pos[3], const unsigned lightIndex)
+{
+	static unsigned posSize = 3 * sizeof(float);
+	s_Data->LightSSBO->Upload(pos, posSize, lightIndex * SSBO_LIGHT_SIZE);
+}
+
+const unsigned Renderer::UploadLightData(const void* data)
 {
 	static unsigned offset = 0;
+	static unsigned lightIndex = 0;
 	s_Data->LightSSBO->Upload(data, SSBO_LIGHT_SIZE, offset);
 	offset += SSBO_LIGHT_SIZE;
+	++lightIndex;
+	return lightIndex - 1;
 }
 
 bool Renderer::BindShader(const Ref<Shader> shader)

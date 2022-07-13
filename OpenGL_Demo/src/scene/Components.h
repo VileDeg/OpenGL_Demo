@@ -64,10 +64,18 @@ struct MeshComponent
 struct LightComponent
 {
 	Light Data;
-	LightComponent() = default;
-	LightComponent(const Light& lightData)
-		: Data(lightData)
+	bool  IsDynamic{ false };
+	unsigned SSBOindex;
+
+	void UpdatePosition(const glm::vec3& pos)
 	{
-		Renderer::UploadLightData(&Data);
+		Renderer::UpdateLightPosition(glm::value_ptr(pos), SSBOindex);
+	}
+
+	LightComponent() = default;
+	LightComponent(const Light& lightData, bool isDynamic = false)
+		: Data(lightData), IsDynamic(isDynamic)
+	{
+		SSBOindex = Renderer::UploadLightData(&Data);
 	}
 };

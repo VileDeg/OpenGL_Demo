@@ -17,7 +17,7 @@ namespace test
         float cutOff = 20.f;
         //float outerCutOff = 12.5f;
             
-        m_LightPositions[0] = { 0.0f, 5.0f, 0.0f };
+        m_LightPositions[0] = { 0.0f, 0.0f, 7.5f };
         m_LightPositions[1] = { 10.0f, -3.0f, 0.0 };
         
         
@@ -101,7 +101,7 @@ namespace test
             m_LightCubes[i].GetComponent<TransformComponent>().TranslateTo(m_LightPositions[i]);
             m_LightCubes[i].GetComponent<TransformComponent>().ScaleTo(0.2f);
         }
-        m_LightCubes[0].AddComponent<LightComponent>(m_PointLightParams);
+        m_LightCubes[0].AddComponent<LightComponent>(m_PointLightParams, true);
         /*m_LightCubes[0] = m_Scene->CreateEntity("LightCube0");
         m_LightCubes[0].AddComponent<LightComponent>(m_DirLightParams);
         m_LightCubes[1].AddComponent<LightComponent>(m_SpotLightParams);
@@ -114,13 +114,22 @@ namespace test
     }
 
     static float DeltaTime = 0.f;
+    static float LightRotSpeed = 150.f;
 
     void TestRenderer::OnUpdate(float deltaTime)
     {
         DeltaTime = deltaTime;
         Renderer::BeginScene(m_Camera);
 
-            m_Scene->OnUpdate(deltaTime);
+        auto& tr = m_LightCubes[0].GetComponent<TransformComponent>();
+
+        glm::quat quatRot = glm::angleAxis(glm::radians(LightRotSpeed * deltaTime), glm::vec3(0.f, 1.0f, 0.f));
+        glm::mat4x4 matRot = glm::mat4_cast(quatRot);
+        
+        tr.Transform = matRot * tr.Transform;
+        //tr = glm::rotate(tr.Transform, glm::radians(LightRotSpeed * deltaTime), glm::vec3(0.f, 1.0f, 0.f));
+
+        m_Scene->OnUpdate(deltaTime);
 
         Renderer::EndScene();
         m_Camera.SetSpeed(m_CamSpeed);
@@ -132,6 +141,10 @@ namespace test
         static float min = 0.0f;
         static int x, y, z;
         ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
+        ImGui::SliderFloat("Light Rot Speed", &LightRotSpeed, min, 300.f);
+        /*static glm::vec3 lightPos = m_LightPositions[0];
+        ImGui::SliderFloat3("Light Position", glm::value_ptr(lightPos), -5.f, 5.f);*/
+        //m_LightCubes[0].GetComponent<TransformComponent>().TranslateTo(lightPos);
         ImGui::LabelText("Frame Rate", "%f", 1 / DeltaTime);
        
         ImGui::End();

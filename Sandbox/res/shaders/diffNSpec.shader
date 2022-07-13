@@ -83,10 +83,6 @@ uniform samplerCube depthMap;
 uniform vec3  lightPos;
 uniform float far_plane;
 
-
-
-
-
 // function prototypes
 float ShadowCalculation(vec3 fragPos);
 
@@ -96,7 +92,6 @@ vec3 CalcSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {
-    
     vec3 normal = normalize(fs_in.Normal);
     vec3 viewDir = normalize(u_ViewPos - fs_in.FragPos);
     Light light = lights[0];

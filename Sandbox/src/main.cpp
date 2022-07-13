@@ -19,15 +19,15 @@ int main()
     ImguiLayer::Init(windowHandle);
 
     test::Test* currentTest = nullptr;
-    //test::TestMenu* testMenu = new test::TestMenu(window,currentTest);
-    //currentTest = testMenu;
+    test::TestMenu* testMenu = new test::TestMenu(window,currentTest);
+    currentTest = testMenu;
 
-    //testMenu->RegisterTest<test::TestRenderer>(window, "TestRenderer");
-    //testMenu->RunNextTest();
+    testMenu->RegisterTest<test::TestRenderer>(window, "TestRenderer");
+    testMenu->RunNextTest();
 
     
-    test::TestRenderer* testRenderer = new test::TestRenderer(window);
-    currentTest = testRenderer;
+    /*test::TestRenderer* testRenderer = new test::TestRenderer(window);
+    currentTest = testRenderer;*/
     window.HideCursor();
     while (window.IsOpen())
     {
@@ -49,24 +49,24 @@ int main()
             }
             
 
-            //ImGui::Begin("Menu");
-            /*if (currentTest != testMenu && ImGui::Button("<-"))
+            ImGui::Begin("Menu");
+            if (currentTest != testMenu && ImGui::Button("<-"))
             {
                 delete currentTest;
                 currentTest = testMenu;
                 window.ShowCursor();
             }
-            currentTest->OnImGuiRender();*/
-            //ImGui::End();
+            currentTest->OnImGuiRender();
+            ImGui::End();
         }
 
         ImguiLayer::End(window.Width(), window.Height());
 
         context.SwapBuffers();
     }
-    //delete testMenu;
-    //if (currentTest != testMenu)
-    delete currentTest;
+    delete testMenu;
+    if (currentTest != testMenu)
+        delete currentTest;
 
     ImguiLayer::Shutdown();
 
