@@ -6,7 +6,7 @@ namespace test
 {
     void test::TestRenderer::SetLightParams()
     {
-        glm::vec3 ambient = glm::vec3(0.3f);
+        glm::vec3 ambient = glm::vec3(0.1f);
         glm::vec3 diffuse = glm::vec3(0.8f);
         glm::vec3 specular = glm::vec3(1.f);
 
@@ -17,11 +17,12 @@ namespace test
         float cutOff = 20.f;
         //float outerCutOff = 12.5f;
             
-        m_LightPositions[0] = { 10.0f, -3.0f, 0.0 };
-        m_LightPositions[1] = { 0.0f, 5.0f, 0.0f };
+        m_LightPositions[0] = { 0.0f, 5.0f, 0.0f };
+        m_LightPositions[1] = { 10.0f, -3.0f, 0.0 };
         
         
         {
+            m_DirLightParams.type = 0; //Dir
             m_DirLightParams.direction = glm::vec3(1.f, -1.f, 0.f);
             m_DirLightParams.ambient   = ambient;
             m_DirLightParams.diffuse   = diffuse;
@@ -29,7 +30,8 @@ namespace test
         }
 
         {
-            m_SpotLightParams.position    = m_LightPositions[0];
+            m_SpotLightParams.type = 2; //Spot
+            m_SpotLightParams.position    = m_LightPositions[1];
             m_SpotLightParams.direction   = glm::vec3(-1.0f, 0.0f, 0.0f);;
             m_SpotLightParams.ambient     = ambient;
             m_SpotLightParams.diffuse     = diffuse;
@@ -44,7 +46,8 @@ namespace test
         }
 
         {
-            m_PointLightParams.position  = m_LightPositions[1];
+            m_PointLightParams.type = 1; //Point
+            m_PointLightParams.position  = m_LightPositions[0];
             m_PointLightParams.ambient   = ambient;
             m_PointLightParams.diffuse   = diffuse;
             m_PointLightParams.specular  = specular;
@@ -63,7 +66,7 @@ namespace test
             GeoData::GetData(Primitive::Cube).size, 
             GeoData::GetData(Primitive::Cube).count,
             { 
-                {TexType::Diffuse, "container2.png"},
+                {TexType::Diffuse,  "container2.png"         },
                 {TexType::Specular, "container2_specular.png"} 
             }),
         m_CamSpeed(8.0f)
@@ -71,13 +74,6 @@ namespace test
         m_Window.SetCamera(&m_Camera);
 
         SetLightParams();
-
-        {
-            using Type = Renderer::LightType;
-            Renderer::UploadLightData(Type::Directional, &m_DirLightParams);
-            Renderer::UploadLightData(Type::Spot, &m_SpotLightParams);
-            Renderer::UploadLightData(Type::Point, &m_PointLightParams);
-        }
 
         int num = 10;
         int h = num / 2;
@@ -91,13 +87,12 @@ namespace test
                     m_Cubes[i + j + k].AddComponent<MeshComponent>(&m_CubeMesh);
                     m_Cubes[i + j + k].GetComponent<TransformComponent>().
                         TranslateTo(glm::vec3(i - h, k - h, j - h));
-                    
                 }
             }
         }
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 1; i++)
         {
-            m_LightCubes[i] = m_Scene->CreateEntity("LightCube" + std::to_string(0));
+            m_LightCubes[i] = m_Scene->CreateEntity("LightCube" + std::to_string(i));
             m_LightCubes[i].AddComponent<MeshComponent>(&m_CubeMesh);
 
             m_LightCubes[i].GetComponent<MeshComponent>().HasTextures = false;
@@ -106,6 +101,16 @@ namespace test
             m_LightCubes[i].GetComponent<TransformComponent>().TranslateTo(m_LightPositions[i]);
             m_LightCubes[i].GetComponent<TransformComponent>().ScaleTo(0.2f);
         }
+        m_LightCubes[0].AddComponent<LightComponent>(m_PointLightParams);
+        /*m_LightCubes[0] = m_Scene->CreateEntity("LightCube0");
+        m_LightCubes[0].AddComponent<LightComponent>(m_DirLightParams);
+        m_LightCubes[1].AddComponent<LightComponent>(m_SpotLightParams);
+        m_LightCubes[2].AddComponent<LightComponent>(m_PointLightParams);*/
+        m_Room = m_Scene->CreateEntity("Room");
+        auto& mesh = m_Room.AddComponent<MeshComponent>(&m_CubeMesh);
+        mesh.FlipNormals = true;
+        m_Room.GetComponent<TransformComponent>().ScaleTo(35.f);
+
     }
 
     static float DeltaTime = 0.f;

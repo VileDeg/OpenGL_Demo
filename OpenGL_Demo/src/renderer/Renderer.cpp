@@ -6,9 +6,10 @@
 
 Renderer::RenderData* Renderer::s_Data = nullptr;
 
-static constexpr short DIFF_TEX_SLOT = 0;
-static constexpr short SPEC_TEX_SLOT = 1;
+static constexpr short DIFF_TEX_SLOT   = 0;
+static constexpr short SPEC_TEX_SLOT   = 1;
 static constexpr short SKYBOX_TEX_SLOT = 2;
+static constexpr short DEPTH_TEX_SLOT  = 3;
 
 void Renderer::SetUniformBuffer(const Ref<ShaderBlock> ubo, const short slot,
 	std::vector<ShaderType> shTypes)
@@ -41,11 +42,16 @@ void Renderer::SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short s
 	}
 }
 
-void Renderer::Init()
+void Renderer::Init(unsigned width, unsigned height)
 {
 	s_Data = new RenderData();
+	s_Data->viewportWidth  = width;
+	s_Data->viewportHeight = height;
+	s_Data->DepthMap = CreateRef<Texture>(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+	s_Data->DepthMapFBO = CreateRef<Framebuffer>();
+	s_Data->DepthMapFBO->AttachDepthCubemap(s_Data->DepthMap->Id());
 
-	CreateShaders();
+	LoadShaders();
 	CreateSkybox();
 
 	s_Data->SceneUBO = CreateRef<ShaderBlock>(
@@ -53,59 +59,23 @@ void Renderer::Init()
 		sizeof(glm::mat4) + sizeof(glm::vec3) + sizeof(unsigned),
 		GL_UNIFORM_BUFFER);
 
+	s_Data->LightsCount = 3;
+	s_Data->SceneUBO->Upload(
+		&s_Data->LightsCount, 4, 76);
+
 	SetUniformBuffer(s_Data->SceneUBO, 0,
 		{ ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::Color });
 
-	int lightsCount = 1;
-	std::size_t dirSize = 16 * 4;
-	std::size_t spotSize = 16 * 5;
-	std::size_t pointSize = 16 * 4;
 	s_Data->LightSSBO = CreateRef<ShaderBlock>(
 		"LightData", (const void*)NULL,
-		dirSize + spotSize + pointSize * lightsCount,
+		SSBO_LIGHT_SIZE * s_Data->LightsCount,
 		GL_SHADER_STORAGE_BUFFER);
 
 	SetShaderStorageBuffer(s_Data->LightSSBO, 0,
 		{ ShaderType::DiffNSpec });
 
-
+	
 }
-
-//void Renderer::BindShaderBlock(const Ref<ShaderBlock> block,
-//	const short slot, std::vector<ShaderType> shTypes)
-//{
-//	block->Bind(slot);
-//	if (block->Type() == ShaderBlock::Type::UBO)
-//	{
-//		for (ShaderType type : shTypes)
-//		{
-//			auto shader = s_Data->Shader[type];
-//			unsigned index = glGetUniformBlockIndex(shader->Id(), block->Name());
-//
-//			ASSERT(index != GL_INVALID_INDEX, "UBO not found");
-//
-//			glUniformBlockBinding(shader->Id(), index, slot);
-//		}
-//	}
-//	else if (block->Type() == ShaderBlock::Type::SSBO)
-//	{
-//		for (ShaderType type : shTypes)
-//		{
-//			auto shader = s_Data->Shader[type];
-//			unsigned index = glGetProgramResourceIndex(
-//				shader->Id(), GL_SHADER_STORAGE_BUFFER, block->Name());
-//
-//			ASSERT(index != GL_INVALID_INDEX, "SSBO not found");
-//
-//			glShaderStorageBlockBinding(shader->Id(), index, slot);
-//		}
-//	}
-//	else
-//	{
-//		LOG_ERROR("Invalid ShaderBlock type");
-//	}
-//}
-
 
 void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
 	const Ref<Texture> diffuse)
@@ -126,9 +96,12 @@ void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
 	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
 	BindShader(sh);
 	sh->setMat4f("u_ModelMat", modelMat);
+	sh->setFloat3("lightPos", glm::vec3(0.0f, 5.0f, 0.0f));
+	sh->setFloat("far_plane", 25.f);
 
 	BindTexture(diffuse, DIFF_TEX_SLOT);
 	BindTexture(specular, SPEC_TEX_SLOT);
+	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
 	BindVAO(vao);
 
 	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
@@ -146,6 +119,80 @@ void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::ve
 	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
 }
 
+
+void Renderer::DrawDepth(const glm::mat4& modelMat, const Ref<VAO> vao)
+{
+	Ref<Shader> sh = s_Data->Shader[ShaderType::DepthShader];
+	BindShader(sh);
+	sh->setMat4f("u_ModelMat", modelMat);
+
+	BindVAO(vao);
+
+	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+}
+
+void Renderer::DrawDepthInside(const glm::mat4& modelMat, const Ref<VAO> vao)
+{
+	Ref<Shader> sh = s_Data->Shader[ShaderType::DepthShader];
+	BindShader(sh);
+	sh->setMat4f("u_ModelMat", modelMat);
+
+	BindVAO(vao);
+
+	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
+	sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
+	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+	sh->setInt("reverse_normals", 0); // and of course disable it
+	glEnable(GL_CULL_FACE);
+}
+
+void Renderer::DrawInside(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse, const Ref<Texture> specular)
+{
+	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
+	BindShader(sh);
+	sh->setMat4f("u_ModelMat", modelMat);
+
+	BindTexture(diffuse, DIFF_TEX_SLOT);
+	BindTexture(specular, SPEC_TEX_SLOT);
+	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+	BindVAO(vao);
+
+	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
+	sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
+	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+	sh->setInt("reverse_normals", 0); // and of course disable it
+	glEnable(GL_CULL_FACE);
+}
+
+void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
+{
+	float near_plane = 1.0f;
+	float far_plane = 25.0f;
+	unsigned SHADOW_WIDTH = 1024;
+	unsigned SHADOW_HEIGHT = 1024;
+	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
+	std::vector<glm::mat4> shadowTransforms;
+	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+	s_Data->DepthMapFBO->Bind();
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	Shader sh = *s_Data->Shader[ShaderType::DepthShader];
+	sh.Bind();
+	for (unsigned int i = 0; i < 6; ++i)
+		sh.setMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+	sh.setFloat("far_plane", far_plane);
+	sh.setFloat3("lightPos", lightPos);
+}
+void Renderer::ShadowRenderEnd()
+{
+	s_Data->DepthMapFBO->Unbind();
+}
 void Renderer::DrawSkybox()
 {
 	glDepthFunc(GL_LEQUAL);
@@ -163,12 +210,7 @@ void Renderer::DrawSkybox()
 	glDepthFunc(GL_LESS);
 }
 
-
-
-
-
-
-void Renderer::CreateShaders()
+void Renderer::LoadShaders()
 {
 	s_Data->Shader[ShaderType::Color] = CreateRef<Shader>("color.shader");
 
@@ -183,10 +225,14 @@ void Renderer::CreateShaders()
 	s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.diffuse", DIFF_TEX_SLOT);
 	s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.specular", SPEC_TEX_SLOT);
 	s_Data->Shader[ShaderType::DiffNSpec]->setFloat("material.shininess", 32.0f);
+	s_Data->Shader[ShaderType::DiffNSpec]->setInt("depthMap", DEPTH_TEX_SLOT);
 
 	s_Data->Shader[ShaderType::Skybox] = CreateRef<Shader>("skybox.shader");
 	s_Data->Shader[ShaderType::Skybox]->Bind();
 	s_Data->Shader[ShaderType::Skybox]->setInt("u_SkyboxTex", SKYBOX_TEX_SLOT);
+
+	s_Data->Shader[ShaderType::DepthShader] = CreateRef<Shader>("depthShader.shader");
+	
 }
 
 void Renderer::CreateSkybox()
@@ -226,18 +272,13 @@ std::pair<unsigned, unsigned> Renderer::GetSizeOffset(const LightType type)
 	return std::pair<unsigned, unsigned>(size, offset);
 }
 
-void Renderer::UploadLightData(const LightType type, const void* data)
+void Renderer::UploadLightData(const void* data)
 {
-	auto offsetSize = GetSizeOffset(type);
-	s_Data->LightSSBO->Upload(data, offsetSize.first, offsetSize.second);
+	static unsigned offset = 0;
+	s_Data->LightSSBO->Upload(data, SSBO_LIGHT_SIZE, offset);
+	offset += SSBO_LIGHT_SIZE;
 }
 
-void Renderer::UpdateLightData(const LightType type, 
-	const void* data, unsigned size, unsigned offset)
-{
-	auto offsetSize = GetSizeOffset(type);
-	s_Data->LightSSBO->Upload(data, size, offsetSize.second + offset);
-}
 bool Renderer::BindShader(const Ref<Shader> shader)
 {
 	if (s_Data->boundShaderId != shader->Id())
@@ -273,9 +314,7 @@ void Renderer::BeginScene(const Camera& camera)
 		glm::value_ptr(camera.GetProjViewMat()), sizeof(glm::mat4), 0);
 	s_Data->SceneUBO->Upload(
 		glm::value_ptr(camera.Position()), sizeof(glm::vec3), 64);
-	s_Data->LightsCount = 1;
-	s_Data->SceneUBO->Upload(
-		&s_Data->LightsCount, 4, 76);
+	
 
 	s_Data->ViewMat = camera.GetViewMat();
 	s_Data->ProjMat = camera.GetProjMat();
@@ -285,9 +324,34 @@ void Renderer::EndScene()
 {
 }
 
+void Renderer::Clear(std::bitset<3> bufferBits)
+{
+	int buffers = 0;
+	if (bufferBits[0])
+	{
+		buffers |= GL_COLOR_BUFFER_BIT;
+	}
+	if (bufferBits[1])
+	{
+		buffers |= GL_DEPTH_BUFFER_BIT;
+	}
+	if (bufferBits[2])
+	{
+		buffers |= GL_STENCIL_BUFFER_BIT;
+	}
+	glClear(buffers);
+}
+void Renderer::SetClearColor(float r, float g, float b, float a)
+{
+	glClearColor(r, g, b, a);
+}
+
+void Renderer::ResetViewport()
+{
+	glViewport(0, 0, s_Data->viewportWidth, s_Data->viewportHeight);
+}
+
 void Renderer::Shutdown()
 {
 	delete s_Data;
 }
-
-

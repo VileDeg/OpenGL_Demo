@@ -5,7 +5,6 @@
 
 namespace test
 {
-
     class TestRenderer : public Test
     {
     public:
@@ -21,14 +20,16 @@ namespace test
         Ref<Scene> m_Scene;
         Mesh m_CubeMesh;
         Entity m_Cubes[1000];
-        Entity m_LightCubes[2];
+        Entity m_LightCubes[3];
+        Entity m_Room;
         //Object m_Cube;
         //Object m_LightCube;
         Camera m_Camera;
         float m_CamSpeed;
         glm::vec3 m_LightPositions[3];
-        DirectionalLight m_DirLightParams;
-        Spotlight m_SpotLightParams;
-        PointLight m_PointLightParams;
+
+        Light m_DirLightParams;
+        Light m_SpotLightParams;
+        Light m_PointLightParams;
     };
 }

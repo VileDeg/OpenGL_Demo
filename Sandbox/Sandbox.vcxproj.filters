@@ -22,4 +22,7 @@
       <Filter>tests</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\depthShader.shader" />
+  </ItemGroup>
 </Project>

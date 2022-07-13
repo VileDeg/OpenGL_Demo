@@ -11,9 +11,8 @@ public:
 	GLFWwindow* OpenWindow(const unsigned width = 800, const unsigned height = 600,
 		const std::string& name = "Window");
 
-	void Clear(std::bitset<3> bufferBits) const;
 	void Terminate() const;
-	void SetClearColors(float r, float g, float b, float a);
+	
 	void SwapBuffers() const;
 	void PollEvents() const;
 	void UpdateWindows()

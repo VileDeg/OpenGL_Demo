@@ -5,12 +5,9 @@
 class Shader
 {
 public:
-	Shader(const char* vertexPath, const char* fragmentPath);
-	Shader(const char* vertNFragPath);
+	Shader(const char* shaderPath);
 
-
-	void Parse(const char* vertexPath, const char* fragmentPath);
-	void Parse(const char* vertNFragPath);
+	void Parse(const char* shaderPath);
 	void Compile();
 	
 	void Link();
@@ -31,21 +28,30 @@ public:
 
 	void setMat4f(const std::string& name, const glm::mat4& matrix);
 
-	const unsigned Id() const { return ID; }
+	const unsigned Id() const { return m_ProgramId; }
 private:
-	static constexpr const char* BASE_SHADER_PATH = "res/shaders/";
-
-	std::string m_VertexCode;
-	std::string m_FragmentCode;
-    std::string m_VertFullPath;
-    std::string m_FragFullPath;
-	unsigned int ID;
-	unsigned int vShader;
-	unsigned int fShader;
-	std::unordered_map<std::string, int> uniformLocationCache;
-
 	const int GetUniformLocation(const std::string& name);
 
 	void checkCompileErrors(unsigned int shader, std::string type);
+private:
+
+	enum class ShaderType
+	{
+		NONE = -1, VERTEX = 0, FRAGMENT = 1, GEOMETRY = 2
+	};
+
+	struct ShaderTypeData
+	{
+		std::string code;
+		unsigned id;
+		bool found = false;
+	};
+
+	std::unordered_map<ShaderType, ShaderTypeData> m_Data;
+	std::string m_FullPath;
+	unsigned int m_ProgramId;
+	std::unordered_map<std::string, int> uniformLocationCache;
+
+	static constexpr const char* BASE_SHADER_PATH = "res/shaders/";
 };
 

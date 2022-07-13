@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "renderer/Mesh.h"
-#include "glad/glad.h"
+
+#define GL_FLOAT 0x1406
+#define GL_FALSE 0
 
 Mesh::Mesh(const void* vertexData, std::size_t size, unsigned vertexCount,
     std::unordered_map<TexType, const char*> textures)

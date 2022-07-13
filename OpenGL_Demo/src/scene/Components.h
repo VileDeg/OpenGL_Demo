@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "renderer/Renderer.h"
 #include "renderer/Mesh.h"
 
 
@@ -30,6 +31,11 @@ struct TransformComponent
 		Transform = glm::scale(Transform, glm::vec3(units));
 	}
 
+	const glm::vec3& Position() const
+	{
+		return Transform[3];
+	}
+
 	TransformComponent() = default;
 	TransformComponent(const TransformComponent&) = default;
 	TransformComponent(const glm::mat4& transform)
@@ -43,6 +49,7 @@ struct MeshComponent
 {
 	Mesh* Mesh_{nullptr};
 	bool  HasTextures{true};
+	bool  FlipNormals{ false };
 	glm::vec4 Color{1.f, 0.f, 1.f, 1.f}; //magenta
 
 	MeshComponent() = default;
@@ -54,3 +61,13 @@ struct MeshComponent
 	operator const Mesh& () const { return Mesh_; }*/
 };
 
+struct LightComponent
+{
+	Light Data;
+	LightComponent() = default;
+	LightComponent(const Light& lightData)
+		: Data(lightData)
+	{
+		Renderer::UploadLightData(&Data);
+	}
+};

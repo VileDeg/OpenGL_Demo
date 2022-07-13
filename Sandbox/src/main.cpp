@@ -15,23 +15,28 @@ int main()
     GLFWwindow* windowHandle = context.OpenWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL_Demo");
     Window& window = context.GetWindow();
 
+    Renderer::Init(SCR_WIDTH, SCR_HEIGHT);
     ImguiLayer::Init(windowHandle);
 
     test::Test* currentTest = nullptr;
-    test::TestMenu* testMenu = new test::TestMenu(window,currentTest);
-    currentTest = testMenu;
+    //test::TestMenu* testMenu = new test::TestMenu(window,currentTest);
+    //currentTest = testMenu;
 
-    testMenu->RegisterTest<test::TestRenderer>(window, "TestRenderer");
+    //testMenu->RegisterTest<test::TestRenderer>(window, "TestRenderer");
+    //testMenu->RunNextTest();
 
-    Renderer::Init();
+    
+    test::TestRenderer* testRenderer = new test::TestRenderer(window);
+    currentTest = testRenderer;
+    window.HideCursor();
     while (window.IsOpen())
     {
         context.PollEvents();
 
         context.UpdateWindows();
 
-        context.SetClearColors(0.049f, 0.0f, 0.1f, 1.f);
-        context.Clear(0b111);
+        Renderer::SetClearColor(0.049f, 0.0f, 0.1f, 1.f);
+        Renderer::Clear(0b111);
 
         ImguiLayer::Begin();
         
@@ -44,24 +49,24 @@ int main()
             }
             
 
-            ImGui::Begin("Menu");
-            if (currentTest != testMenu && ImGui::Button("<-"))
+            //ImGui::Begin("Menu");
+            /*if (currentTest != testMenu && ImGui::Button("<-"))
             {
                 delete currentTest;
                 currentTest = testMenu;
                 window.ShowCursor();
             }
-            currentTest->OnImGuiRender();
-            ImGui::End();
+            currentTest->OnImGuiRender();*/
+            //ImGui::End();
         }
 
         ImguiLayer::End(window.Width(), window.Height());
 
         context.SwapBuffers();
     }
-    delete testMenu;
-    if (currentTest != testMenu)
-        delete currentTest;
+    //delete testMenu;
+    //if (currentTest != testMenu)
+    delete currentTest;
 
     ImguiLayer::Shutdown();
 

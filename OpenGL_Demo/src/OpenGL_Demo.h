@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "GLContext.h"
 #include "renderer/Renderer.h"
+#include "renderer/Mesh.h"
 #include "Window.h"
 
 #include "imgui/imgui.h"

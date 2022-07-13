@@ -10,6 +10,7 @@ public:
 	Texture(const std::string& texName);
 	Texture(const std::string& folderName, 
 		const char* faces[]);
+	Texture(const unsigned width, const unsigned height);
 	~Texture();
 
 	Texture(const Texture&& t) = delete;

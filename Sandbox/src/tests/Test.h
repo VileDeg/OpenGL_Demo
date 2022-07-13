@@ -26,6 +26,17 @@ namespace test
 		~TestMenu() {}
 
 		void OnImGuiRender() override;
+		void RunNextTest()
+		{
+			for (auto& test : m_Tests)
+			{
+				//auto test = m_Tests[0];
+				ASSERT(test.second, "Next test doesn't exist");
+
+				m_CurrentTest = test.second();
+				m_Window.HideCursor();
+			}
+		}
 
 		template<typename T>
 		void RegisterTest(Window& window, const std::string& name)

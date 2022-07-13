@@ -100,6 +100,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\GLContext.h" />
     <ClInclude Include="src\OpenGL_Demo.h" />
+    <ClInclude Include="src\renderer\Framebuffer.h" />
     <ClInclude Include="src\renderer\Mesh.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\Window.h" />
@@ -540,6 +541,7 @@
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\GLContext.cpp" />
+    <ClCompile Include="src\renderer\Framebuffer.cpp" />
     <ClCompile Include="src\renderer\Mesh.cpp" />
     <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\Window.cpp" />
