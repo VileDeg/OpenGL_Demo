@@ -96,8 +96,8 @@ void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
 	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
 	BindShader(sh);
 	sh->setMat4f("u_ModelMat", modelMat);
-	sh->setFloat3("lightPos", glm::vec3(0.0f, 5.0f, 0.0f));
-	sh->setFloat("far_plane", 25.f);
+	/*sh->setFloat3("lightPos", glm::vec3(0.0f, 5.0f, 0.0f));
+	sh->setFloat("far_plane", 25.f);*/
 
 	BindTexture(diffuse, DIFF_TEX_SLOT);
 	BindTexture(specular, SPEC_TEX_SLOT);
@@ -182,12 +182,16 @@ void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
 	s_Data->DepthMapFBO->Bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	Shader sh = *s_Data->Shader[ShaderType::DepthShader];
-	sh.Bind();
+	auto sh = s_Data->Shader[ShaderType::DepthShader];
+	BindShader(sh);
 	for (unsigned int i = 0; i < 6; ++i)
-		sh.setMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
-	sh.setFloat("far_plane", far_plane);
-	sh.setFloat3("lightPos", lightPos);
+		sh->setMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+	sh->setFloat("far_plane", far_plane);
+	sh->setFloat3("lightPos", lightPos);
+	sh = s_Data->Shader[ShaderType::DiffNSpec];
+	BindShader(sh);
+	sh->setFloat("far_plane", far_plane);
+	sh->setFloat3("lightPos", lightPos);
 }
 void Renderer::ShadowRenderEnd()
 {

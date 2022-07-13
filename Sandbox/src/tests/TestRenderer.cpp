@@ -75,6 +75,11 @@ namespace test
 
         SetLightParams();
 
+        /*m_Cubes[0] = m_Scene->CreateEntity("Cube" + std::to_string(0));
+        m_Cubes[0].AddComponent<MeshComponent>(&m_CubeMesh);
+        m_Cubes[0].GetComponent<TransformComponent>().
+            TranslateTo(glm::vec3(0.f, 0.f, 0.f));*/
+
         int num = 10;
         int h = num / 2;
         for (int j = 0; j < num; j += 2)
@@ -90,7 +95,7 @@ namespace test
                 }
             }
         }
-        for (int i = 0; i < 1; i++)
+        /*for (int i = 0; i < 1; i++)
         {
             m_LightCubes[i] = m_Scene->CreateEntity("LightCube" + std::to_string(i));
             m_LightCubes[i].AddComponent<MeshComponent>(&m_CubeMesh);
@@ -100,7 +105,16 @@ namespace test
 
             m_LightCubes[i].GetComponent<TransformComponent>().TranslateTo(m_LightPositions[i]);
             m_LightCubes[i].GetComponent<TransformComponent>().ScaleTo(0.2f);
-        }
+        }*/
+        m_LightCubes[0] = m_Scene->CreateEntity("LightCube0");
+        m_LightCubes[0].AddComponent<MeshComponent>(&m_CubeMesh);
+                     
+        m_LightCubes[0].GetComponent<MeshComponent>().HasTextures = false;
+        m_LightCubes[0].GetComponent<MeshComponent>().Color = { 1.f, 1.f, 1.f, 1.f };
+                     
+        m_LightCubes[0].GetComponent<TransformComponent>().TranslateTo(m_LightPositions[0]);
+        m_LightCubes[0].GetComponent<TransformComponent>().ScaleTo(0.2f);
+
         m_LightCubes[0].AddComponent<LightComponent>(m_PointLightParams, true);
         /*m_LightCubes[0] = m_Scene->CreateEntity("LightCube0");
         m_LightCubes[0].AddComponent<LightComponent>(m_DirLightParams);
@@ -114,7 +128,8 @@ namespace test
     }
 
     static float DeltaTime = 0.f;
-    static float LightRotSpeed = 150.f;
+    static float LightRotSpeed = 100.f;
+    glm::vec3 RotAxis = { 0.f, 1.0f, 0.f };
 
     void TestRenderer::OnUpdate(float deltaTime)
     {
@@ -123,7 +138,7 @@ namespace test
 
         auto& tr = m_LightCubes[0].GetComponent<TransformComponent>();
 
-        glm::quat quatRot = glm::angleAxis(glm::radians(LightRotSpeed * deltaTime), glm::vec3(0.f, 1.0f, 0.f));
+        glm::quat quatRot = glm::angleAxis(glm::radians(LightRotSpeed * deltaTime), glm::normalize(RotAxis));
         glm::mat4x4 matRot = glm::mat4_cast(quatRot);
         
         tr.Transform = matRot * tr.Transform;
@@ -142,6 +157,7 @@ namespace test
         static int x, y, z;
         ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
         ImGui::SliderFloat("Light Rot Speed", &LightRotSpeed, min, 300.f);
+        //ImGui::SliderFloat3("Rotation Axis", glm::value_ptr(RotAxis), min, 1.0f);
         /*static glm::vec3 lightPos = m_LightPositions[0];
         ImGui::SliderFloat3("Light Position", glm::value_ptr(lightPos), -5.f, 5.f);*/
         //m_LightCubes[0].GetComponent<TransformComponent>().TranslateTo(lightPos);
