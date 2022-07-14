@@ -1,6 +1,11 @@
 #pragma once
 #include "pch.h"
 
+enum class TexType
+{
+	None = -1, Diffuse, Specular, Flatmap, Cubemap
+};
+
 class Texture
 {
 private:
@@ -10,7 +15,7 @@ public:
 	Texture(const std::string& texName);
 	Texture(const std::string& folderName, 
 		const char* faces[]);
-	Texture(const unsigned width, const unsigned height);
+	Texture(const unsigned width, const unsigned height, const TexType type);
 	~Texture();
 
 	Texture(const Texture&& t) = delete;

@@ -12,11 +12,6 @@ struct Vertex {
     // texCoords
     glm::vec2 TexCoords;
 };
-
-enum class TexType
-{
-    None = -1, Diffuse, Specular
-};
   
 class Mesh
 {

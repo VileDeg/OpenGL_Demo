@@ -36,6 +36,9 @@ void main()
 #shader fragment
 #version 460 core
 
+#define MAX_LIGHTS_COUNT 12
+#define MAX_POINTLIGHTS_COUNT 4
+
 out vec4 FragColor;
 
 in VS_OUT{
@@ -67,9 +70,10 @@ struct Light {
 
 layout(std430) buffer LightData
 {
-    Light lights[];
+    Light lights        [MAX_LIGHTS_COUNT];
 };
 
+    
 layout(std140) uniform SceneData
 {
     uniform mat4 u_ProjViewMat;
@@ -79,9 +83,9 @@ layout(std140) uniform SceneData
 
 uniform Material material;
 
-uniform samplerCube depthMap;
-uniform vec3  lightPos;
-uniform float far_plane;
+uniform samplerCube u_DepthCubemaps[MAX_POINTLIGHTS_COUNT];
+uniform sampler2D u_DepthMaps[MAX_LIGHTS_COUNT - MAX_POINTLIGHTS_COUNT];
+uniform float u_FarPlane;
 
 // function prototypes
 float ShadowCalculation(vec3 fragPos);

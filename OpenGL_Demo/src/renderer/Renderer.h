@@ -8,15 +8,13 @@
 #include "geometry/GeoData.h"
 #include "Texture.h"
 #include "Light.h"
+#include "Mesh.h"
 #include "Framebuffer.h"
 
-enum class LightType
-{
-	None = -1, Directional, Point, Spot
-};
+
 enum class ShaderType
 {
-	None = -1, Skybox, Color, Diffuse, DiffNSpec, DepthShader
+	None = -1, Skybox, Color, Diffuse, DiffNSpec, DirDepth, SpotDepth, PointDepth
 };
 
 //struct SceneData
@@ -36,20 +34,26 @@ private:
 		Ref<Texture> SkyboxTex;
 	};
 
+	//static constexpr const unsigned MAX_LIGHTS_COUNT = 8;
+	static constexpr const int MAX_POINTLIGHTS_COUNT   = 4;
+	static constexpr const int MAX_DIRNSPOTLIGHTS_COUNT = 8;
+	//static constexpr const int MAX_SPOTLIGHTS_COUNT = 4;
 	struct RenderData
 	{
 		std::unordered_map<ShaderType, Ref<Shader>> Shader;
+
 		Ref<ShaderBlock> SceneUBO;
 		Ref<ShaderBlock> LightSSBO;
-		//unsigned lightSSBOoffset = 0;
 		Ref<Framebuffer> DepthMapFBO;
-		Ref<Texture> DepthMap;
+		Ref<Texture>     DepthMap [MAX_LIGHTS_COUNT];
+		glm::vec3        LightsPos[MAX_LIGHTS_COUNT];
+		const float      lightFarPlane{25.f};
 		
 		glm::mat4 ViewMat = glm::mat4(1.f);
 		glm::mat4 ProjMat = glm::mat4(1.f);
 		
 		std::unordered_map<unsigned, unsigned> TexSlotId;
-		unsigned LightsCount;
+		unsigned lightsCount{0};
 		unsigned boundVaoId;
 		unsigned boundShaderId;
 		unsigned viewportWidth;
@@ -75,17 +79,15 @@ public:
 		const Ref<Texture> diffuse, const Ref<Texture> specular);
 	
 	//static void RenderShadowMap();
-	static void ShadowRenderSetup(glm::vec3 lightPos);
+	static void PointDepthRenderSetup(glm::vec3 lightPos, int lightIndex);
+	static void DirDepthRenderSetup  (glm::vec3 lightPos, int lightIndex);
+	static void SpotDepthRenderSetup (glm::vec3 lightPos, int lightIndex);
 	static void ShadowRenderEnd();
 		
 	static void DrawSkybox();
 
-	static const unsigned UploadLightData(const void* data);
-	static void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
-
-	/*static void UploadLightData(const LightType type, const void* data);
-	static void UpdateLightData(const LightType type,
-		const void* data, unsigned size, unsigned offset);*/
+	static const unsigned UploadLightData(const Light* data, const LightType type);
+	static void UpdateLightPosition(const glm::vec3& pos, const unsigned lightIndex);
 
 	static void Init(unsigned width, unsigned height);
 	static void LoadShaders();
@@ -103,8 +105,6 @@ public:
 	static void BindVAO(const Ref<VAO> vao);
 	static void BindTexture(const Ref<Texture> tex, const short slot);
 private:
-	static std::pair<unsigned, unsigned> GetSizeOffset(const LightType type);
-private:
 	static RenderData* s_Data;
 
 	static constexpr const unsigned SSBO_DIRLIGHT_OFFSET   = 0;
@@ -117,6 +117,12 @@ private:
 
 	static constexpr const unsigned SHADOW_MAP_WIDTH = 1024;
 	static constexpr const unsigned SHADOW_MAP_HEIGHT = 1024;
+
+	static constexpr short DIFF_TEX_SLOT     = 0;
+	static constexpr short SPEC_TEX_SLOT     = 1;
+	static constexpr short SKYBOX_TEX_SLOT   = 2;
+	static constexpr short DEPTHMAP_SLOT     = 3;
+	static constexpr short DEPTHCUBEMAP_SLOT = 15;
 
 	/*static constexpr const char* DIFFUSE_TEX_UNIFORM_NAME = "material.diffuse";
 	static constexpr const char* SPECULAR_TEX_UNIFORM_NAME = "material.specular";

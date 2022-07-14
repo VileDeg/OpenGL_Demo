@@ -60,7 +60,7 @@ namespace test
 
     TestRenderer::TestRenderer(Window& window)
         : Test(window),
-        m_Camera(window, glm::vec3(0.0f, 0.0f, 10.0f)),
+        m_Camera(window, glm::vec3(0.f, 10.f, 15.f)),
         m_Scene(CreateRef<Scene>()),
         m_CubeMesh(GeoData::GetData(Primitive::Cube).data,
             GeoData::GetData(Primitive::Cube).size, 
@@ -161,7 +161,9 @@ namespace test
         /*static glm::vec3 lightPos = m_LightPositions[0];
         ImGui::SliderFloat3("Light Position", glm::value_ptr(lightPos), -5.f, 5.f);*/
         //m_LightCubes[0].GetComponent<TransformComponent>().TranslateTo(lightPos);
-        ImGui::LabelText("Frame Rate", "%f", 1 / DeltaTime);
+        ImGui::Text("Camera Pos:\n%.2f %.2f %.2f",
+            m_Camera.Position().x, m_Camera.Position().y, m_Camera.Position().z);
+        ImGui::Text("Frame Rate: %.0f", 1 / DeltaTime);
        
         ImGui::End();
     }

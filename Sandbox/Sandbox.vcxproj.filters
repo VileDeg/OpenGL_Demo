@@ -23,6 +23,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\depthShader.shader" />
+    <None Include="res\shaders\pointDepth.shader" />
+    <None Include="res\shaders\dirDepth.shader" />
   </ItemGroup>
 </Project>

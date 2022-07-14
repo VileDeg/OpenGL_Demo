@@ -69,13 +69,15 @@ struct LightComponent
 
 	void UpdatePosition(const glm::vec3& pos)
 	{
-		Renderer::UpdateLightPosition(glm::value_ptr(pos), SSBOindex);
+		Renderer::UpdateLightPosition(pos, SSBOindex);
 	}
+	LightType Type() { return Data.type; }
+	unsigned Index() { return SSBOindex; }
 
 	LightComponent() = default;
 	LightComponent(const Light& lightData, bool isDynamic = false)
 		: Data(lightData), IsDynamic(isDynamic)
 	{
-		SSBOindex = Renderer::UploadLightData(&Data);
+		SSBOindex = Renderer::UploadLightData(&Data, Data.type);
 	}
 };

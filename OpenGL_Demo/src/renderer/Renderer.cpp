@@ -6,11 +6,6 @@
 
 Renderer::RenderData* Renderer::s_Data = nullptr;
 
-static constexpr short DIFF_TEX_SLOT   = 0;
-static constexpr short SPEC_TEX_SLOT   = 1;
-static constexpr short SKYBOX_TEX_SLOT = 2;
-static constexpr short DEPTH_TEX_SLOT  = 3;
-
 void Renderer::SetUniformBuffer(const Ref<ShaderBlock> ubo, const short slot,
 	std::vector<ShaderType> shTypes)
 {
@@ -47,9 +42,9 @@ void Renderer::Init(unsigned width, unsigned height)
 	s_Data = new RenderData();
 	s_Data->viewportWidth  = width;
 	s_Data->viewportHeight = height;
-	s_Data->DepthMap = CreateRef<Texture>(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+	//s_Data->DepthMap = CreateRef<Texture>(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 	s_Data->DepthMapFBO = CreateRef<Framebuffer>();
-	s_Data->DepthMapFBO->AttachDepthCubemap(s_Data->DepthMap->Id());
+	//s_Data->DepthMapFBO->AttachDepthCubemap(s_Data->DepthMap->Id());
 
 	LoadShaders();
 	CreateSkybox();
@@ -58,23 +53,19 @@ void Renderer::Init(unsigned width, unsigned height)
 		"SceneData", (const void*)NULL,
 		sizeof(glm::mat4) + sizeof(glm::vec3) + sizeof(unsigned),
 		GL_UNIFORM_BUFFER);
-
-	s_Data->LightsCount = 3;
-	s_Data->SceneUBO->Upload(
-		&s_Data->LightsCount, 4, 76);
+	
+	s_Data->SceneUBO->Upload(&MAX_LIGHTS_COUNT, 4, 76);
 
 	SetUniformBuffer(s_Data->SceneUBO, 0,
 		{ ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::Color });
 
 	s_Data->LightSSBO = CreateRef<ShaderBlock>(
 		"LightData", (const void*)NULL,
-		SSBO_LIGHT_SIZE * s_Data->LightsCount,
+		SSBO_LIGHT_SIZE * MAX_LIGHTS_COUNT,
 		GL_SHADER_STORAGE_BUFFER);
 
 	SetShaderStorageBuffer(s_Data->LightSSBO, 0,
 		{ ShaderType::DiffNSpec });
-
-	
 }
 
 void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
@@ -96,12 +87,13 @@ void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
 	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
 	BindShader(sh);
 	sh->setMat4f("u_ModelMat", modelMat);
-	/*sh->setFloat3("lightPos", glm::vec3(0.0f, 5.0f, 0.0f));
-	sh->setFloat("far_plane", 25.f);*/
 
 	BindTexture(diffuse, DIFF_TEX_SLOT);
 	BindTexture(specular, SPEC_TEX_SLOT);
-	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+	for (unsigned i = 0; i < s_Data->lightsCount; ++i)
+	{
+		BindTexture(s_Data->DepthMap[i], DEPTH_TEX_SLOT + i);
+	}
 	BindVAO(vao);
 
 	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
@@ -154,7 +146,11 @@ void Renderer::DrawInside(const glm::mat4& modelMat, const Ref<VAO> vao, const R
 
 	BindTexture(diffuse, DIFF_TEX_SLOT);
 	BindTexture(specular, SPEC_TEX_SLOT);
-	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+
+	for (unsigned i = 0; i < s_Data->lightsCount; i++)
+	{
+		BindTexture(s_Data->DepthMap[i], DEPTH_TEX_SLOT+i);
+	}
 	BindVAO(vao);
 
 	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
@@ -164,38 +160,69 @@ void Renderer::DrawInside(const glm::mat4& modelMat, const Ref<VAO> vao, const R
 	glEnable(GL_CULL_FACE);
 }
 
-void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
+void Renderer::DirDepthRenderSetup(glm::vec3 lightPos, int lightIndex)
 {
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glm::mat4 lightProjection, lightView;
+	glm::mat4 lightSpaceMatrix;
+	float near_plane = 1.0f, far_plane = s_Data->lightFarPlane;
+	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightSpaceMatrix = lightProjection * lightView;
+	// render scene from light's point of view
+
+	s_Data->DepthMapFBO->AttachDepthFlatmap(s_Data->DepthMap[lightIndex]->Id());
+	s_Data->DepthMapFBO->Bind();
+
+	auto sh = s_Data->Shader[ShaderType::DirDepth];
+	BindShader(sh);
+	sh->setMat4f("lightSpaceMatrix", lightSpaceMatrix);
+
+	glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::PointDepthRenderSetup(glm::vec3 lightPos, int lightIndex)
+{
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	float near_plane = 1.0f;
-	float far_plane = 25.0f;
+	float far_plane = s_Data->lightFarPlane;
 	unsigned SHADOW_WIDTH = 1024;
 	unsigned SHADOW_HEIGHT = 1024;
+
 	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
 	std::vector<glm::mat4> shadowTransforms;
+
 	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
 	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-	glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
-	s_Data->DepthMapFBO->Bind();
-	glClear(GL_DEPTH_BUFFER_BIT);
 
-	auto sh = s_Data->Shader[ShaderType::DepthShader];
+	s_Data->DepthMapFBO->AttachDepthCubemap(s_Data->DepthMap[lightIndex]->Id());
+	s_Data->DepthMapFBO->Bind();
+
+	auto sh = s_Data->Shader[ShaderType::PointDepth];
 	BindShader(sh);
+
 	for (unsigned int i = 0; i < 6; ++i)
 		sh->setMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
-	sh->setFloat("far_plane", far_plane);
+
+	sh->setFloat ("far_plane", far_plane);
 	sh->setFloat3("lightPos", lightPos);
-	sh = s_Data->Shader[ShaderType::DiffNSpec];
-	BindShader(sh);
-	sh->setFloat("far_plane", far_plane);
-	sh->setFloat3("lightPos", lightPos);
+
+	glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+	glClear(GL_DEPTH_BUFFER_BIT);
 }
+
 void Renderer::ShadowRenderEnd()
 {
 	s_Data->DepthMapFBO->Unbind();
+	glViewport(0, 0, s_Data->viewportWidth, s_Data->viewportHeight);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 void Renderer::DrawSkybox()
 {
@@ -216,26 +243,36 @@ void Renderer::DrawSkybox()
 
 void Renderer::LoadShaders()
 {
-	s_Data->Shader[ShaderType::Color] = CreateRef<Shader>("color.shader");
+	s_Data->Shader[ShaderType::Color    ] = CreateRef<Shader>("color.shader");
 
-	s_Data->Shader[ShaderType::Diffuse] = CreateRef<Shader>("diffuse.shader");
-	s_Data->Shader[ShaderType::Diffuse]->Bind();
-	s_Data->Shader[ShaderType::Diffuse]->setInt(  "material.diffuse", DIFF_TEX_SLOT);
-	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.specular", 0.5f);
-	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.shininess", 32.0f);
+	s_Data->Shader[ShaderType::Diffuse  ] = CreateRef<Shader>("diffuse.shader");
+	s_Data->Shader[ShaderType::Diffuse  ]->Bind();
+	s_Data->Shader[ShaderType::Diffuse  ]->setInt(  "material.diffuse", DIFF_TEX_SLOT);
+	s_Data->Shader[ShaderType::Diffuse  ]->setFloat("material.specular", 0.5f);
+	s_Data->Shader[ShaderType::Diffuse  ]->setFloat("material.shininess", 32.0f);
 
 	s_Data->Shader[ShaderType::DiffNSpec] = CreateRef<Shader>("diffNSpec.shader");
 	s_Data->Shader[ShaderType::DiffNSpec]->Bind();
 	s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.diffuse", DIFF_TEX_SLOT);
 	s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.specular", SPEC_TEX_SLOT);
 	s_Data->Shader[ShaderType::DiffNSpec]->setFloat("material.shininess", 32.0f);
-	s_Data->Shader[ShaderType::DiffNSpec]->setInt("depthMap", DEPTH_TEX_SLOT);
+	s_Data->Shader[ShaderType::DiffNSpec]->setFloat("u_FarPlane", s_Data->lightFarPlane);
+
+	for (unsigned i = 0; i < MAX_POINTLIGHTS_COUNT; ++i)
+		s_Data->Shader[ShaderType::DiffNSpec]->setInt(
+			"u_DepthMaps["+std::to_string(i)+"]", DEPTHCUBEMAP_SLOT+i);
+
+	for (unsigned i = 0; i < MAX_DIRNSPOTLIGHTS_COUNT; ++i)
+		s_Data->Shader[ShaderType::DiffNSpec]->setInt(
+			"u_DepthMaps["+std::to_string(i)+"]", DEPTHMAP_SLOT+i    );
+
 
 	s_Data->Shader[ShaderType::Skybox] = CreateRef<Shader>("skybox.shader");
 	s_Data->Shader[ShaderType::Skybox]->Bind();
 	s_Data->Shader[ShaderType::Skybox]->setInt("u_SkyboxTex", SKYBOX_TEX_SLOT);
 
-	s_Data->Shader[ShaderType::DepthShader] = CreateRef<Shader>("depthShader.shader");
+	s_Data->Shader[ShaderType::DirDepth  ]   = CreateRef<Shader>("dirDepth.shader"  );
+	s_Data->Shader[ShaderType::PointDepth] = CreateRef<Shader>("pointDepth.shader");
 	
 }
 
@@ -254,42 +291,40 @@ void Renderer::CreateSkybox()
 	s_Data->skyboxData.SkyboxTex = CreateRef<Texture>("skybox", SKYBOX_FACES);
 }
 
-std::pair<unsigned, unsigned> Renderer::GetSizeOffset(const LightType type)
-{
-	unsigned size   = 0;
-	unsigned offset = 0;
-	switch (type)
-	{
-	case LightType::Directional:
-		size = SSBO_SPOTLIGHT_OFFSET - SSBO_DIRLIGHT_OFFSET;
-		offset = SSBO_DIRLIGHT_OFFSET;
-		break;
-	case LightType::Spot:
-		size = SSBO_POINTLIGHT_OFFSET - SSBO_SPOTLIGHT_OFFSET;
-		offset = SSBO_SPOTLIGHT_OFFSET;
-		break;
-	case LightType::Point:
-		size = SSBO_POINTLIGHT_SIZE;
-		offset = SSBO_POINTLIGHT_OFFSET;
-		break;
-	}
-	return std::pair<unsigned, unsigned>(size, offset);
-}
-
-void Renderer::UpdateLightPosition(const float pos[3], const unsigned lightIndex)
+void Renderer::UpdateLightPosition(const glm::vec3& pos, const unsigned lightIndex)
 {
 	static unsigned posSize = 3 * sizeof(float);
-	s_Data->LightSSBO->Upload(pos, posSize, lightIndex * SSBO_LIGHT_SIZE);
+	s_Data->LightSSBO->Upload(glm::value_ptr(pos), posSize, lightIndex * SSBO_LIGHT_SIZE);
+	s_Data->LightsPos[lightIndex] = pos;
 }
 
-const unsigned Renderer::UploadLightData(const void* data)
+const unsigned Renderer::UploadLightData(const Light* data, const LightType type)
 {
 	static unsigned offset = 0;
-	static unsigned lightIndex = 0;
-	s_Data->LightSSBO->Upload(data, SSBO_LIGHT_SIZE, offset);
+	static int lightIndex = -1;
+
+	s_Data->LightSSBO->Upload((const void*)data, SSBO_LIGHT_SIZE, offset);
+	s_Data->LightsPos[lightIndex] = data->position;
+	s_Data->lightsCount++;
+	lightIndex++;
+
+	if (type == LightType::Point)
+	{
+		s_Data->DepthMap[lightIndex] = CreateRef<Texture>(
+			SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, TexType::Flatmap);
+	}
+	else if (type == LightType::Directional || type == LightType::Spot)
+	{
+		s_Data->DepthMap[lightIndex] = CreateRef<Texture>(
+			SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, TexType::Cubemap);
+	}
+	else
+		ASSERT(0, "Invalid TexType");
+	
+	//s_Data->DepthMapFBO->AttachDepthCubemap(s_Data->DepthMap[lightIndex]->Id());
+
 	offset += SSBO_LIGHT_SIZE;
-	++lightIndex;
-	return lightIndex - 1;
+	return lightIndex;
 }
 
 bool Renderer::BindShader(const Ref<Shader> shader)

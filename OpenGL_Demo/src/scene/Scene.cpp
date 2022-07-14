@@ -41,7 +41,6 @@ void Scene::RenderScene()
 		else
 			Renderer::Draw(transform, mesh.Mesh_->Vao(), mesh.Color);
 	}
-		
 }
 
 void Scene::RenderSceneDepth()
@@ -70,18 +69,23 @@ void Scene::RenderShadow()
 		if (light.IsDynamic)
 			light.UpdatePosition(transform.Position());
 
-		Renderer::SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		Renderer::Clear(0b111);
-
-		Renderer::ShadowRenderSetup(transform.Position());
+		switch (light.Type())
+		{
+			case LightType::Directional:
+				Renderer::DirDepthRenderSetup  (transform.Position(), light.Index());
+				break;
+			case LightType::Spot:
+				Renderer::SpotDepthRenderSetup (transform.Position(), light.Index());
+				break;
+			case LightType::Point:
+				Renderer::PointDepthRenderSetup(transform.Position(), light.Index());
+				break;
+		}
 		
 		// render scene from light's point of view
 		RenderSceneDepth();
-
+		
 		Renderer::ShadowRenderEnd();
-		// reset viewport
-		Renderer::ResetViewport();
-		Renderer::Clear(0b111);
 	}
 }
 
