@@ -1,13 +1,14 @@
 #pragma once
 
 #include "math_headers.h"
-#include "Buffer.h"
+#include "VertexArray.h"
 
 #include "Shader.h"
 #include "Camera.h"
-#include "geometry/GeoData.h"
+//#include "geometry/GeoData.h"
+#include "renderer/Mesh.h"
 #include "Texture.h"
-#include "Light.h"
+//#include "Light.h"
 #include "Framebuffer.h"
 
 enum class LightType
@@ -65,14 +66,14 @@ public:
 	static void SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short slot,
 		std::vector<ShaderType> shTypes);
 
-	//static void Submit(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
-	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
+	static void Draw(const glm::mat4& modelMat, Mesh* mesh);
+	/*static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color);
 	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse);
-	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse, const Ref<Texture> specular);
-	static void DrawDepth(const glm::mat4& modelMat, const Ref<VAO> vao);
-	static void DrawDepthInside(const glm::mat4& modelMat, const Ref<VAO> vao);
-	static void DrawInside(const glm::mat4& modelMat, const Ref<VAO> vao,
-		const Ref<Texture> diffuse, const Ref<Texture> specular);
+	static void Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse, const Ref<Texture> specular);*/
+	static void DrawDepth(const glm::mat4& modelMat, Mesh* mesh);
+	//static void DrawDepthInside(const glm::mat4& modelMat, const Ref<VAO> vao);
+	/*static void DrawInside(const glm::mat4& modelMat, const Ref<VAO> vao,
+		const Ref<Texture> diffuse, const Ref<Texture> specular);*/
 	
 	//static void RenderShadowMap();
 	static void ShadowRenderSetup(glm::vec3 lightPos);
@@ -91,19 +92,23 @@ public:
 	static void LoadShaders();
 	static void CreateSkybox();
 
-	static void Clear(std::bitset<3> bufferBits);
-	static void SetClearColor(float r, float g, float b, float a);
-	static void ResetViewport();
+
 
 	static void BeginScene(const Camera& camera);
 	static void EndScene();
 	static void Shutdown();
 
+	
 	static bool BindShader(const Ref<Shader> shader);
 	static void BindVAO(const Ref<VAO> vao);
 	static void BindTexture(const Ref<Texture> tex, const short slot);
+
+	static void Clear(std::bitset<3> bufferBits);
+	static void SetClearColor(float r, float g, float b, float a);
+	static void ResetViewport();
 private:
-	static std::pair<unsigned, unsigned> GetSizeOffset(const LightType type);
+	//static std::pair<unsigned, unsigned> GetSizeOffset(const LightType type);
+	static void GLDraw(const Ref<VAO> vao);
 private:
 	static RenderData* s_Data;
 

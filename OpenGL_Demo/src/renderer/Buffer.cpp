@@ -3,7 +3,6 @@
 #include "Buffer.h"
 #include "glad/glad.h"
 
-
 /////////////////////////////////////////////////////////
 //VBO////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
@@ -70,47 +69,18 @@ void VertexLayout::Enable() const
 	for (unsigned i = 0; i < attribs.size(); ++i)
 	{
 		const auto& at = attribs[i];
-		glVertexAttribPointer(i, at.count, at.type, at.normalized, stride, (void*)offset);
+
+		if      (at.type == GL_FLOAT)
+			glVertexAttribPointer(i, at.count, at.type, at.normalized, stride, (void*)offset);
+		else if (at.type == GL_INT  )
+			glVertexAttribIPointer(i, at.count, at.type, stride, (void*)offset);
+		else
+			ASSERT(0, "Unsupported type");
+
 		glEnableVertexAttribArray(i);
 		offset += at.count * at.GetTypeSize();
 	}
 }
-
-
-/////////////////////////////////////////////////////////
-//VAO////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-
-VAO::VAO()
-{
-	glGenVertexArrays(1, &id);
-}
-
-VAO::~VAO()
-{
-	glDeleteVertexArrays(1, &id);
-}
-
-void VAO::AddBuffer(const VBO& vbo)
-{
-	Bind();
-	vbo.Bind();
-	vbo.GetLayout().Enable();
-	count = vbo.Count();
-}
-
-void VAO::Bind() const
-{
-	glBindVertexArray(id);
-}
-
-void VAO::Unbind() const
-{
-	glBindVertexArray(0);
-}
-
-
-
 
 /////////////////////////////////////////////////////////
 //EBO////////////////////////////////////////////////////

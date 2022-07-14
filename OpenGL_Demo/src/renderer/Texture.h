@@ -7,7 +7,7 @@ private:
 	static constexpr const char* BASE_TEXTURE_PATH = "res/textures/";
 	static constexpr const char* BASE_CUBEMAP_PATH = "res/textures/cubemaps/";
 public:
-	Texture(const std::string& texName);
+	Texture(const std::string& texName, bool useRelativePath = true);
 	Texture(const std::string& folderName, 
 		const char* faces[]);
 	Texture(const unsigned width, const unsigned height);

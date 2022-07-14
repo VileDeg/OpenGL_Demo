@@ -3,13 +3,15 @@
 #include "glad/glad.h"
 #include "stb_image.h"
 
-Texture::Texture(const std::string& texName)
+Texture::Texture(const std::string& texName, bool useRelativePath)
 	: m_Id(-1), m_BoundSlot(-1), m_Type(GL_TEXTURE_2D)
 {
 	glGenTextures(1, &m_Id);
 	glBindTexture(GL_TEXTURE_2D, m_Id);
 	stbi_set_flip_vertically_on_load(1);
-	std::string fullPath = BASE_TEXTURE_PATH + texName;
+	std::string fullPath = texName;
+	if (useRelativePath)
+		fullPath = BASE_TEXTURE_PATH + fullPath;
 	int width, height, BPP;
 	unsigned char* data = stbi_load(fullPath.c_str(), &width, &height, &BPP, 4);
 	if (!data)

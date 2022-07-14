@@ -4,6 +4,7 @@
 #include "Light.h"
 #include "geometry/GeoData.h"
 
+
 Renderer::RenderData* Renderer::s_Data = nullptr;
 
 static constexpr short DIFF_TEX_SLOT   = 0;
@@ -42,6 +43,8 @@ void Renderer::SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short s
 	}
 }
 
+
+
 void Renderer::Init(unsigned width, unsigned height)
 {
 	s_Data = new RenderData();
@@ -77,92 +80,153 @@ void Renderer::Init(unsigned width, unsigned height)
 	
 }
 
-void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
-	const Ref<Texture> diffuse)
+void Renderer::Draw(const glm::mat4& modelMat, Mesh* mesh)
 {
-	Ref<Shader> sh = s_Data->Shader[ShaderType::Diffuse];
-	BindShader(sh);
+	auto tex = mesh->Textures();
+	auto diff = tex[TexType::Diffuse];
+	auto spec = tex[TexType::Specular];
+	Ref<Shader> sh = nullptr;
+
+	if (mesh->HasTextures())
+	{
+		if (!diff.empty() && !spec.empty())
+		{
+			sh = s_Data->Shader[ShaderType::DiffNSpec];
+			BindShader(sh);
+			BindTexture(diff[0], DIFF_TEX_SLOT);
+			BindTexture(spec[0], SPEC_TEX_SLOT);
+			BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+		}
+		else if (!diff.empty())
+		{
+			sh = s_Data->Shader[ShaderType::Diffuse];
+			BindShader(sh);
+			BindTexture(diff[0], DIFF_TEX_SLOT);
+			BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+		}
+		else
+		{
+			sh = s_Data->Shader[ShaderType::Color];
+			BindShader(sh);
+			sh->setFloat4("u_Color", mesh->Color());
+		}
+	}
+	else
+	{
+		sh = s_Data->Shader[ShaderType::Color];
+		BindShader(sh);
+		sh->setFloat4("u_Color", mesh->Color());
+	}
+
 	sh->setMat4f("u_ModelMat", modelMat);
 
-	BindTexture(diffuse, DIFF_TEX_SLOT);
-	BindVAO(vao);
-	
-	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+	if (mesh->NormalsOut())
+		GLDraw(mesh->Vao());
+	else
+	{
+		glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
+		sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
+		GLDraw(mesh->Vao());
+		sh->setInt("reverse_normals", 0); // and of course disable it
+		glEnable(GL_CULL_FACE);
+	}
 }
 
-void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
-	const Ref<Texture> diffuse, const Ref<Texture> specular)
-{
-	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
-	BindShader(sh);
-	sh->setMat4f("u_ModelMat", modelMat);
-	/*sh->setFloat3("lightPos", glm::vec3(0.0f, 5.0f, 0.0f));
-	sh->setFloat("far_plane", 25.f);*/
+//void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
+//	const Ref<Texture> diffuse)
+//{
+//	Ref<Shader> sh = s_Data->Shader[ShaderType::Diffuse];
+//	BindShader(sh);
+//	sh->setMat4f("u_ModelMat", modelMat);
+//
+//	BindTexture(diffuse, DIFF_TEX_SLOT);
+//	BindVAO(vao);
+//	
+//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+//}
+//
+//void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
+//	const Ref<Texture> diffuse, const Ref<Texture> specular)
+//{
+//	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
+//	BindShader(sh);
+//	sh->setMat4f("u_ModelMat", modelMat);
+//	/*sh->setFloat3("lightPos", glm::vec3(0.0f, 5.0f, 0.0f));
+//	sh->setFloat("far_plane", 25.f);*/
+//
+//	BindTexture(diffuse, DIFF_TEX_SLOT);
+//	BindTexture(specular, SPEC_TEX_SLOT);
+//	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+//	/*BindVAO(vao);
+//
+//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());*/
+//	GLDraw(vao);
+//}
 
-	BindTexture(diffuse, DIFF_TEX_SLOT);
-	BindTexture(specular, SPEC_TEX_SLOT);
-	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
-	BindVAO(vao);
-
-	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-}
-
-void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color)
-{
-	Ref<Shader> sh = s_Data->Shader[ShaderType::Color];
-	BindShader(sh);
-	sh->setMat4f("u_ModelMat", modelMat);
-
-	sh->setFloat4("u_Color", color);
-
-	BindVAO(vao);
-	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-}
+//void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color)
+//{
+//	Ref<Shader> sh = s_Data->Shader[ShaderType::Color];
+//	BindShader(sh);
+//	sh->setMat4f("u_ModelMat", modelMat);
+//	sh->setFloat4("u_Color", color);
+//
+//	BindVAO(vao);
+//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+//}
 
 
-void Renderer::DrawDepth(const glm::mat4& modelMat, const Ref<VAO> vao)
+void Renderer::DrawDepth(const glm::mat4& modelMat, Mesh* mesh)
 {
 	Ref<Shader> sh = s_Data->Shader[ShaderType::DepthShader];
 	BindShader(sh);
 	sh->setMat4f("u_ModelMat", modelMat);
 
-	BindVAO(vao);
+	BindVAO(mesh->Vao());
 
-	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+	if (mesh->NormalsOut())
+		GLDraw(mesh->Vao());
+	else
+	{
+		glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
+		sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
+		GLDraw(mesh->Vao());
+		sh->setInt("reverse_normals", 0); // and of course disable it
+		glEnable(GL_CULL_FACE);
+	}
 }
 
-void Renderer::DrawDepthInside(const glm::mat4& modelMat, const Ref<VAO> vao)
-{
-	Ref<Shader> sh = s_Data->Shader[ShaderType::DepthShader];
-	BindShader(sh);
-	sh->setMat4f("u_ModelMat", modelMat);
+//void Renderer::DrawDepthInside(const glm::mat4& modelMat, const Ref<VAO> vao)
+//{
+//	Ref<Shader> sh = s_Data->Shader[ShaderType::DepthShader];
+//	BindShader(sh);
+//	sh->setMat4f("u_ModelMat", modelMat);
+//
+//	BindVAO(vao);
+//
+//	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
+//	sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
+//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+//	sh->setInt("reverse_normals", 0); // and of course disable it
+//	glEnable(GL_CULL_FACE);
+//}
 
-	BindVAO(vao);
-
-	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-	sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-	sh->setInt("reverse_normals", 0); // and of course disable it
-	glEnable(GL_CULL_FACE);
-}
-
-void Renderer::DrawInside(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse, const Ref<Texture> specular)
-{
-	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
-	BindShader(sh);
-	sh->setMat4f("u_ModelMat", modelMat);
-
-	BindTexture(diffuse, DIFF_TEX_SLOT);
-	BindTexture(specular, SPEC_TEX_SLOT);
-	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
-	BindVAO(vao);
-
-	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-	sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-	sh->setInt("reverse_normals", 0); // and of course disable it
-	glEnable(GL_CULL_FACE);
-}
+//void Renderer::DrawInside(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse, const Ref<Texture> specular)
+//{
+//	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
+//	BindShader(sh);
+//	sh->setMat4f("u_ModelMat", modelMat);
+//
+//	BindTexture(diffuse, DIFF_TEX_SLOT);
+//	BindTexture(specular, SPEC_TEX_SLOT);
+//	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+//	BindVAO(vao);
+//
+//	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
+//	sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
+//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+//	sh->setInt("reverse_normals", 0); // and of course disable it
+//	glEnable(GL_CULL_FACE);
+//}
 
 void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
 {
@@ -223,6 +287,7 @@ void Renderer::LoadShaders()
 	s_Data->Shader[ShaderType::Diffuse]->setInt(  "material.diffuse", DIFF_TEX_SLOT);
 	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.specular", 0.5f);
 	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.shininess", 32.0f);
+	s_Data->Shader[ShaderType::Diffuse]->setInt("depthMap", DEPTH_TEX_SLOT);
 
 	s_Data->Shader[ShaderType::DiffNSpec] = CreateRef<Shader>("diffNSpec.shader");
 	s_Data->Shader[ShaderType::DiffNSpec]->Bind();
@@ -236,7 +301,6 @@ void Renderer::LoadShaders()
 	s_Data->Shader[ShaderType::Skybox]->setInt("u_SkyboxTex", SKYBOX_TEX_SLOT);
 
 	s_Data->Shader[ShaderType::DepthShader] = CreateRef<Shader>("depthShader.shader");
-	
 }
 
 void Renderer::CreateSkybox()
@@ -254,27 +318,27 @@ void Renderer::CreateSkybox()
 	s_Data->skyboxData.SkyboxTex = CreateRef<Texture>("skybox", SKYBOX_FACES);
 }
 
-std::pair<unsigned, unsigned> Renderer::GetSizeOffset(const LightType type)
-{
-	unsigned size   = 0;
-	unsigned offset = 0;
-	switch (type)
-	{
-	case LightType::Directional:
-		size = SSBO_SPOTLIGHT_OFFSET - SSBO_DIRLIGHT_OFFSET;
-		offset = SSBO_DIRLIGHT_OFFSET;
-		break;
-	case LightType::Spot:
-		size = SSBO_POINTLIGHT_OFFSET - SSBO_SPOTLIGHT_OFFSET;
-		offset = SSBO_SPOTLIGHT_OFFSET;
-		break;
-	case LightType::Point:
-		size = SSBO_POINTLIGHT_SIZE;
-		offset = SSBO_POINTLIGHT_OFFSET;
-		break;
-	}
-	return std::pair<unsigned, unsigned>(size, offset);
-}
+//std::pair<unsigned, unsigned> Renderer::GetSizeOffset(const LightType type)
+//{
+//	unsigned size   = 0;
+//	unsigned offset = 0;
+//	switch (type)
+//	{
+//	case LightType::Directional:
+//		size = SSBO_SPOTLIGHT_OFFSET - SSBO_DIRLIGHT_OFFSET;
+//		offset = SSBO_DIRLIGHT_OFFSET;
+//		break;
+//	case LightType::Spot:
+//		size = SSBO_POINTLIGHT_OFFSET - SSBO_SPOTLIGHT_OFFSET;
+//		offset = SSBO_SPOTLIGHT_OFFSET;
+//		break;
+//	case LightType::Point:
+//		size = SSBO_POINTLIGHT_SIZE;
+//		offset = SSBO_POINTLIGHT_OFFSET;
+//		break;
+//	}
+//	return std::pair<unsigned, unsigned>(size, offset);
+//}
 
 void Renderer::UpdateLightPosition(const float pos[3], const unsigned lightIndex)
 {
@@ -290,6 +354,19 @@ const unsigned Renderer::UploadLightData(const void* data)
 	offset += SSBO_LIGHT_SIZE;
 	++lightIndex;
 	return lightIndex - 1;
+}
+
+void Renderer::GLDraw(const Ref<VAO> vao)
+{
+	BindVAO(vao);
+	auto ebo = vao->Ebo();
+	if (ebo)
+	{
+		ebo->Bind();
+		glDrawElements(GL_TRIANGLES, ebo->Count(), GL_UNSIGNED_INT, 0);
+	}
+	else
+		glDrawArrays(GL_TRIANGLES, 0, vao->Count());
 }
 
 bool Renderer::BindShader(const Ref<Shader> shader)

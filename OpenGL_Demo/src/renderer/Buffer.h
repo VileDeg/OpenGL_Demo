@@ -14,6 +14,10 @@ public:
         unsigned normalized;
 
         const unsigned GetTypeSize() const;
+        VertexAttribute(unsigned t, unsigned c, unsigned n)
+            : type(t), count(c), normalized(n) {}
+        VertexAttribute(unsigned t, unsigned c)
+            : type(t), count(c) {}
         
     };
 
@@ -56,32 +60,6 @@ private:
     int count;
     VertexLayout layout;
 };
-
-
-
-/////////////////////////////////////////////////////////
-//VAO////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-
-class VAO
-{
-public:
-    VAO();
-    ~VAO();
-    void AddBuffer(const VBO& vbo);
-
-    inline const int Count() const { return count; }
-
-    void Bind() const;
-    void Unbind() const;
-
-    const unsigned Id() const { return id; }
-private:
-    unsigned id;
-    int count;
-};
-
-
 
 /////////////////////////////////////////////////////////
 //EBO////////////////////////////////////////////////////

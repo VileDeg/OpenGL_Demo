@@ -4,6 +4,7 @@
 #include "GLContext.h"
 #include "renderer/Renderer.h"
 #include "renderer/Mesh.h"
+#include "renderer/Model.h"
 #include "Window.h"
 
 #include "imgui/imgui.h"

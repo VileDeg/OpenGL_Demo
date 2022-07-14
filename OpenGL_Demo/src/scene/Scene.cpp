@@ -20,16 +20,18 @@ Entity Scene::CreateEntity(const std::string& name)
 	entity.AddComponent<TransformComponent>();
 	auto& tag = entity.AddComponent<TagComponent>();
 	tag.Tag = name.empty() ? "Entity" : name;
+
 	return entity;
 }
 
 void Scene::RenderScene()
 {
-	auto& view = m_Registry.view<TransformComponent, MeshComponent>();
+	auto& view = m_Registry.view<TransformComponent, MeshComponent, TagComponent>();
 	for (auto& entity : view)
 	{
-		auto& [transform, mesh] = view.get(entity);
-		if (mesh.FlipNormals)
+		auto& [transform, mesh, tag] = view.get(entity);
+		Renderer::Draw(transform, mesh);
+		/*if (mesh.FlipNormals)
 		{
 			Renderer::DrawInside(transform, mesh.Mesh_->Vao(),
 				mesh.Mesh_->Diffuse(), mesh.Mesh_->Specular());
@@ -39,9 +41,8 @@ void Scene::RenderScene()
 			Renderer::Draw(transform, mesh.Mesh_->Vao(),
 				mesh.Mesh_->Diffuse(), mesh.Mesh_->Specular());
 		else
-			Renderer::Draw(transform, mesh.Mesh_->Vao(), mesh.Color);
+			Renderer::Draw(transform, mesh.Mesh_->Vao(), mesh.Color);*/
 	}
-		
 }
 
 void Scene::RenderSceneDepth()
@@ -50,12 +51,12 @@ void Scene::RenderSceneDepth()
 	for (auto& entity : view)
 	{
 		auto& [transform, mesh] = view.get(entity);
-		if (mesh.FlipNormals)
+		/*if (mesh.FlipNormals)
 		{
 			Renderer::DrawDepthInside(transform, mesh.Mesh_->Vao());
 			continue;
-		}
-		Renderer::DrawDepth(transform, mesh.Mesh_->Vao());
+		}*/
+		Renderer::DrawDepth(transform, mesh);
 	}
 }
 

@@ -22,6 +22,8 @@ namespace test
         Entity m_Cubes[1000];
         Entity m_LightCubes[3];
         Entity m_Room;
+        Entity m_ImportedModel;
+        Model m_Model;
         //Object m_Cube;
         //Object m_LightCube;
         Camera m_Camera;

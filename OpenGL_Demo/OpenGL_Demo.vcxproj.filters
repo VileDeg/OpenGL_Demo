@@ -1367,6 +1367,8 @@
     </ClInclude>
     <ClInclude Include="src\renderer\Mesh.h" />
     <ClInclude Include="src\renderer\Framebuffer.h" />
+    <ClInclude Include="src\renderer\Model.h" />
+    <ClInclude Include="src\renderer\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp">
@@ -1386,9 +1388,6 @@
     </ClCompile>
     <ClCompile Include="src\assimp_import\Model.cpp">
       <Filter>src\assimp_import</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui\ImguiBuild.cpp">
-      <Filter>src\imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\imgui\ImguiLayer.cpp">
       <Filter>src\imgui</Filter>
@@ -1419,5 +1418,7 @@
     </ClCompile>
     <ClCompile Include="src\renderer\Mesh.cpp" />
     <ClCompile Include="src\renderer\Framebuffer.cpp" />
+    <ClCompile Include="src\renderer\Model.cpp" />
+    <ClCompile Include="src\renderer\VertexArray.cpp" />
   </ItemGroup>
 </Project>

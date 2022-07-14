@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "renderer/Renderer.h"
 #include "renderer/Mesh.h"
+#include "renderer/Light.h"
 
 
 struct TagComponent
@@ -47,18 +48,25 @@ struct TransformComponent
 
 struct MeshComponent
 {
-	Mesh* Mesh_{nullptr};
-	bool  HasTextures{true};
-	bool  FlipNormals{ false };
-	glm::vec4 Color{1.f, 0.f, 1.f, 1.f}; //magenta
+	Mesh* Mesh_      {nullptr};
+	/*bool  HasTextures{true};
+	bool  FlipNormals{ false };*/
+	//glm::vec4 Color{1.f, 0.f, 1.f, 1.f}; //magenta
+
+	bool HasTextures(bool has) { return Mesh_->HasTextures(has); }
+	bool HasTextures()         { return Mesh_->HasTextures();    }
+	bool NormalsOut(bool out)  { return Mesh_->NormalsOut(out); }
+	bool NormalsOut()          { return Mesh_->NormalsOut();     }
+	const glm::vec4& Color(const glm::vec4& color) { return Mesh_->Color(color); }
+	const glm::vec4& Color()   { return Mesh_->Color(); }
 
 	MeshComponent() = default;
 	MeshComponent(const MeshComponent&) = default;
 	MeshComponent(Mesh* mesh)
 		: Mesh_(mesh) {}
 
-	/*operator Mesh& () { return Mesh_; }
-	operator const Mesh& () const { return Mesh_; }*/
+	operator Mesh* () { return Mesh_; }
+	operator const Mesh* () const { return Mesh_; }
 };
 
 struct LightComponent

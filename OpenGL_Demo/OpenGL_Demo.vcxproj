@@ -102,6 +102,8 @@
     <ClInclude Include="src\OpenGL_Demo.h" />
     <ClInclude Include="src\renderer\Framebuffer.h" />
     <ClInclude Include="src\renderer\Mesh.h" />
+    <ClInclude Include="src\renderer\Model.h" />
+    <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\assimp_import\Mesh.h" />
@@ -543,11 +545,12 @@
     <ClCompile Include="src\GLContext.cpp" />
     <ClCompile Include="src\renderer\Framebuffer.cpp" />
     <ClCompile Include="src\renderer\Mesh.cpp" />
+    <ClCompile Include="src\renderer\Model.cpp" />
+    <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\assimp_import\Mesh.cpp" />
     <ClCompile Include="src\assimp_import\Model.cpp" />
-    <ClCompile Include="src\imgui\ImguiBuild.cpp" />
     <ClCompile Include="src\imgui\ImguiLayer.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
