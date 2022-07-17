@@ -77,6 +77,6 @@ void Scene::OnUpdate(float deltaTime)
 
 	RenderScene();
 
-	//Renderer::DrawSkybox();
+	Renderer::DrawSkybox();
 }
 

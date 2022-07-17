@@ -30,10 +30,6 @@ enum class TexType
     None = -1, Diffuse, Specular, Normal, Height
 };
 
-
-
-
-  
 class Mesh
 {
 public:
@@ -58,8 +54,6 @@ private:
     Ref<VBO> m_VBO;
     Ref<EBO> m_EBO;
 
-    
-
     std::unordered_map<TexType, std::vector<Ref<Texture>>> m_Textures;
 };
 
@@ -69,15 +63,6 @@ struct MeshInstance
     bool HasTextures{ true };
     bool NormalsOut{ true };
     glm::vec4 Color{ 1.f, 0.f, 1.f, 1.f }; //magenta;
-
-    /*bool HasTextures(bool has) { return m_HasTextures = has; }
-    bool HasTextures() { return m_HasTextures; }
-
-    bool NormalsOut(bool out) { return m_NormalsOut = out; }
-    bool NormalsOut() { return m_NormalsOut; }
-
-    const glm::vec4& Color(const glm::vec4& color) { return m_Color = color; }
-    const glm::vec4& Color() { return m_Color; }*/
 
     MeshInstance() = default;
     MeshInstance(const MeshInstance& mi)

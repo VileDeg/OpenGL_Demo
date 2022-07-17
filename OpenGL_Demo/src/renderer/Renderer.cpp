@@ -9,8 +9,9 @@ Renderer::RenderData* Renderer::s_Data = nullptr;
 
 static constexpr short DIFF_TEX_SLOT   = 0;
 static constexpr short SPEC_TEX_SLOT   = 1;
-static constexpr short SKYBOX_TEX_SLOT = 2;
-static constexpr short DEPTH_TEX_SLOT  = 3;
+static constexpr short NORM_TEX_SLOT   = 2;
+static constexpr short SKYBOX_TEX_SLOT = 7;
+static constexpr short DEPTH_TEX_SLOT  = 8;
 
 void Renderer::SetUniformBuffer(const Ref<ShaderBlock> ubo, const short slot,
 	std::vector<ShaderType> shTypes)
@@ -62,7 +63,7 @@ void Renderer::Init(unsigned width, unsigned height)
 
 	SetUniformBuffer(s_Data->SceneUBO, 0,
 		{ ShaderType::UniformColor, ShaderType::AttribColor,
-		ShaderType::Diffuse, ShaderType::DiffNSpec});
+		ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::NormalMap });
 
 	s_Data->LightSSBO = CreateRef<ShaderBlock>(
 		"LightData", (const void*)NULL,
@@ -70,7 +71,7 @@ void Renderer::Init(unsigned width, unsigned height)
 		GL_SHADER_STORAGE_BUFFER);
 
 	SetShaderStorageBuffer(s_Data->LightSSBO, 0,
-		{ ShaderType::Diffuse, ShaderType::DiffNSpec });
+		{ ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::NormalMap });
 }
 
 void Renderer::Draw(const glm::mat4& modelMat, MeshInstance& mi)
@@ -80,11 +81,20 @@ void Renderer::Draw(const glm::mat4& modelMat, MeshInstance& mi)
 	auto& tex = Mesh.Textures();
 	auto& diff = tex[TexType::Diffuse];
 	auto& spec = tex[TexType::Specular];
+	auto& norm = tex[TexType::Normal];
 	Ref<Shader> sh = nullptr;
 
 	if (mi.HasTextures)
 	{
-		if (!diff.empty() && !spec.empty())
+		if (!diff.empty() && !norm.empty())
+		{
+			sh = s_Data->Shader[ShaderType::NormalMap];
+			BindShader(sh);
+			BindTexture(diff[0], DIFF_TEX_SLOT);
+			BindTexture(norm[0], NORM_TEX_SLOT);
+			BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+		}
+		else if (!diff.empty() && !spec.empty())
 		{
 			sh = s_Data->Shader[ShaderType::DiffNSpec];
 			BindShader(sh);
@@ -174,10 +184,10 @@ void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
 		sh->setMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
 	sh->setFloat("far_plane", far_plane);
 	sh->setFloat3("lightPos", lightPos);
-	sh = s_Data->Shader[ShaderType::DiffNSpec];
+	/*sh = s_Data->Shader[ShaderType::DiffNSpec];
 	BindShader(sh);
 	sh->setFloat("far_plane", far_plane);
-	sh->setFloat3("lightPos", lightPos);
+	sh->setFloat3("lightPos", lightPos);*/
 }
 
 void Renderer::ShadowRenderEnd()
@@ -210,10 +220,10 @@ void Renderer::LoadShaders()
 
 	s_Data->Shader[ShaderType::Diffuse] = CreateRef<Shader>("diffuse.shader");
 	s_Data->Shader[ShaderType::Diffuse]->Bind();
-	s_Data->Shader[ShaderType::Diffuse]->setInt(  "material.diffuse", DIFF_TEX_SLOT);
-	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.specular", 0.5f);
-	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.shininess", 32.0f);
-	s_Data->Shader[ShaderType::Diffuse]->setInt("depthMap", DEPTH_TEX_SLOT);
+	s_Data->Shader[ShaderType::Diffuse]->setInt  ("material.diffuse", DIFF_TEX_SLOT);
+	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.specular",		   0.5f);
+	s_Data->Shader[ShaderType::Diffuse]->setFloat("material.shininess",		  32.0f);
+	s_Data->Shader[ShaderType::Diffuse]->setInt  ("depthMap",		 DEPTH_TEX_SLOT);
 
 	s_Data->Shader[ShaderType::DiffNSpec] = CreateRef<Shader>("diffNSpec.shader");
 	s_Data->Shader[ShaderType::DiffNSpec]->Bind();
@@ -221,6 +231,14 @@ void Renderer::LoadShaders()
 	s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.specular", SPEC_TEX_SLOT);
 	s_Data->Shader[ShaderType::DiffNSpec]->setFloat("material.shininess", 32.0f);
 	s_Data->Shader[ShaderType::DiffNSpec]->setInt("depthMap", DEPTH_TEX_SLOT);
+	s_Data->Shader[ShaderType::DiffNSpec]->setFloat("far_plane", s_Data->lightFarPlane);
+
+	s_Data->Shader[ShaderType::NormalMap] = CreateRef<Shader>("normalMap.shader");
+	s_Data->Shader[ShaderType::NormalMap]->Bind();
+	s_Data->Shader[ShaderType::NormalMap]->setInt("diffuseMap", DIFF_TEX_SLOT);
+	s_Data->Shader[ShaderType::NormalMap]->setInt("normalMap",  NORM_TEX_SLOT);
+	s_Data->Shader[ShaderType::NormalMap]->setInt("depthMap",  DEPTH_TEX_SLOT);
+	s_Data->Shader[ShaderType::NormalMap]->setFloat("far_plane", s_Data->lightFarPlane);
 
 	s_Data->Shader[ShaderType::Skybox] = CreateRef<Shader>("skybox.shader");
 	s_Data->Shader[ShaderType::Skybox]->Bind();
@@ -306,17 +324,9 @@ void Renderer::BeginScene(const Camera& cam, unsigned lightCount, bool castShado
 {
 	SceneData data = { cam.GetProjViewMat(), cam.Position(), lightCount, castShadows };
 	s_Data->SceneUBO->Upload((const void*)&data, sizeof(data), 0);
-	/*s_Data->SceneUBO->Upload(
-		glm::value_ptr(data.cam.GetProjViewMat()), sizeof(glm::mat4), 0);
-	s_Data->SceneUBO->Upload(
-		glm::value_ptr(.Position()), sizeof(glm::vec3), 64);*/
+	
 	s_Data->ViewMat = cam.GetViewMat();
 	s_Data->ProjMat = cam.GetProjMat();
-
-	/*s_Data->SceneUBO->Upload(
-		&lightCount, 4, 76);*/
-	/*s_Data->SceneUBO->Upload(
-		&castShadows, 4, 76);*/
 }
 
 void Renderer::EndScene()

@@ -11,7 +11,9 @@ Mesh::Mesh(const void* vertexData, std::size_t size, unsigned vertexCount,
     {
         {GL_FLOAT, 3, GL_FALSE}, //position
         {GL_FLOAT, 3, GL_FALSE}, //normal
-        {GL_FLOAT, 2, GL_FALSE}  //texcoords
+        {GL_FLOAT, 2, GL_FALSE}, //texcoords
+        {GL_FLOAT, 3, GL_FALSE}, //tangent
+        {GL_FLOAT, 3, GL_FALSE}  //bitangent
     };
     m_VBO->SetLayout(layout);
     m_VAO->AddBuffer(*m_VBO, nullptr); //No EBO

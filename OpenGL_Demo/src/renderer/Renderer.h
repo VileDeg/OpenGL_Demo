@@ -14,7 +14,8 @@ enum class LightType
 };
 enum class ShaderType
 {
-	None = -1, Skybox, UniformColor, AttribColor, Diffuse, DiffNSpec, DepthShader
+	None = -1, DepthShader, Skybox, UniformColor,
+	AttribColor, Diffuse, DiffNSpec, NormalMap
 };
 
 class Renderer
@@ -46,6 +47,7 @@ private:
 		glm::mat4 ProjMat = glm::mat4(1.f);
 		
 		std::unordered_map<unsigned, unsigned> TexSlotId;
+		float lightFarPlane{25.f};
 		unsigned LightsCount;
 		unsigned boundVaoId;
 		unsigned boundShaderId;

@@ -19,9 +19,12 @@ namespace test
     private:
         Ref<Scene> m_Scene;
         Mesh m_CubeMesh;
+        Mesh* m_BrickwallMesh;
         Entity m_Cubes[1000];
         Entity m_LightCubes[3];
         Entity m_Room;
+        Entity m_Brickwalls[6];
+        Entity m_WorldCenter;
         std::vector<Entity> m_ImportedModels;
         std::vector<Model> m_Models;
         

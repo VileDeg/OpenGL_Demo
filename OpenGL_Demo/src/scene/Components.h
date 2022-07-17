@@ -6,7 +6,6 @@
 #include "renderer/Model.h"
 #include "renderer/Light.h"
 
-
 struct TagComponent
 {
 	std::string Tag;
@@ -24,13 +23,25 @@ struct TransformComponent
 
 	void TranslateTo(const glm::vec3& pos)
 	{
-		Transform[3] = glm::vec4(pos, 1.f);
+		Transform[3] = glm::vec4(pos, Transform[3].w);
 	}
 	
 	void ScaleTo(const float units)
 	{
 		Transform = glm::scale(Transform, glm::vec3(1.f / Scale));
 		Transform = glm::scale(Transform, glm::vec3(units));
+		Scale = units;
+	}
+
+	void RotateTo(const float angle, const glm::vec3& axis)
+	{
+		Transform = glm::scale(Transform, glm::vec3(1.f / Scale));
+		auto translate = Transform[3];
+		Transform[3] = { 0.f, 0.f, 0.f, translate.w };
+
+		Transform = glm::rotate(glm::mat4(1.f), glm::radians(angle), glm::normalize(axis));
+		Transform[3] = translate;
+		Transform = glm::scale(Transform, glm::vec3(Scale));
 	}
 
 	const glm::vec3& Position() const
@@ -46,22 +57,6 @@ struct TransformComponent
 	operator glm::mat4& () { return Transform; }
 	operator const glm::mat4& () const { return Transform; }
 };
-
-//struct MeshComponent
-//{
-//	MeshInstance mi;
-//
-//	MeshComponent() = default;
-//	MeshComponent(const MeshComponent& mc) : mi(mc.mi) {}
-//	MeshComponent(MeshComponent&&) = default;
-//	MeshComponent(Mesh& mesh, bool hasTex = true, bool normOut = true)
-//		: mi(mesh, hasTex, normOut) {}
-//
-//	MeshComponent& operator=(MeshComponent& mc) { return *this = mc; };
-//
-//	operator MeshInstance () { return mi; }
-//	operator const MeshInstance() const { return mi; }
-//};
 
 struct ModelComponent
 {
