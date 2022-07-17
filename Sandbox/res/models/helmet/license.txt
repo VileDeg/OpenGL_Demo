@@ -1,0 +1,11 @@
+Model Information:
+* title:	Old unequipped helmet
+* source:	https://sketchfab.com/3d-models/old-unequipped-helmet-281b8ddbb8c24eb5b3c09018488b7fe5
+* author:	VALIDOL (https://sketchfab.com/VALIDOLOVICH)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Old unequipped helmet" (https://sketchfab.com/3d-models/old-unequipped-helmet-281b8ddbb8c24eb5b3c09018488b7fe5) by VALIDOL (https://sketchfab.com/VALIDOLOVICH) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

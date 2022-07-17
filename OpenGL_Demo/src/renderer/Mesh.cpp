@@ -9,19 +9,19 @@ Mesh::Mesh(const void* vertexData, std::size_t size, unsigned vertexCount,
 {
     VertexLayout layout
     {
-        {GL_FLOAT, 3, GL_FALSE},
-        {GL_FLOAT, 3, GL_FALSE},
-        {GL_FLOAT, 2, GL_FALSE}
+        {GL_FLOAT, 3, GL_FALSE}, //position
+        {GL_FLOAT, 3, GL_FALSE}, //normal
+        {GL_FLOAT, 2, GL_FALSE}  //texcoords
     };
     m_VBO->SetLayout(layout);
-    m_VAO->AddBuffer(*m_VBO);
+    m_VAO->AddBuffer(*m_VBO, nullptr); //No EBO
 
     for (auto& [type, paths] : textures)
     {
         for (auto& p : paths)
         {
             m_Textures[type].push_back(CreateRef<Texture>(p));
-            m_HasTextures = true;
+            //m_HasTextures = true;
         }
     }
 }
@@ -35,24 +35,24 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
     m_EBO = CreateRef<EBO>(&indices[0], indices.size());
     VertexLayout layout
     {
-        {GL_FLOAT, 3, GL_FALSE},
-        //{GL_FLOAT, 4, GL_FALSE},
-        {GL_FLOAT, 3, GL_FALSE},
-        {GL_FLOAT, 2, GL_FALSE},
-        {GL_FLOAT, 3, GL_FALSE},
-        {GL_FLOAT, 3, GL_FALSE},
-        {GL_INT  , 4          },
-        {GL_FLOAT, 4, GL_FALSE}
+        {GL_FLOAT, 3, GL_FALSE}, //position
+        {GL_FLOAT, 3, GL_FALSE}, //normal
+        {GL_FLOAT, 2, GL_FALSE}, //texcoords
+        {GL_FLOAT, 3, GL_FALSE}, //tangent
+        {GL_FLOAT, 3, GL_FALSE}, //bitangent
+        {GL_FLOAT, 4, GL_FALSE}, //color
+        {GL_INT  , 4          }, //boneid
+        {GL_FLOAT, 4, GL_FALSE}  //weights
     };
     m_VBO->SetLayout(layout);
-    m_VAO->AddBuffer(*m_VBO);
+    m_VAO->AddBuffer(*m_VBO, m_EBO);
 
     for (auto& [type, paths] : textures)
     {
         for (auto& p : paths)
         {
             m_Textures[type].push_back(CreateRef<Texture>(p, false));
-            m_HasTextures = true;
+            //m_HasTextures = true;
         }
     }
 }

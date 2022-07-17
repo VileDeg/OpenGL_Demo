@@ -2,19 +2,22 @@
 
 #include <assimp/scene.h>
 #include "Mesh.h"
+#include "renderer/Texture.h"
 
 class Model
 {
 public:
+    //For import
     Model(std::string const& path, bool gamma = false);
+    
 
     std::vector<Mesh>& Meshes() { return m_Meshes; }
 private:
     void loadModel(std::string const& shortPath);
 
-    void processNode(aiNode* node, const aiScene* scene);
+    void processNode(aiNode* node, const aiScene* scene, aiMatrix4x4& parentTransform);
 
-    Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+    Mesh processMesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& nodeTransform);
         
     // checks all material textures of a given type and 
     // loads the textures if they're not loaded yet.

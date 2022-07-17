@@ -43,8 +43,6 @@ void Renderer::SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short s
 	}
 }
 
-
-
 void Renderer::Init(unsigned width, unsigned height)
 {
 	s_Data = new RenderData();
@@ -59,35 +57,32 @@ void Renderer::Init(unsigned width, unsigned height)
 
 	s_Data->SceneUBO = CreateRef<ShaderBlock>(
 		"SceneData", (const void*)NULL,
-		sizeof(glm::mat4) + sizeof(glm::vec3) + sizeof(unsigned),
+		256,
 		GL_UNIFORM_BUFFER);
 
-	s_Data->LightsCount = 3;
-	s_Data->SceneUBO->Upload(
-		&s_Data->LightsCount, 4, 76);
-
 	SetUniformBuffer(s_Data->SceneUBO, 0,
-		{ ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::Color });
+		{ ShaderType::UniformColor, ShaderType::AttribColor,
+		ShaderType::Diffuse, ShaderType::DiffNSpec});
 
 	s_Data->LightSSBO = CreateRef<ShaderBlock>(
 		"LightData", (const void*)NULL,
-		SSBO_LIGHT_SIZE * s_Data->LightsCount,
+		512,
 		GL_SHADER_STORAGE_BUFFER);
 
 	SetShaderStorageBuffer(s_Data->LightSSBO, 0,
-		{ ShaderType::DiffNSpec });
-
-	
+		{ ShaderType::Diffuse, ShaderType::DiffNSpec });
 }
 
-void Renderer::Draw(const glm::mat4& modelMat, Mesh* mesh)
+void Renderer::Draw(const glm::mat4& modelMat, MeshInstance& mi)
 {
-	auto tex = mesh->Textures();
-	auto diff = tex[TexType::Diffuse];
-	auto spec = tex[TexType::Specular];
+
+	auto& Mesh = mi.mesh;
+	auto& tex = Mesh.Textures();
+	auto& diff = tex[TexType::Diffuse];
+	auto& spec = tex[TexType::Specular];
 	Ref<Shader> sh = nullptr;
 
-	if (mesh->HasTextures())
+	if (mi.HasTextures)
 	{
 		if (!diff.empty() && !spec.empty())
 		{
@@ -106,127 +101,54 @@ void Renderer::Draw(const glm::mat4& modelMat, Mesh* mesh)
 		}
 		else
 		{
-			sh = s_Data->Shader[ShaderType::Color];
+			sh = s_Data->Shader[ShaderType::UniformColor];
+			//sh = s_Data->Shader[ShaderType::AttribColor];
 			BindShader(sh);
-			sh->setFloat4("u_Color", mesh->Color());
+			sh->setFloat4("u_Color", mi.Color);
 		}
 	}
 	else
 	{
-		sh = s_Data->Shader[ShaderType::Color];
+		//sh = s_Data->Shader[ShaderType::UniformColor];
+		sh = s_Data->Shader[ShaderType::UniformColor];
 		BindShader(sh);
-		sh->setFloat4("u_Color", mesh->Color());
+		sh->setFloat4("u_Color", mi.Color);
 	}
 
 	sh->setMat4f("u_ModelMat", modelMat);
-
-	if (mesh->NormalsOut())
-		GLDraw(mesh->Vao());
+	
+	if (mi.NormalsOut)
+		GLDraw(Mesh.Vao());
 	else
 	{
 		glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
 		sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-		GLDraw(mesh->Vao());
+		GLDraw(Mesh.Vao());
 		sh->setInt("reverse_normals", 0); // and of course disable it
 		glEnable(GL_CULL_FACE);
 	}
 }
 
-//void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
-//	const Ref<Texture> diffuse)
-//{
-//	Ref<Shader> sh = s_Data->Shader[ShaderType::Diffuse];
-//	BindShader(sh);
-//	sh->setMat4f("u_ModelMat", modelMat);
-//
-//	BindTexture(diffuse, DIFF_TEX_SLOT);
-//	BindVAO(vao);
-//	
-//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-//}
-//
-//void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao,
-//	const Ref<Texture> diffuse, const Ref<Texture> specular)
-//{
-//	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
-//	BindShader(sh);
-//	sh->setMat4f("u_ModelMat", modelMat);
-//	/*sh->setFloat3("lightPos", glm::vec3(0.0f, 5.0f, 0.0f));
-//	sh->setFloat("far_plane", 25.f);*/
-//
-//	BindTexture(diffuse, DIFF_TEX_SLOT);
-//	BindTexture(specular, SPEC_TEX_SLOT);
-//	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
-//	/*BindVAO(vao);
-//
-//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());*/
-//	GLDraw(vao);
-//}
-
-//void Renderer::Draw(const glm::mat4& modelMat, const Ref<VAO> vao, const glm::vec4& color)
-//{
-//	Ref<Shader> sh = s_Data->Shader[ShaderType::Color];
-//	BindShader(sh);
-//	sh->setMat4f("u_ModelMat", modelMat);
-//	sh->setFloat4("u_Color", color);
-//
-//	BindVAO(vao);
-//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-//}
-
-
-void Renderer::DrawDepth(const glm::mat4& modelMat, Mesh* mesh)
+void Renderer::DrawDepth(const glm::mat4& modelMat, const MeshInstance& mi)
 {
+	auto Mesh = mi.mesh;
 	Ref<Shader> sh = s_Data->Shader[ShaderType::DepthShader];
 	BindShader(sh);
 	sh->setMat4f("u_ModelMat", modelMat);
 
-	BindVAO(mesh->Vao());
+	BindVAO(Mesh.Vao());
 
-	if (mesh->NormalsOut())
-		GLDraw(mesh->Vao());
+	if (mi.NormalsOut)
+		GLDraw(Mesh.Vao());
 	else
 	{
 		glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
 		sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-		GLDraw(mesh->Vao());
+		GLDraw(Mesh.Vao());
 		sh->setInt("reverse_normals", 0); // and of course disable it
 		glEnable(GL_CULL_FACE);
 	}
 }
-
-//void Renderer::DrawDepthInside(const glm::mat4& modelMat, const Ref<VAO> vao)
-//{
-//	Ref<Shader> sh = s_Data->Shader[ShaderType::DepthShader];
-//	BindShader(sh);
-//	sh->setMat4f("u_ModelMat", modelMat);
-//
-//	BindVAO(vao);
-//
-//	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-//	sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-//	sh->setInt("reverse_normals", 0); // and of course disable it
-//	glEnable(GL_CULL_FACE);
-//}
-
-//void Renderer::DrawInside(const glm::mat4& modelMat, const Ref<VAO> vao, const Ref<Texture> diffuse, const Ref<Texture> specular)
-//{
-//	Ref<Shader> sh = s_Data->Shader[ShaderType::DiffNSpec];
-//	BindShader(sh);
-//	sh->setMat4f("u_ModelMat", modelMat);
-//
-//	BindTexture(diffuse, DIFF_TEX_SLOT);
-//	BindTexture(specular, SPEC_TEX_SLOT);
-//	BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
-//	BindVAO(vao);
-//
-//	glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-//	sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-//	glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-//	sh->setInt("reverse_normals", 0); // and of course disable it
-//	glEnable(GL_CULL_FACE);
-//}
 
 void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
 {
@@ -257,10 +179,12 @@ void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
 	sh->setFloat("far_plane", far_plane);
 	sh->setFloat3("lightPos", lightPos);
 }
+
 void Renderer::ShadowRenderEnd()
 {
 	s_Data->DepthMapFBO->Unbind();
 }
+
 void Renderer::DrawSkybox()
 {
 	glDepthFunc(GL_LEQUAL);
@@ -280,7 +204,9 @@ void Renderer::DrawSkybox()
 
 void Renderer::LoadShaders()
 {
-	s_Data->Shader[ShaderType::Color] = CreateRef<Shader>("color.shader");
+	s_Data->Shader[ShaderType::UniformColor] = CreateRef<Shader>("color.shader");
+
+	s_Data->Shader[ShaderType::AttribColor] = CreateRef<Shader>("colorAttrib.shader");
 
 	s_Data->Shader[ShaderType::Diffuse] = CreateRef<Shader>("diffuse.shader");
 	s_Data->Shader[ShaderType::Diffuse]->Bind();
@@ -314,31 +240,9 @@ void Renderer::CreateSkybox()
 		GeoData::SKYBOX_DATA, sizeof(GeoData::SKYBOX_DATA), 36);
 	VertexLayout layout{ {GL_FLOAT, 3, GL_FALSE} };
 	s_Data->skyboxData.SkyboxVBO->SetLayout(layout);
-	s_Data->skyboxData.SkyboxVAO->AddBuffer(*s_Data->skyboxData.SkyboxVBO);
+	s_Data->skyboxData.SkyboxVAO->AddBuffer(*s_Data->skyboxData.SkyboxVBO, nullptr);
 	s_Data->skyboxData.SkyboxTex = CreateRef<Texture>("skybox", SKYBOX_FACES);
 }
-
-//std::pair<unsigned, unsigned> Renderer::GetSizeOffset(const LightType type)
-//{
-//	unsigned size   = 0;
-//	unsigned offset = 0;
-//	switch (type)
-//	{
-//	case LightType::Directional:
-//		size = SSBO_SPOTLIGHT_OFFSET - SSBO_DIRLIGHT_OFFSET;
-//		offset = SSBO_DIRLIGHT_OFFSET;
-//		break;
-//	case LightType::Spot:
-//		size = SSBO_POINTLIGHT_OFFSET - SSBO_SPOTLIGHT_OFFSET;
-//		offset = SSBO_SPOTLIGHT_OFFSET;
-//		break;
-//	case LightType::Point:
-//		size = SSBO_POINTLIGHT_SIZE;
-//		offset = SSBO_POINTLIGHT_OFFSET;
-//		break;
-//	}
-//	return std::pair<unsigned, unsigned>(size, offset);
-//}
 
 void Renderer::UpdateLightPosition(const float pos[3], const unsigned lightIndex)
 {
@@ -398,16 +302,21 @@ void Renderer::BindTexture(const Ref<Texture> tex, const short slot)
 	}
 }
 
-void Renderer::BeginScene(const Camera& camera)
+void Renderer::BeginScene(const Camera& cam, unsigned lightCount, bool castShadows)
 {
+	SceneData data = { cam.GetProjViewMat(), cam.Position(), lightCount, castShadows };
+	s_Data->SceneUBO->Upload((const void*)&data, sizeof(data), 0);
+	/*s_Data->SceneUBO->Upload(
+		glm::value_ptr(data.cam.GetProjViewMat()), sizeof(glm::mat4), 0);
 	s_Data->SceneUBO->Upload(
-		glm::value_ptr(camera.GetProjViewMat()), sizeof(glm::mat4), 0);
-	s_Data->SceneUBO->Upload(
-		glm::value_ptr(camera.Position()), sizeof(glm::vec3), 64);
-	
+		glm::value_ptr(.Position()), sizeof(glm::vec3), 64);*/
+	s_Data->ViewMat = cam.GetViewMat();
+	s_Data->ProjMat = cam.GetProjMat();
 
-	s_Data->ViewMat = camera.GetViewMat();
-	s_Data->ProjMat = camera.GetProjMat();
+	/*s_Data->SceneUBO->Upload(
+		&lightCount, 4, 76);*/
+	/*s_Data->SceneUBO->Upload(
+		&castShadows, 4, 76);*/
 }
 
 void Renderer::EndScene()
@@ -431,6 +340,7 @@ void Renderer::Clear(std::bitset<3> bufferBits)
 	}
 	glClear(buffers);
 }
+
 void Renderer::SetClearColor(float r, float g, float b, float a)
 {
 	glClearColor(r, g, b, a);

@@ -22,10 +22,9 @@ namespace test
         Entity m_Cubes[1000];
         Entity m_LightCubes[3];
         Entity m_Room;
-        Entity m_ImportedModel;
-        Model m_Model;
-        //Object m_Cube;
-        //Object m_LightCube;
+        std::vector<Entity> m_ImportedModels;
+        std::vector<Model> m_Models;
+        
         Camera m_Camera;
         float m_CamSpeed;
         glm::vec3 m_LightPositions[3];

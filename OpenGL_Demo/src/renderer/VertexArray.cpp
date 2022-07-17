@@ -12,7 +12,7 @@ VAO::~VAO()
 	glDeleteVertexArrays(1, &m_Id);
 }
 
-void VAO::AddBuffer(const VBO& vbo, EBO* ebo)
+void VAO::AddBuffer(const VBO& vbo, Ref<EBO> ebo)
 {
 	Bind();
 	vbo.Bind();

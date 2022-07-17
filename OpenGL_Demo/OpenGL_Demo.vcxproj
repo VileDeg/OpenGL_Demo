@@ -69,7 +69,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mt.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -93,17 +93,13 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mt.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\GLContext.h" />
     <ClInclude Include="src\OpenGL_Demo.h" />
-    <ClInclude Include="src\renderer\Framebuffer.h" />
-    <ClInclude Include="src\renderer\Mesh.h" />
-    <ClInclude Include="src\renderer\Model.h" />
-    <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\assimp_import\Mesh.h" />
@@ -116,10 +112,14 @@
     <ClInclude Include="src\math_headers.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\renderer\Buffer.h" />
+    <ClInclude Include="src\renderer\Framebuffer.h" />
     <ClInclude Include="src\renderer\Light.h" />
+    <ClInclude Include="src\renderer\Mesh.h" />
+    <ClInclude Include="src\renderer\Model.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\Shader.h" />
     <ClInclude Include="src\renderer\Texture.h" />
+    <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\scene\Components.h" />
     <ClInclude Include="src\scene\Entity.h" />
     <ClInclude Include="src\scene\Scene.h" />
@@ -543,10 +543,6 @@
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\GLContext.cpp" />
-    <ClCompile Include="src\renderer\Framebuffer.cpp" />
-    <ClCompile Include="src\renderer\Mesh.cpp" />
-    <ClCompile Include="src\renderer\Model.cpp" />
-    <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\assimp_import\Mesh.cpp" />
@@ -556,9 +552,17 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\renderer\Buffer.cpp" />
+    <ClCompile Include="src\renderer\Framebuffer.cpp" />
+    <ClCompile Include="src\renderer\Mesh.cpp">
+      <ObjectFileName>$(IntDir)\Mesh1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Model.cpp">
+      <ObjectFileName>$(IntDir)\Model1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
     <ClCompile Include="src\renderer\Texture.cpp" />
+    <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\scene\Entity.cpp" />
     <ClCompile Include="src\scene\Scene.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
@@ -572,9 +576,6 @@
     </ProjectReference>
     <ProjectReference Include="vendor\ImGui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="vendor\assimp\assimp.vcxproj">
-      <Project>{724885F2-5EEA-AFC8-47A5-C31C33E63619}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

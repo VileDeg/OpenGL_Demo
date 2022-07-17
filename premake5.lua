@@ -23,7 +23,7 @@ group "Dependencies"
 	include "OpenGL_Demo/vendor/GLFW"
 	include "OpenGL_Demo/vendor/GLAD"
 	include "OpenGL_Demo/vendor/ImGui"
-	include "OpenGL_Demo/vendor/assimp"
+	--include "OpenGL_Demo/vendor/assimp"
 
 group ""
 
@@ -77,7 +77,7 @@ project "OpenGL_Demo"
 		"GLFW",
 		"GLAD",
 		"ImGui",
-		"assimp",
+		"OpenGL_Demo/vendor/assimp/lib/assimp-vc143-mt.lib",
 		"opengl32.lib"
 	}
 

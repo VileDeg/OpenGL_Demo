@@ -10,19 +10,18 @@
 Model::Model(std::string const& shortPath, bool gamma)
     : m_GammaCorrection(gamma)
 {
-    /*auto last = shortPath.find_last_of("/\\");
-    m_Directory = shortPath.substr(0, last+1);
-    std::cout << "Dir: " << m_Directory << '\n';*/
     stbi_set_flip_vertically_on_load(1);
     loadModel(shortPath);
-    
 }
 
 void Model::loadModel(std::string const& shortPath)
 {
     std::string path = BASE_MODEL_PATH + shortPath;
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    //importer.SetPropertyInteger(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0); //< Get rid of $AssimpFbx$_PreRotation nodes
+    //importer.SetPropertyInteger(AI_CONFIG_FBX_CONVERT_TO_M, 0); //< Convert FBX cm to m.
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate |
+        aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         std::cerr << "ERROR::ASSIMP:: " << importer.GetErrorString() << '\n';
@@ -31,25 +30,28 @@ void Model::loadModel(std::string const& shortPath)
     m_Directory = path.substr(0, path.find_last_of('/')+1);
     std::cout << "Dir: " << m_Directory << '\n';
 
-    processNode(scene->mRootNode, scene);
+    aiMatrix4x4 transform = scene->mRootNode->mTransformation;
+    processNode(scene->mRootNode, scene, transform);
 
     std::cout << "Finished loading model at path :" << path << ".\n";
 }
 
-void Model::processNode(aiNode* node, const aiScene* scene)
+void Model::processNode(aiNode* node, const aiScene* scene, aiMatrix4x4& parentTransform)
 {
+    parentTransform *= node->mTransformation;
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        m_Meshes.push_back(processMesh(mesh, scene));
+        m_Meshes.push_back(processMesh(mesh, scene, node->mTransformation));
     }
+
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        processNode(node->mChildren[i], scene);
+        processNode(node->mChildren[i], scene, parentTransform);
     }
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
+Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& nodeTransform)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -60,9 +62,16 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
         Vertex vertex;
         glm::vec3 vector;
         // positions
-        vector.x = mesh->mVertices[i].x;
-        vector.y = mesh->mVertices[i].y;
-        vector.z = mesh->mVertices[i].z;
+        glm::mat4 tf;
+        for (int i = 0; i < 4; ++i)
+            for (int j = 0; j < 4; ++j)
+                tf[i][j] = nodeTransform[i][j];
+        auto v = mesh->mVertices[i];
+        glm::vec4 gv = { v.x, v.y, v.z, 1.0f };
+        glm::vec4 vert = gv * tf;
+        vector.x = vert.x;
+        vector.y = vert.y;
+        vector.z = vert.z;
         vertex.Position = vector;
         // normals
         if (mesh->HasNormals())
@@ -72,15 +81,14 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
             vector.z = mesh->mNormals[i].z;
             vertex.Normal = vector;
         }
-        //// colors MY ADDITION
-        //if (mesh->HasVertexColors(0))
-        //{
-        //    vertex.Color.x = mesh->mColors[0][i].r;
-        //    vertex.Color.y = mesh->mColors[0][i].g;
-        //    vertex.Color.z = mesh->mColors[0][i].b;
-        //    vertex.Color.w = mesh->mColors[0][i].a;
-        //}
-
+        // colors 
+        if (mesh->HasVertexColors(0))
+        {
+            vertex.Color.x = mesh->mColors[0][i].r;
+            vertex.Color.y = mesh->mColors[0][i].g;
+            vertex.Color.z = mesh->mColors[0][i].b;
+            vertex.Color.w = mesh->mColors[0][i].a;
+        }
         // texture coordinates
         if (mesh->HasTextureCoords(0)) // does the mesh contain texture coordinates?
         {
@@ -116,12 +124,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     }
     // process materials
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-    // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-    // Same applies to other texture as the following list summarizes:
-    // diffuse: texture_diffuseN
-    // specular: texture_specularN
-    // normal: texture_normalN
+    /*aiColor3D color(0.f, 0.f, 0.f);
+    material->Get(AI_MATKEY_COLOR_DIFFUSE, color);*/
 
     // 1. diffuse maps
     std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE);
@@ -150,8 +154,11 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
         map[TexType::Height  ].push_back(m_Directory + x);
     }
 
+    auto m = Mesh(vertices, indices, map);
+   /* glm::vec4 col = { color.r, color.g, color.b, 1.0f };
+    m.UniformColor = col;*/
     // return a mesh object created from the extracted mesh data
-    return Mesh(vertices, indices, map);
+    return m;
 }
 
 // checks all material textures of a given type and loads the textures if they're not loaded yet.
@@ -165,15 +172,15 @@ std::vector<std::string> Model::loadMaterialTextures(aiMaterial* mat, aiTextureT
         mat->GetTexture(type, i, &str);
         // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
         bool skip = false;
-        //for (unsigned int j = 0; j < m_TexturesLoaded.size(); j++)
-        //{
-        //    if (std::strcmp(m_TexturesLoaded[j].data(), str.C_Str()) == 0)
-        //    {
-        //        texturePaths.push_back(m_TexturesLoaded[j]);
-        //        skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
-        //        break;
-        //    }
-        //}
+        for (unsigned int j = 0; j < m_TexturesLoaded.size(); j++)
+        {
+            if (std::strcmp(m_TexturesLoaded[j].data(), str.C_Str()) == 0)
+            {
+                texturePaths.push_back(m_TexturesLoaded[j]);
+                skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
+                break;
+            }
+        }
         if (!skip)
         {   // if texture hasn't been loaded already, load it
             texturePaths.push_back(str.C_Str());

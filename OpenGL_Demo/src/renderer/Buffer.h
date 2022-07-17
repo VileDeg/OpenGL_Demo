@@ -86,16 +86,8 @@ public:
 //UBO////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-#define GL_UNIFORM_BUFFER 0x8A11
-#define GL_SHADER_STORAGE_BUFFER 0x92E6
-
 class ShaderBlock
 {
-public:
-    /*enum class Type : unsigned
-    {
-        UBO = GL_UNIFORM_BUFFER, SSBO = GL_SHADER_STORAGE_BUFFER
-    };*/
 public:
     ShaderBlock(const char* name, const void* data,
         const std::size_t size, const unsigned type);

@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "renderer/Renderer.h"
 #include "renderer/Mesh.h"
+#include "renderer/Model.h"
 #include "renderer/Light.h"
 
 
@@ -46,27 +47,57 @@ struct TransformComponent
 	operator const glm::mat4& () const { return Transform; }
 };
 
-struct MeshComponent
+//struct MeshComponent
+//{
+//	MeshInstance mi;
+//
+//	MeshComponent() = default;
+//	MeshComponent(const MeshComponent& mc) : mi(mc.mi) {}
+//	MeshComponent(MeshComponent&&) = default;
+//	MeshComponent(Mesh& mesh, bool hasTex = true, bool normOut = true)
+//		: mi(mesh, hasTex, normOut) {}
+//
+//	MeshComponent& operator=(MeshComponent& mc) { return *this = mc; };
+//
+//	operator MeshInstance () { return mi; }
+//	operator const MeshInstance() const { return mi; }
+//};
+
+struct ModelComponent
 {
-	Mesh* Mesh_      {nullptr};
-	/*bool  HasTextures{true};
-	bool  FlipNormals{ false };*/
-	//glm::vec4 Color{1.f, 0.f, 1.f, 1.f}; //magenta
+	std::vector<MeshInstance> mis;
 
-	bool HasTextures(bool has) { return Mesh_->HasTextures(has); }
-	bool HasTextures()         { return Mesh_->HasTextures();    }
-	bool NormalsOut(bool out)  { return Mesh_->NormalsOut(out); }
-	bool NormalsOut()          { return Mesh_->NormalsOut();     }
-	const glm::vec4& Color(const glm::vec4& color) { return Mesh_->Color(color); }
-	const glm::vec4& Color()   { return Mesh_->Color(); }
+	void Draw(const glm::mat4& modelMat)
+	{
+		for (auto& mesh : mis)
+		{
+			Renderer::Draw(modelMat, mesh);
+		}
+	}
 
-	MeshComponent() = default;
-	MeshComponent(const MeshComponent&) = default;
-	MeshComponent(Mesh* mesh)
-		: Mesh_(mesh) {}
+	ModelComponent() = default;
+	ModelComponent(Mesh& mesh, bool hasTex = true, bool normOut = true)
+	{
+		mis.push_back({ mesh, hasTex, normOut });
+	}
+	ModelComponent(Model model, bool hasTex = true, bool normOut = true)
+	{
+		for (auto& mesh : model.Meshes())
+			mis.push_back({ mesh, hasTex, normOut });
+	}
+	ModelComponent(const ModelComponent& mc) : mis(mc.mis) {}
+	ModelComponent(ModelComponent&& mc) : mis(mc.mis) {}
 
-	operator Mesh* () { return Mesh_; }
-	operator const Mesh* () const { return Mesh_; }
+	ModelComponent& operator=(ModelComponent& mc)
+	{ 
+		if (this == &mc)
+			return *this;
+		mis = mc.mis;
+		return *this;
+	};
+
+	operator std::vector<MeshInstance>() { return mis; }
+	operator const std::vector<MeshInstance>() const { return mis; }
 };
 
 struct LightComponent

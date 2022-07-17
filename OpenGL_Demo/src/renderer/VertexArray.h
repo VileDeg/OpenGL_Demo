@@ -6,7 +6,7 @@ class VAO
 public:
     VAO();
     ~VAO();
-    void AddBuffer(const VBO& vbo, EBO* ebo = nullptr);
+    void AddBuffer(const VBO& vbo, Ref<EBO> ebo);
 
     const int Count() const { return m_Count; }
     Ref<EBO> Ebo() { return m_EBO; }

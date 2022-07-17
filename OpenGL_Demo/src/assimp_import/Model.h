@@ -3,6 +3,7 @@
 #include <assimp/scene.h>
 #include <assimp_import/Mesh.h>
 
+
 namespace AssimpImport 
 {
     using namespace std;
@@ -16,6 +17,8 @@ namespace AssimpImport
         bool gammaCorrection;
 
         Model(string const& path, bool gamma = false);
+
+        
 
         void Draw(Shader& shader);
     private:

@@ -63,21 +63,22 @@ namespace test
         m_Camera(window, glm::vec3(0.0f, 0.0f, 10.0f)),
         m_Scene(CreateRef<Scene>()),
         m_CubeMesh(GeoData::GetData(Primitive::Cube).data,
-            GeoData::GetData(Primitive::Cube).size, 
-            GeoData::GetData(Primitive::Cube).count,
+            GeoData::GetData(Primitive::Cube).size,
+            GeoData::GetData(Primitive::Cube).count, 
             { 
                 {TexType::Diffuse,  {"container2.png"         }},
                 {TexType::Specular, {"container2_specular.png"} }
             }),
-        //m_Model("backpack/backpack.obj"),
-        m_Model("deccer-cubes/SM_Deccer_Cubes_Textured.gltf"),
-        m_CamSpeed(8.0f)
+        //m_Models{{"helmet/scene.gltf"}},
+        
+        
+        m_CamSpeed(12.f)
     {
         m_Window.SetCamera(&m_Camera);
 
         SetLightParams();
 
-        /*int num = 10;
+        int num = 10;
         int h = num / 2;
         for (int j = 0; j < num; j += 2)
         {
@@ -86,18 +87,17 @@ namespace test
                 for (int k = 0; k < num; k += 2)
                 {
                     m_Cubes[i + j + k] = m_Scene->CreateEntity("Cube" + std::to_string(i));
-                    m_Cubes[i + j + k].AddComponent<MeshComponent>(&m_CubeMesh);
+                    m_Cubes[i + j + k].AddComponent<ModelComponent>(m_CubeMesh);
                     m_Cubes[i + j + k].GetComponent<TransformComponent>().
                         TranslateTo(glm::vec3(i - h, k - h, j - h));
                 }
             }
-        }*/
+        }
         
         m_LightCubes[0] = m_Scene->CreateEntity("LightCube0");
-        m_LightCubes[0].AddComponent<MeshComponent>(&m_CubeMesh);
+        m_LightCubes[0].AddComponent<ModelComponent>(m_CubeMesh, false);
                      
-        m_LightCubes[0].GetComponent<MeshComponent>().HasTextures(false);
-        m_LightCubes[0].GetComponent<MeshComponent>().Color({ 1.f, 1.f, 1.f, 1.f });
+        m_LightCubes[0].GetComponent<ModelComponent>().mis[0].Color = {1.f, 1.f, 1.f, 1.f};
                      
         m_LightCubes[0].GetComponent<TransformComponent>().TranslateTo(m_LightPositions[0]);
         m_LightCubes[0].GetComponent<TransformComponent>().ScaleTo(0.2f);
@@ -105,24 +105,36 @@ namespace test
         m_LightCubes[0].AddComponent<LightComponent>(m_PointLightParams, true);
 
         m_Room = m_Scene->CreateEntity("Room");
-        auto& mesh = m_Room.AddComponent<MeshComponent>(&m_CubeMesh);
-        mesh.NormalsOut(false);
+        auto& mesh = m_Room.AddComponent<ModelComponent>(m_CubeMesh, true, false);
         m_Room.GetComponent<TransformComponent>().ScaleTo(35.f);
-
-        m_ImportedModel = m_Scene->CreateEntity("ImportedModel");
-        m_ImportedModel.AddComponent<MeshComponent>(&m_Model.Meshes()[0]);
         
+        /*float offset = 0;
+
+        for (int i = 0; i < m_Models.size(); ++i)
+        {
+            if (m_Models[i].Meshes().empty())
+                continue;
+            auto& e = m_Scene->CreateEntity("ImportedModel");
+            m_ImportedModels.push_back(e);
+            e.AddComponent<ModelComponent>(m_Models[i]);
+            e.GetComponent<TransformComponent>().TranslateTo(glm::vec3(0.f + offset, 0.f, 0.f));
+            if (i == 0)
+                e.GetComponent<TransformComponent>().ScaleTo(100.f);
+            offset += 10;
+        }*/
     }
 
     static float DeltaTime = 0.f;
     static bool  RotateLight = false;
+    static bool  LightOn = true;
+    static bool  CastShadows = true;
     static float LightRotSpeed = 100.f;
     glm::vec3 RotAxis = { 0.f, 1.0f, 0.f };
 
     void TestRenderer::OnUpdate(float deltaTime)
     {
         DeltaTime = deltaTime;
-        Renderer::BeginScene(m_Camera);
+        Renderer::BeginScene( m_Camera, LightOn ? 1 : 0, CastShadows);
 
         if (RotateLight)
         {
@@ -144,6 +156,8 @@ namespace test
         static float min = 0.0f;
         static int x, y, z;
         ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
+        ImGui::Checkbox   ("Light On", &LightOn);
+        ImGui::Checkbox   ("Cast Shadows", &CastShadows);
         ImGui::Checkbox   ("Rotate Light", &RotateLight);
         ImGui::SliderFloat("Light Rot Speed", &LightRotSpeed, min, 300.f);
         ImGui::LabelText  ("Frame Rate", "%f", 1 / DeltaTime);

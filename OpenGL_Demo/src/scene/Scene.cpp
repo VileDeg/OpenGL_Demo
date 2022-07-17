@@ -26,37 +26,22 @@ Entity Scene::CreateEntity(const std::string& name)
 
 void Scene::RenderScene()
 {
-	auto& view = m_Registry.view<TransformComponent, MeshComponent, TagComponent>();
+	auto& view = m_Registry.view<TransformComponent, ModelComponent>();
 	for (auto& entity : view)
 	{
-		auto& [transform, mesh, tag] = view.get(entity);
-		Renderer::Draw(transform, mesh);
-		/*if (mesh.FlipNormals)
-		{
-			Renderer::DrawInside(transform, mesh.Mesh_->Vao(),
-				mesh.Mesh_->Diffuse(), mesh.Mesh_->Specular());
-			continue;
-		}
-		if (mesh.HasTextures)
-			Renderer::Draw(transform, mesh.Mesh_->Vao(),
-				mesh.Mesh_->Diffuse(), mesh.Mesh_->Specular());
-		else
-			Renderer::Draw(transform, mesh.Mesh_->Vao(), mesh.Color);*/
+		auto& [transform, model] = view.get(entity);
+		model.Draw(transform);
 	}
 }
 
 void Scene::RenderSceneDepth()
 {
-	auto& view = m_Registry.view<TransformComponent, MeshComponent>();
+	auto& view = m_Registry.view<TransformComponent, ModelComponent>();
 	for (auto& entity : view)
 	{
-		auto& [transform, mesh] = view.get(entity);
-		/*if (mesh.FlipNormals)
-		{
-			Renderer::DrawDepthInside(transform, mesh.Mesh_->Vao());
-			continue;
-		}*/
-		Renderer::DrawDepth(transform, mesh);
+		auto& [transform, model] = view.get(entity);
+		for (auto& m : model.mis)
+			Renderer::DrawDepth(transform, m);
 	}
 }
 
@@ -92,6 +77,6 @@ void Scene::OnUpdate(float deltaTime)
 
 	RenderScene();
 
-	Renderer::DrawSkybox();
+	//Renderer::DrawSkybox();
 }
 
