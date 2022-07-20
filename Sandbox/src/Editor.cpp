@@ -1,4 +1,5 @@
 #include "Editor.h"
+#include "scenes/TestScene.h"
 
 Editor::Editor()
 {
@@ -11,17 +12,11 @@ Editor::Editor()
 
     m_Camera = CreateRef<Camera>(*m_Window, glm::vec3(0.f, 0.f, 10.f));
     m_Window->SetCamera(m_Camera);
-    /*m_Framebuffer = CreateRef<Framebuffer>();
-    m_Framebuffer->ResetForRender(WINDOW_WIDTH, WINDOW_HEIGHT);*/
-    /*test::Test* currentTest = nullptr;
-    test::TestMenu* testMenu = new test::TestMenu(*m_Window, currentTest);
-    currentTest = testMenu;
 
-    testMenu->RegisterTest<test::TestRenderer>(window, "TestRenderer");
-    testMenu->RunNextTest();*/
-    m_RendererTest = CreateScope<test::TestRenderer>(*m_Window);
-
-    //m_Window->HideCursor();
+    //m_RendererTest = CreateScope<test::TestRenderer>(*m_Window);
+    m_ActiveScene = CreateRef<TestScene>(*m_Window, *m_Camera);
+    //m_ActiveScene = new TestScene(*m_Window, *m_Camera);
+    m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 }
 
 void Editor::Run()
@@ -39,7 +34,8 @@ void Editor::Run()
         Renderer::Clear(0b111);
         //m_Framebuffer->Unbind(WINDOW_WIDTH, WINDOW_HEIGHT);
         
-        m_RendererTest->OnUpdate(m_Window->DeltaTime(), *m_Camera);
+        //m_RendererTest->OnUpdate(m_Window->DeltaTime(), *m_Camera);
+        m_ActiveScene->OnUpdate(m_Window->DeltaTime());
         
         ImGuiRender();
 
@@ -109,6 +105,8 @@ void Editor::ImGuiShowViewport()
         ImGui::EndMenuBar();
     }
 
+    m_SceneHierarchyPanel.OnImGuiRender();
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
     ImGui::Begin("Viewport");
         
@@ -139,7 +137,8 @@ void Editor::ImGuiRender()
 
     ImGuiShowViewport();
 
-    m_RendererTest->OnImGuiRender();
+    //m_RendererTest->OnImGuiRender();
+    m_ActiveScene->OnImGuiRender();
 
     ImguiLayer::End(m_Window->Width(), m_Window->Height());
 }

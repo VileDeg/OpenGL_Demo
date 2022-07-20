@@ -2,7 +2,8 @@
 #include "OpenGL_Demo.h"
 #include "imgui/ImguiLayer.h"
 #include "imgui/imgui.h"
-#include "tests/TestRenderer.h"
+//#include "tests/TestRenderer.h"
+#include "ui/SceneHierarchyPanel.h"
 
 class Editor
 {
@@ -17,9 +18,11 @@ private:
 	GLContext* m_Context;
 	Window*    m_Window;
 	Ref<Camera> m_Camera;
+	Ref<Scene> m_ActiveScene;
 	//Ref<Framebuffer> m_Framebuffer;
 	glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
-	Scope<test::TestRenderer> m_RendererTest;
+	//Scope<test::TestRenderer> m_RendererTest;
+	SceneHierarchyPanel m_SceneHierarchyPanel;
 private:
 	static constexpr const unsigned WINDOW_WIDTH = 1600;
 	static constexpr const unsigned WINDOW_HEIGHT = 900;

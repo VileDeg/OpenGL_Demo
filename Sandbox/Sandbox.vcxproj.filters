@@ -6,23 +6,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\tests\Test.h">
-      <Filter>tests</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tests\TestRenderer.h">
-      <Filter>tests</Filter>
-    </ClInclude>
     <ClInclude Include="src\Editor.h" />
+    <ClInclude Include="src\ui\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\scenes\TestScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\tests\Test.cpp">
-      <Filter>tests</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tests\TestRenderer.cpp">
-      <Filter>tests</Filter>
-    </ClCompile>
     <ClCompile Include="src\Editor.cpp" />
+    <ClCompile Include="src\ui\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="src\scenes\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\colorAttrib.shader" />

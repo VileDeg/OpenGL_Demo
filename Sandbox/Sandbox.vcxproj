@@ -92,14 +92,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Editor.h" />
-    <ClInclude Include="src\tests\Test.h" />
-    <ClInclude Include="src\tests\TestRenderer.h" />
+    <ClInclude Include="src\scenes\TestScene.h" />
+    <ClInclude Include="src\ui\SceneHierarchyPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\tests\Test.cpp" />
-    <ClCompile Include="src\tests\TestRenderer.cpp" />
+    <ClCompile Include="src\scenes\TestScene.cpp" />
+    <ClCompile Include="src\ui\SceneHierarchyPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenGL_Demo\OpenGL_Demo.vcxproj">
