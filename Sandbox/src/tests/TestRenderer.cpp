@@ -133,7 +133,7 @@ namespace test
     static int num = 5;
     TestRenderer::TestRenderer(Window& window)
         : Test(window),
-        m_Camera(window, glm::vec3(0.0f, 0.0f, 7.5f)),
+        //m_Camera(window, glm::vec3(0.0f, 0.0f, 7.5f)),
         m_Scene(CreateRef<Scene>()),
         m_CubeMesh(GeoData::GetData(Primitive::Cube).data,
             GeoData::GetData(Primitive::Cube).size,
@@ -146,7 +146,8 @@ namespace test
         //m_Models{{"helmet/scene.gltf"}},
         m_CamSpeed(12.f)
     {
-        m_Window.SetCamera(&m_Camera);
+        //m_Window.SetCamera(&m_Camera);
+        m_Window.HideCursor();
 
         SetLightParams();
         CalcPlaneVertices();
@@ -235,7 +236,7 @@ namespace test
 
     static float DeltaTime = 0.f;
     static bool  RotateLight = false;
-    static bool  LightOn = true;
+    static bool  LightOn     = true;
     static bool  CastShadows = true;
     static float LightRotSpeed = 100.f;
 
@@ -243,10 +244,10 @@ namespace test
     static glm::vec3 PlaneAxis = { 0.f, 1.f, 0.f };
     glm::vec3 RotAxis = { 0.f, 1.0f, 0.f };
 
-    void TestRenderer::OnUpdate(float deltaTime)
+    void TestRenderer::OnUpdate(float deltaTime, Camera& camera)
     {
         DeltaTime = deltaTime;
-        Renderer::BeginScene( m_Camera, LightOn ? 1 : 0, CastShadows);
+        Renderer::BeginScene(camera, LightOn ? 1 : 0, CastShadows);
 
         if (RotateLight)
         {
@@ -256,21 +257,21 @@ namespace test
             tr.Transform = matRot * tr.Transform;
         }
 
-        for (int i = 0; i < num*num*num; ++i)
+        /*for (int i = 0; i < num*num*num; ++i)
         {
             auto& tr = m_Cubes[i].GetComponent<TransformComponent>();
             auto axis = glm::normalize(glm::vec3(1.f, 1.f, 0.f));
             glm::quat quatRot = glm::angleAxis(glm::radians(LightRotSpeed * deltaTime), axis);
             glm::mat4x4 matRot = glm::mat4_cast(quatRot);
             tr.Transform = matRot * tr.Transform;
-        }
+        }*/
 
         //m_Brickwall.GetComponent<TransformComponent>().RotateTo(PlaneAngle, PlaneAxis);
 
         m_Scene->OnUpdate(deltaTime);
 
         Renderer::EndScene();
-        m_Camera.SetSpeed(m_CamSpeed);
+        camera.SetSpeed(m_CamSpeed);
     }
 
     void TestRenderer::OnImGuiRender()

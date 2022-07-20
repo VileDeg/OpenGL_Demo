@@ -12,7 +12,7 @@ private:
     {
         bool paused = false;
         std::vector<Keybind> keys;
-        Camera* camera = nullptr;
+        Ref<Camera> camera = nullptr;
         int width;
         int height;
         float cursorX;
@@ -24,15 +24,13 @@ public:
     ~Window() {}
 
     GLFWwindow* Handle() { return m_WindowHandle; }
-    void SetCamera(Camera* cam);
+    void SetCamera(Ref<Camera> cam);
     void OnUpdate();
 
     const bool Paused() const { return m_Params.paused; }
     const int Width() { return m_Params.width; }
     const int Height() { return m_Params.height; }
-    Camera::ScreenParams GetDimensions() const {
-        return { m_Params.width, m_Params.height }; 
-    }
+
     const float DeltaTime() const { return m_DeltaTime; }
 
     bool IsOpen() const;

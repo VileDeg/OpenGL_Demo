@@ -2,22 +2,41 @@
 #include "Camera.h"
 #include "Window.h"
 
-const glm::mat4 Camera::GetProjMat() const
-{
-    //if (m_Window.Width() == 0 || m_Window.Height() == 0)
-    //    abort();
-
-    return glm::perspective(glm::radians(m_Zoom),
+Camera::Camera(Window& window, glm::vec3 position,
+    glm::vec3 up, float yaw, float pitch)
+    : m_Window(window),
+    m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
+    m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
+    m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch),
+    m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE),
+    m_ViewMat(glm::lookAt(m_Position, m_Position + m_Front, m_Up)),
+    m_ProjMat(glm::perspective(glm::radians(m_Zoom),
         (float)(m_Window.Width()) / m_Window.Height(),
-        m_NearPlane, m_FarPlane);
-   /* return glm::perspective(glm::radians(m_Zoom),
-        (float)(m_Params.width) / m_Params.height,
-        m_NearPlane, m_FarPlane);*/
+        m_NearPlane, m_FarPlane))
+{
+    UpdateCameraVectors();
 }
 
-void Camera::updateCameraVectors()
+void Camera::OnUpdate()
 {
+    UpdateCameraVectors();
+    m_ViewMat = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+    /*m_ProjMat = glm::perspective(glm::radians(m_Zoom),
+        (float)(m_Window.Width()) / m_Window.Height(),
+        m_NearPlane, m_FarPlane);*/
+    m_ProjViewMat = m_ProjMat * m_ViewMat;
+}
 
+void Camera::UpdateProjMat(const unsigned width, const unsigned height)
+{
+    m_ProjMat = glm::perspective(glm::radians(m_Zoom),
+        (float)(width) / height,
+        m_NearPlane, m_FarPlane);
+    m_ProjViewMat = m_ProjMat * m_ViewMat;
+}
+
+void Camera::UpdateCameraVectors()
+{
 	glm::vec3 front;
 	front.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
 	front.y = sin(glm::radians(m_Pitch));
@@ -26,9 +45,7 @@ void Camera::updateCameraVectors()
 
 	m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp));
 	m_Up = glm::normalize(glm::cross(m_Right, m_Front));
-
 }
-
 
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch)
 {
@@ -38,7 +55,6 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPi
     m_Yaw   += xoffset;
     m_Pitch += yoffset;
 
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
     if (constrainPitch)
     {
         if (m_Pitch > 89.0f)
@@ -47,11 +63,9 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPi
             m_Pitch = -89.0f;
     }
 
-    // update Front, Right and Up Vectors using the updated Euler angles
-    updateCameraVectors();
+    UpdateCameraVectors();
 }
-//
-// processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
+
 void Camera::ProcessMouseScroll(float yoffset)
 {
     m_Zoom -= (float)yoffset;
@@ -59,5 +73,4 @@ void Camera::ProcessMouseScroll(float yoffset)
         m_Zoom = 1.0f;
     if (m_Zoom > 45.0f)
         m_Zoom = 45.0f;
-
 }

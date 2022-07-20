@@ -5,12 +5,21 @@
 
 std::unique_ptr<GLContext> GLContext::s_Instance = nullptr;
 
+static void s_DebugMessageCallback(GLenum source,
+    GLenum type, GLuint id, GLenum severity,
+    GLsizei length, const GLchar* message, const void* userParam)
+{
+    if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+        return;
+    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        type, severity, message);
+}
 
 GLContext::GLContext()
-
 {
     Init();
-
+    
     SetKeybinds();
 }
 
@@ -41,6 +50,11 @@ GLFWwindow* GLContext::OpenWindow(const unsigned width, const unsigned height, c
         {
             std::cout << "Failed to initialize GLAD" << std::endl;
         }
+        m_GladInit = true;
+#ifdef _DEBUG
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(s_DebugMessageCallback, nullptr);
+#endif
     }
     
     m_Window.reset(new Window(handle, name));
@@ -58,8 +72,6 @@ void GLContext::Init()
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
-   
 }
 
 

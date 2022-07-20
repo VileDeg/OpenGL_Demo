@@ -49,9 +49,12 @@ void Renderer::Init(unsigned width, unsigned height)
 	s_Data = new RenderData();
 	s_Data->viewportWidth  = width;
 	s_Data->viewportHeight = height;
+	s_Data->DefaultFramebuffer = CreateRef<Framebuffer>();
+	s_Data->DefaultFramebuffer->ResetForRender(width, height);
 	s_Data->DepthMap = CreateRef<Texture>(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 	s_Data->DepthMapFBO = CreateRef<Framebuffer>();
-	s_Data->DepthMapFBO->AttachDepthCubemap(s_Data->DepthMap->Id());
+	s_Data->DepthMapFBO->AttachDepthCubemap(s_Data->DepthMap->Id(), SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+	
 
 	LoadShaders();
 	CreateSkybox();
@@ -162,6 +165,8 @@ void Renderer::DrawDepth(const glm::mat4& modelMat, const MeshInstance& mi)
 
 void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
 {
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	float near_plane = 1.0f;
 	float far_plane = 25.0f;
 	unsigned SHADOW_WIDTH = 1024;
@@ -176,6 +181,7 @@ void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
 	shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 	glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 	s_Data->DepthMapFBO->Bind();
+	//BindFramebuffer(s_Data->DepthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	auto sh = s_Data->Shader[ShaderType::DepthShader];
@@ -184,15 +190,15 @@ void Renderer::ShadowRenderSetup(glm::vec3 lightPos)
 		sh->setMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
 	sh->setFloat("far_plane", far_plane);
 	sh->setFloat3("lightPos", lightPos);
-	/*sh = s_Data->Shader[ShaderType::DiffNSpec];
-	BindShader(sh);
-	sh->setFloat("far_plane", far_plane);
-	sh->setFloat3("lightPos", lightPos);*/
 }
 
 void Renderer::ShadowRenderEnd()
 {
-	s_Data->DepthMapFBO->Unbind();
+	//BindDefaultFramebuffer();
+	s_Data->DefaultFramebuffer->Bind();
+	//ResetViewport();
+	//s_Data->DepthMapFBO->Unbind(s_Data->viewportWidth, s_Data->viewportHeight);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void Renderer::DrawSkybox()
@@ -291,15 +297,13 @@ void Renderer::GLDraw(const Ref<VAO> vao)
 		glDrawArrays(GL_TRIANGLES, 0, vao->Count());
 }
 
-bool Renderer::BindShader(const Ref<Shader> shader)
+void Renderer::BindShader(const Ref<Shader> shader)
 {
 	if (s_Data->boundShaderId != shader->Id())
 	{
 		shader->Bind();
 		s_Data->boundShaderId = shader->Id();
-		return true;
 	}
-	return false;
 }
 
 void Renderer::BindVAO(const Ref<VAO> vao)
@@ -320,6 +324,19 @@ void Renderer::BindTexture(const Ref<Texture> tex, const short slot)
 	}
 }
 
+const unsigned Renderer::GetFBColorAttachmentID()
+{
+	return s_Data->DefaultFramebuffer->GetColorAttachmentId();
+}
+
+void Renderer::SetRenderImageSize(const unsigned width, const unsigned height)
+{
+	s_Data->viewportWidth = width;
+	s_Data->viewportHeight = height;
+	s_Data->DefaultFramebuffer->ResetForRender(width, height);
+	
+}
+
 void Renderer::BeginScene(const Camera& cam, unsigned lightCount, bool castShadows)
 {
 	SceneData data = { cam.GetProjViewMat(), cam.Position(), lightCount, castShadows };
@@ -327,10 +344,13 @@ void Renderer::BeginScene(const Camera& cam, unsigned lightCount, bool castShado
 	
 	s_Data->ViewMat = cam.GetViewMat();
 	s_Data->ProjMat = cam.GetProjMat();
+
+	s_Data->DefaultFramebuffer->Bind();
 }
 
 void Renderer::EndScene()
 {
+	s_Data->DefaultFramebuffer->Unbind(s_Data->viewportWidth, s_Data->viewportHeight);
 }
 
 void Renderer::Clear(std::bitset<3> bufferBits)
@@ -365,3 +385,4 @@ void Renderer::Shutdown()
 {
 	delete s_Data;
 }
+

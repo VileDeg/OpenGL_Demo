@@ -12,6 +12,7 @@
     <ClInclude Include="src\tests\TestRenderer.h">
       <Filter>tests</Filter>
     </ClInclude>
+    <ClInclude Include="src\Editor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
@@ -21,6 +22,7 @@
     <ClCompile Include="src\tests\TestRenderer.cpp">
       <Filter>tests</Filter>
     </ClCompile>
+    <ClCompile Include="src\Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\colorAttrib.shader" />

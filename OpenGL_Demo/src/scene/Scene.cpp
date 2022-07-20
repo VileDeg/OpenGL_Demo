@@ -56,18 +56,12 @@ void Scene::RenderShadow()
 		if (light.IsDynamic)
 			light.UpdatePosition(transform.Position());
 
-		Renderer::SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		Renderer::Clear(0b111);
-
 		Renderer::ShadowRenderSetup(transform.Position());
 		
 		// render scene from light's point of view
 		RenderSceneDepth();
 
 		Renderer::ShadowRenderEnd();
-		// reset viewport
-		Renderer::ResetViewport();
-		Renderer::Clear(0b111);
 	}
 }
 

@@ -91,10 +91,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Editor.h" />
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\tests\TestRenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\tests\TestRenderer.cpp" />

@@ -30,27 +30,20 @@ private:
 	void Init();
 	void SetKeybinds();
 
-	/*void UpdateWindowDelayedKeybinds();
-	void UpdateWindowCameraKeybinds();*/
-
 	template<typename T>
     inline void RegisterDelayedKeybind(int keyId)
     {
         m_DelayedKeybinds.push_back(new T(keyId));
-		//UpdateWindowDelayedKeybinds();
     }
     template<typename T>
     inline void RegisterCameraKeybind(int keyId)
     {
         m_CameraKeybinds.push_back(new T(keyId));
-		//UpdateWindowCameraKeybinds();
     }
 
 	GLContext();
 	
 private:
-	/*std::vector<KeybindDelayed*> m_DelayedKeybinds;
-	std::vector<KeybindCamera*>  m_CameraKeybinds;*/
 	bool m_GladInit = false;
 	std::unordered_map<KeyActionType, Keybind> m_Keybinds;
 	std::shared_ptr<Window> m_Window = nullptr;

@@ -40,6 +40,7 @@ private:
 		std::unordered_map<ShaderType, Ref<Shader>> Shader;
 		Ref<ShaderBlock> SceneUBO;
 		Ref<ShaderBlock> LightSSBO;
+		Ref<Framebuffer> DefaultFramebuffer;
 		Ref<Framebuffer> DepthMapFBO;
 		Ref<Texture> DepthMap;
 		
@@ -51,6 +52,7 @@ private:
 		unsigned LightsCount;
 		unsigned boundVaoId;
 		unsigned boundShaderId;
+		unsigned boundFramebufferId;
 		unsigned viewportWidth;
 		unsigned viewportHeight;
 		SkyboxData skyboxData;
@@ -76,12 +78,15 @@ public:
 	static void LoadShaders();
 	static void CreateSkybox();
 
+	static const unsigned GetFBColorAttachmentID();
+	static void SetRenderImageSize(const unsigned width, const unsigned height);
 	static void BeginScene(const Camera& cam, unsigned lightCount, bool castShadows);
 	static void EndScene();
 	static void Shutdown();
 
-	
-	static bool BindShader(const Ref<Shader> shader);
+	//static void BindDefaultFramebuffer();
+	//static void BindFramebuffer(const Ref<Framebuffer> fb);
+	static void BindShader(const Ref<Shader> shader);
 	static void BindVAO(const Ref<VAO> vao);
 	static void BindTexture(const Ref<Texture> tex, const short slot);
 

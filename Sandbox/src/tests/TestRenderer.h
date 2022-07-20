@@ -11,8 +11,8 @@ namespace test
         TestRenderer(Window& window);
         ~TestRenderer() {}
 
-        void OnUpdate(float deltaTime) override;
-        void OnRender() override {}
+        void OnUpdate(float deltaTime, Camera& camera) override;
+        //void OnRender() override {}
         void OnImGuiRender() override;
     private:
         void SetLightParams();
@@ -28,7 +28,7 @@ namespace test
         std::vector<Entity> m_ImportedModels;
         std::vector<Model> m_Models;
         
-        Camera m_Camera;
+        //Camera m_Camera;
         float m_CamSpeed;
         glm::vec3 m_LightPositions[3];
 

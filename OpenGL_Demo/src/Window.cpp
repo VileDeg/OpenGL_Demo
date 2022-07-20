@@ -13,7 +13,7 @@ Window::Window(GLFWwindow* handle, const std::string& name)
     glfwGetWindowSize(handle, &m_Params.width, &m_Params.height);
     glfwSetWindowUserPointer(handle, (void*)&m_Params);
 
-    glfwSetFramebufferSizeCallback(handle, s_fbSizeCallback);
+    //glfwSetFramebufferSizeCallback(handle, s_fbSizeCallback);
     glfwSetKeyCallback(handle, s_keyCallback);
     glfwSetWindowIconifyCallback(handle, s_iconifyCallback);
 
@@ -53,7 +53,7 @@ void Window::CalcDeltaTime()
     m_LastFrame = currentFrame;
 }
 
-void Window::SetCamera(Camera* cam)
+void Window::SetCamera(Ref<Camera> cam)
 {
     m_Params.camera = cam;
 }
@@ -128,7 +128,7 @@ void Window::s_fbSizeCallback(GLFWwindow* window, int width, int height)
     WindowParams& params = 
         *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));
 
-    glViewport(0, 0, width, height);
+    //glViewport(0, 0, width, height);
     params.width = width;
     params.height = height;
 }

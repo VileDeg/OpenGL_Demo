@@ -8,6 +8,7 @@ class ImguiLayer
 public:
 	static void Init(GLFWwindow* window);
 	static void Begin();
+	//static void OnUpdate();
 	static void End(float width, float height);
 	static void Shutdown();
 };
