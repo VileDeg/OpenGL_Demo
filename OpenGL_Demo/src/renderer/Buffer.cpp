@@ -7,30 +7,30 @@
 //VBO////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-VBO::VBO(const void* data, std::size_t size) : count(-1)
+VBO::VBO(const void* data, std::size_t size) : m_Count(-1)
 {
-	glGenBuffers(1, &id);
-	glBindBuffer(GL_ARRAY_BUFFER, id);
+	glGenBuffers(1, &m_Id);
+	glBindBuffer(GL_ARRAY_BUFFER, m_Id);
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }
 
 VBO::VBO(const void* data, const std::size_t size, const int vertexCount)
 {
-	glGenBuffers(1, &id);
-	glBindBuffer(GL_ARRAY_BUFFER, id);
+	glGenBuffers(1, &m_Id);
+	glBindBuffer(GL_ARRAY_BUFFER, m_Id);
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-	count = vertexCount;
+	m_Count = vertexCount;
 }
 
 VBO::~VBO()
 {
-	glDeleteBuffers(1, &id);
+	glDeleteBuffers(1, &m_Id);
 }
 
 
 void VBO::Bind() const
 {
-	glBindBuffer(GL_ARRAY_BUFFER, id);
+	glBindBuffer(GL_ARRAY_BUFFER, m_Id);
 }
 
 void VBO::Unbind() const
@@ -55,25 +55,25 @@ const unsigned VertexLayout::VertexAttribute::GetTypeSize() const
 }
 
 VertexLayout::VertexLayout(const std::initializer_list<VertexAttribute>& list)
-: stride(0), attribs(list)
+: m_Stride(0), m_Attribs(list)
 {
-	for (auto& attrib : attribs)
+	for (auto& attrib : m_Attribs)
 	{
-		stride += attrib.count * sizeof(attrib.GetTypeSize());
+		m_Stride += attrib.count * sizeof(attrib.GetTypeSize());
 	}
 }
 
 void VertexLayout::Enable() const
 {
 	unsigned offset = 0;
-	for (unsigned i = 0; i < attribs.size(); ++i)
+	for (unsigned i = 0; i < m_Attribs.size(); ++i)
 	{
-		const auto& at = attribs[i];
+		const auto& at = m_Attribs[i];
 
 		if      (at.type == GL_FLOAT)
-			glVertexAttribPointer(i, at.count, at.type, at.normalized, stride, (void*)offset);
+			glVertexAttribPointer(i, at.count, at.type, at.normalized, m_Stride, (void*)offset);
 		else if (at.type == GL_INT  )
-			glVertexAttribIPointer(i, at.count, at.type, stride, (void*)offset);
+			glVertexAttribIPointer(i, at.count, at.type, m_Stride, (void*)offset);
 		else
 			ASSERT(0, "Unsupported type");
 
@@ -86,22 +86,22 @@ void VertexLayout::Enable() const
 //EBO////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-EBO::EBO(const unsigned int* data, unsigned int count) : count(count)
+EBO::EBO(const unsigned int* data, unsigned int count) : m_Count(count)
 {
-    glGenBuffers(1, &id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);
+    glGenBuffers(1, &m_Id);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Id);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Count * sizeof(unsigned int), data, GL_STATIC_DRAW);
 }
 
 EBO::~EBO()
 {
-    glDeleteBuffers(1, &id);
+    glDeleteBuffers(1, &m_Id);
 }
 
 
 void EBO::Bind()
 {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Id);
 }
 
 void EBO::Unbind()

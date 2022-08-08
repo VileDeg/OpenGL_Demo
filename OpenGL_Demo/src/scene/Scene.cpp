@@ -24,22 +24,27 @@ Entity Scene::CreateEntity(const std::string& name)
 	return entity;
 }
 
+void Scene::DestroyEntity(Entity entity)
+{
+	m_Registry.destroy(entity);
+}
+
 void Scene::RenderScene()
 {
-	auto& view = m_Registry.view<TransformComponent, ModelComponent>();
+	auto& view = m_Registry.view<TransformComponent, ModelComponent, TagComponent>();
 	for (auto& entity : view)
 	{
-		auto& [transform, model] = view.get(entity);
+		auto& [transform, model, tag] = view.get(entity);
 		model.Draw(transform);
 	}
 }
 
 void Scene::RenderSceneDepth()
 {
-	auto& view = m_Registry.view<TransformComponent, ModelComponent>();
+	auto& view = m_Registry.view<TransformComponent, ModelComponent, TagComponent>();
 	for (auto& entity : view)
 	{
-		auto& [transform, model] = view.get(entity);
+		auto& [transform, model, tag] = view.get(entity);
 		for (auto& m : model.mis)
 			Renderer::DrawDepth(transform, m);
 	}
@@ -54,9 +59,9 @@ void Scene::RenderShadow()
 
 		//Update dynamic light position
 		if (light.IsDynamic)
-			light.UpdatePosition(transform.Position());
+			light.UpdatePosition(transform.Position);
 
-		Renderer::ShadowRenderSetup(transform.Position());
+		Renderer::ShadowRenderSetup(transform.Position);
 		
 		// render scene from light's point of view
 		RenderSceneDepth();

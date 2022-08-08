@@ -6,6 +6,11 @@
 #include "renderer/Model.h"
 #include "renderer/Light.h"
 
+namespace Components
+{
+	constexpr const int NUMBER_OF_COMPONENTS = 3;
+}
+
 struct TagComponent
 {
 	std::string Tag;
@@ -18,44 +23,52 @@ struct TagComponent
 
 struct TransformComponent
 {
-	glm::mat4 Transform{ 1.0f };
-	float Scale{ 1.f };
+	glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
+	glm::quat Quaternion{};
+	glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
 
-	void TranslateTo(const glm::vec3& pos)
+	void ScaleF(const float units)
 	{
-		Transform[3] = glm::vec4(pos, Transform[3].w);
-	}
-	
-	void ScaleTo(const float units)
-	{
-		Transform = glm::scale(Transform, glm::vec3(1.f / Scale));
-		Transform = glm::scale(Transform, glm::vec3(units));
-		Scale = units;
+		Scale = glm::vec3(units);
 	}
 
 	void RotateTo(const float angle, const glm::vec3& axis)
 	{
-		Transform = glm::scale(Transform, glm::vec3(1.f / Scale));
-		auto translate = Transform[3];
-		Transform[3] = { 0.f, 0.f, 0.f, translate.w };
-
-		Transform = glm::rotate(glm::mat4(1.f), glm::radians(angle), glm::normalize(axis));
-		Transform[3] = translate;
-		Transform = glm::scale(Transform, glm::vec3(Scale));
+		Quaternion = glm::angleAxis(glm::radians(angle), axis);
 	}
 
-	const glm::vec3& Position() const
+	void RotateTo(const glm::vec3& eulerAngles)
 	{
-		return Transform[3];
+		Quaternion = glm::quat(glm::radians(eulerAngles));
+	}
+
+	void RotateAroundPoint(const glm::vec3& point, const float angle, const glm::vec3& axis)
+	{
+		glm::vec3 iniPos = Position - point;
+		glm::quat quatRot = glm::angleAxis(glm::radians(angle), glm::normalize(axis));
+		glm::mat4 rotMat = glm::toMat4(quatRot);
+		Position = glm::vec3(rotMat * glm::vec4(iniPos,1.f)) + point;
+	}
+		
+	const glm::vec3& EulerAngles() const
+	{
+		return glm::eulerAngles(Quaternion);
+	}
+
+	glm::mat4 GetTransform() const
+	{
+		return glm::translate(glm::mat4(1.0f), Position)
+			* glm::toMat4(Quaternion)
+			* glm::scale(glm::mat4(1.0f), Scale);
 	}
 
 	TransformComponent() = default;
 	TransformComponent(const TransformComponent&) = default;
-	TransformComponent(const glm::mat4& transform)
-		: Transform(transform) {}
+	TransformComponent(const glm::vec3& pos)
+		: Position(pos) {}
 
-	operator glm::mat4& () { return Transform; }
-	operator const glm::mat4& () const { return Transform; }
+	operator glm::mat4 () { return GetTransform(); }
+	operator const glm::mat4 () const { return GetTransform(); }
 };
 
 struct ModelComponent

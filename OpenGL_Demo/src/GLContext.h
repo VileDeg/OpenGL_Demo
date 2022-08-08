@@ -6,13 +6,12 @@ class GLContext
 {
 public:
 	static GLContext& Get() { return *s_Instance; }
-
 	static GLContext& Create();
+
 	GLFWwindow* OpenWindow(const unsigned width = 800, const unsigned height = 600,
 		const std::string& name = "Window");
 
 	void Terminate() const;
-	
 	void SwapBuffers() const;
 	void PollEvents() const;
 	void UpdateWindows()

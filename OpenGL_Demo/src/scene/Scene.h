@@ -11,6 +11,7 @@ public:
 	virtual ~Scene() = 0;
 
 	Entity CreateEntity(const std::string& name = std::string());
+	void DestroyEntity(Entity entity);
 	
 	virtual void OnUpdate(float deltaTime);
 	virtual void OnImGuiRender() = 0;
@@ -23,4 +24,5 @@ private:
 
 	friend class Entity;
 	friend class SceneHierarchyPanel;
+	friend class SceneSerializer;
 };

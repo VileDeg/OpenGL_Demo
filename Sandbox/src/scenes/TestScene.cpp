@@ -126,7 +126,7 @@ static void CalcPlaneVertices()
     }
 }
 
-static int num = 5;
+static int num = 2;
 TestScene::TestScene(Window& window, Camera& camera)
     : m_Window(window), m_Camera(camera),
     m_CubeMesh(GeoData::GetData(Primitive::Cube).data,
@@ -137,14 +137,13 @@ TestScene::TestScene(Window& window, Camera& camera)
             {TexType::Specular, {"container2_specular.png"}}
         }),
 
-    //m_Models{{"helmet/scene.gltf"}},
     m_CamSpeed(12.f)
 {
-    //m_Window.SetCamera(&m_Camera);
     m_Window.HideCursor();
 
     SetLightParams();
     CalcPlaneVertices();
+   
     m_BrickwallMesh = new Mesh((const void*)QuadVertices, sizeof(QuadVertices), 84,
         {
             { TexType::Diffuse, { "brickwall.jpg" }},
@@ -153,7 +152,7 @@ TestScene::TestScene(Window& window, Camera& camera)
     m_WorldCenter = CreateEntity("WorldCenter");
     m_WorldCenter.AddComponent<ModelComponent>(m_CubeMesh, false);
     m_WorldCenter.GetComponent<ModelComponent>().mis[0].Color = { 1.f, 1.f, 1.f, 1.f };
-    m_WorldCenter.GetComponent<TransformComponent>().ScaleTo(0.2f);
+    m_WorldCenter.GetComponent<TransformComponent>().ScaleF(0.2f);
 
     float h = num - 1;
     for (int i = 0; i < num; ++i)
@@ -166,7 +165,7 @@ TestScene::TestScene(Window& window, Camera& camera)
                 m_Cubes[ind] = CreateEntity("Cube" + std::to_string(ind));
                 m_Cubes[ind].AddComponent<ModelComponent>(m_CubeMesh);
                 m_Cubes[ind].GetComponent<TransformComponent>().
-                    TranslateTo(glm::vec3(i * 2.f - h, j * 2.f - h, k * 2.f - h));
+                    Position = glm::vec3(i * 2.f - h, j * 2.f - h, k * 2.f - h);
             }
         }
     }
@@ -177,56 +176,40 @@ TestScene::TestScene(Window& window, Camera& camera)
         m_Brickwalls[i] = CreateEntity("Brickwall" + std::to_string(i));
         m_Brickwalls[i].AddComponent<ModelComponent>(*m_BrickwallMesh);
 
-        m_Brickwalls[i].GetComponent<TransformComponent>().ScaleTo(scale);
+        m_Brickwalls[i].GetComponent<TransformComponent>().ScaleF(scale);
     }
 
     const glm::vec3 up{ 0.f, 1.f, 0.f };
     const glm::vec3 right{ 1.f, 0.f, 0.f };
 
-    m_Brickwalls[0].GetComponent<TransformComponent>().TranslateTo({ 0.f, 0.f, -scale });
-    //m_Brickwalls[0].GetComponent<TransformComponent>().RotateTo   (90.f, up);
-    m_Brickwalls[1].GetComponent<TransformComponent>().TranslateTo({ 0.f, 0.f, scale });
-    m_Brickwalls[1].GetComponent<TransformComponent>().RotateTo(180.f, up);
+    {
+        m_Brickwalls[0].GetComponent<TransformComponent>().Position = { 0.f, 0.f, -scale };
 
-    m_Brickwalls[2].GetComponent<TransformComponent>().TranslateTo({ -scale, 0.f, 0.f });
-    m_Brickwalls[2].GetComponent<TransformComponent>().RotateTo(90.f, up);
-    m_Brickwalls[3].GetComponent<TransformComponent>().TranslateTo({ scale, 0.f, 0.f });
-    m_Brickwalls[3].GetComponent<TransformComponent>().RotateTo(-90.f, up);
+        m_Brickwalls[1].GetComponent<TransformComponent>().Position = { 0.f, 0.f, scale };
+        m_Brickwalls[1].GetComponent<TransformComponent>().RotateTo(180.f, up);
 
-    m_Brickwalls[4].GetComponent<TransformComponent>().TranslateTo({ 0.f, -scale, 0.f });
-    m_Brickwalls[4].GetComponent<TransformComponent>().RotateTo(-90.f, right);
-    m_Brickwalls[5].GetComponent<TransformComponent>().TranslateTo({ 0.f, scale, 0.f });
-    m_Brickwalls[5].GetComponent<TransformComponent>().RotateTo(90.f, right);
+        m_Brickwalls[2].GetComponent<TransformComponent>().Position = { -scale, 0.f, 0.f };
+        m_Brickwalls[2].GetComponent<TransformComponent>().RotateTo(90.f, up);
 
+        m_Brickwalls[3].GetComponent<TransformComponent>().Position = { scale, 0.f, 0.f };
+        m_Brickwalls[3].GetComponent<TransformComponent>().RotateTo(-90.f, up);
+
+        m_Brickwalls[4].GetComponent<TransformComponent>().Position = { 0.f, -scale, 0.f };
+        m_Brickwalls[4].GetComponent<TransformComponent>().RotateTo(-90.f, right);
+
+        m_Brickwalls[5].GetComponent<TransformComponent>().Position = { 0.f, scale, 0.f };
+        m_Brickwalls[5].GetComponent<TransformComponent>().RotateTo(90.f, right);
+    }
 
     m_LightCubes[0] = CreateEntity("LightCube");
     m_LightCubes[0].AddComponent<ModelComponent>(m_CubeMesh, false);
 
     m_LightCubes[0].GetComponent<ModelComponent>().mis[0].Color = { 1.f, 1.f, 1.f, 1.f };
 
-    m_LightCubes[0].GetComponent<TransformComponent>().TranslateTo(m_LightPositions[0]);
-    m_LightCubes[0].GetComponent<TransformComponent>().ScaleTo(0.2f);
+    m_LightCubes[0].GetComponent<TransformComponent>().Position = m_LightPositions[0];
+    m_LightCubes[0].GetComponent<TransformComponent>().ScaleF(0.2f);
 
     m_LightCubes[0].AddComponent<LightComponent>(m_PointLightParams, true);
-
-    /*m_Room = m_Scene->CreateEntity("Room");
-    auto& mesh = m_Room.AddComponent<ModelComponent>(m_CubeMesh, true, false);
-    m_Room.GetComponent<TransformComponent>().ScaleTo(35.f);*/
-
-    /*float offset = 0;
-
-    for (int i = 0; i < m_Models.size(); ++i)
-    {
-        if (m_Models[i].Meshes().empty())
-            continue;
-        auto& e = m_Scene->CreateEntity("ImportedModel");
-        m_ImportedModels.push_back(e);
-        e.AddComponent<ModelComponent>(m_Models[i]);
-        e.GetComponent<TransformComponent>().TranslateTo(glm::vec3(0.f + offset, 0.f, 0.f));
-        if (i == 0)
-            e.GetComponent<TransformComponent>().ScaleTo(100.f);
-        offset += 10;
-    }*/
 }
 
 static float DeltaTime = 0.f;
@@ -237,6 +220,7 @@ static float LightRotSpeed = 100.f;
 
 static float PlaneAngle = 0.f;
 static glm::vec3 PlaneAxis = { 0.f, 1.f, 0.f };
+glm::vec3 RotPoint = { 0.f, 0.f, 0.f };
 glm::vec3 RotAxis = { 0.f, 1.0f, 0.f };
 
 void TestScene::OnUpdate(float deltaTime)
@@ -247,9 +231,7 @@ void TestScene::OnUpdate(float deltaTime)
     if (RotateLight)
     {
         auto& tr = m_LightCubes[0].GetComponent<TransformComponent>();
-        glm::quat quatRot = glm::angleAxis(glm::radians(150.f * deltaTime), glm::normalize(RotAxis));
-        glm::mat4x4 matRot = glm::mat4_cast(quatRot);
-        tr.Transform = matRot * tr.Transform;
+        tr.RotateAroundPoint(RotPoint, 150.f * deltaTime, RotAxis);
     }
 
     /*for (int i = 0; i < num*num*num; ++i)
@@ -279,9 +261,11 @@ void TestScene::OnImGuiRender()
     ImGui::Checkbox("Cast Shadows", &CastShadows);
     ImGui::Checkbox("Rotate Light", &RotateLight);
     ImGui::SliderFloat("Light Rot Speed", &LightRotSpeed, min, 300.f);
+    ImGui::SliderFloat3("Light Rot Point", glm::value_ptr(RotPoint), -15.f, 15.f);
 
     ImGui::SliderFloat("Plane Angle", &PlaneAngle, min, 90.f);
     ImGui::SliderFloat3("Plane Axis", glm::value_ptr(PlaneAxis), min, 1.0f);
+
 
     ImGui::LabelText("Frame Rate", "%f", 1 / DeltaTime);
 

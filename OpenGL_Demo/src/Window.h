@@ -41,7 +41,7 @@ public:
     void SetKeybinds(std::unordered_map<KeyActionType, Keybind>& kbs);
     
 private:
-    void SetCameraCallbacks(bool cameraActive);
+    void SetCameraCallbacks();
     void ProcessCameraInput() const;
     void CalcDeltaTime();
     void SetGlobalSettings();

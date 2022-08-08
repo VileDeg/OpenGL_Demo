@@ -1,4 +1,6 @@
 #pragma once
+#include <cereal/archives/json.hpp>
+#include <cereal/access.hpp>
 
 /////////////////////////////////////////////////////////
 //Layout/////////////////////////////////////////////////
@@ -18,23 +20,33 @@ public:
             : type(t), count(c), normalized(n) {}
         VertexAttribute(unsigned t, unsigned c)
             : type(t), count(c) {}
-        
+        VertexAttribute() {}
     };
 
 public:
     VertexLayout(const std::initializer_list<VertexAttribute>& list);
    
     VertexLayout()
-        : stride(0) {}
+        : m_Stride(0) {}
     ~VertexLayout() {}
 
-    inline const auto& Attribs() const { return attribs; }
-    inline unsigned Stride() const { return stride; }
+    const auto& Attribs() const { return m_Attribs; }
+    unsigned    Stride()  const { return m_Stride;  }
 
     void Enable() const;
+
 private:
-    std::vector<VertexAttribute> attribs;
-    unsigned stride;
+    std::vector<VertexAttribute> m_Attribs;
+    unsigned m_Stride;
+
+private:
+    friend class cereal::access;
+    template<typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar& cereal::make_nvp("Stride", m_Stride);
+        ar& cereal::make_nvp("VertexAttributes", m_Attribs);
+    }
 };
 
 /////////////////////////////////////////////////////////
@@ -44,21 +56,34 @@ private:
 class VBO
 {
 public:
+    VBO() {}
     VBO(const void* data, const std::size_t size);
     VBO(const void* data, const std::size_t size, const int vertexCount);
 
     ~VBO();
 
-    inline const int Count() const { return count; }
+    int Count() const { return m_Count; }
+    int Id()    const { return m_Id; }
 
     void Bind() const;
     void Unbind() const;
-    void SetLayout(const VertexLayout& layout) { this->layout = layout; };
-    const VertexLayout& GetLayout() const { return layout; };
+    void SetLayout(const VertexLayout& layout) { m_Layout = layout; };
+    const VertexLayout& GetLayout() const { return m_Layout; };
+
 private:
-    unsigned id;
-    int count;
-    VertexLayout layout;
+    unsigned m_Id;
+    int m_Count;
+    VertexLayout m_Layout;
+
+private:
+    friend class cereal::access;
+    template<typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar& cereal::make_nvp("ID", m_Id);
+        ar& cereal::make_nvp("Count", m_Count);
+        ar& cereal::make_nvp("Layout", m_Layout);
+    }
 };
 
 /////////////////////////////////////////////////////////
@@ -67,19 +92,30 @@ private:
 
 class EBO
 {
-private:
-    unsigned int id;
-    unsigned int count;
 
 public:
-    EBO() : id(0), count(0) {}
-    EBO(const unsigned int* data, unsigned int count);
+    EBO() : m_Id(0), m_Count(0) {}
+    EBO(const unsigned int* data, unsigned int m_Count);
     ~EBO();
 
     void Bind();
     void Unbind();
 
-    const unsigned int Count() const { return count; }
+    unsigned Id()    const { return m_Id;    }
+    unsigned Count() const { return m_Count; }
+
+private:
+    unsigned int m_Id;
+    unsigned int m_Count;
+
+private:
+    friend class cereal::access;
+    template<typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar& cereal::make_nvp("ID", m_Id);
+        ar& cereal::make_nvp("Count", m_Count);
+    }
 };
 
 /////////////////////////////////////////////////////////

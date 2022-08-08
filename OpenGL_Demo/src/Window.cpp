@@ -108,19 +108,10 @@ void Window::SetKeybinds(std::unordered_map<KeyActionType, Keybind>& kbs)
     }
 }
 
-void Window::SetCameraCallbacks(bool cameraActive)
+void Window::SetCameraCallbacks()
 {
-    /*if (cameraActive)
-    {*/
     glfwSetCursorPosCallback(m_WindowHandle, s_cursorPosCallback);
     glfwSetScrollCallback(m_WindowHandle, s_scrollCallback);
-    /*}
-    else
-    {
-        glfwSetCursorPosCallback(m_WindowHandle, [](GLFWwindow*,double, double){});
-        glfwSetScrollCallback(m_WindowHandle, [](GLFWwindow*, double, double) {});
-    }*/
-    
 }
 
 void Window::s_fbSizeCallback(GLFWwindow* window, int width, int height)

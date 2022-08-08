@@ -74,7 +74,6 @@ void GLContext::Init()
 #endif
 }
 
-
 void GLContext::SetKeybinds()
 {
     m_Keybinds.insert({ KeyActionType::CameraForward  , Keybind(GLFW_KEY_W, GLFW_PRESS)      });
@@ -85,11 +84,17 @@ void GLContext::SetKeybinds()
     m_Keybinds.insert({ KeyActionType::CursorToggle   , Keybind(GLFW_KEY_C, GLFW_PRESS)      });
 }
 
-
 void GLContext::Terminate() const
 {
     glfwTerminate();
 }
 
-void GLContext::SwapBuffers() const { glfwSwapBuffers(m_Window->Handle()); }
-void GLContext::PollEvents() const { glfwPollEvents(); }
+void GLContext::SwapBuffers() const
+{ 
+    glfwSwapBuffers(m_Window->Handle()); 
+}
+
+void GLContext::PollEvents() const 
+{ 
+    glfwPollEvents(); 
+}

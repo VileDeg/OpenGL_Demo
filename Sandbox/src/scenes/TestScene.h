@@ -23,10 +23,10 @@ private:
     Entity m_WorldCenter;
     std::vector<Entity> m_ImportedModels;
     std::vector<Model> m_Models;
-
+    
     float m_CamSpeed;
     glm::vec3 m_LightPositions[3];
-
+    
     Light m_DirLightParams;
     Light m_SpotLightParams;
     Light m_PointLightParams;

@@ -18,11 +18,17 @@ IncludeDir["ImGui"] = "OpenGL_Demo/vendor/imgui"
 IncludeDir["GLM"] = "OpenGL_Demo/vendor/GLM"
 IncludeDir["entt"] = "OpenGL_Demo/vendor/entt"
 IncludeDir["assimp"] = "OpenGL_Demo/vendor/assimp/include"
+--IncludeDir["yaml_cpp"] = "OpenGL_Demo/vendor/yaml-cpp/include"
+IncludeDir["boost"] = "C:/Program Files/boost/boost_1_79_0"
+IncludeDir["ImGuizmo"] = "OpenGL_Demo/vendor/ImGuizmo"
+IncludeDir["cereal"] = "OpenGL_Demo/vendor/cereal"
 
 group "Dependencies"
 	include "OpenGL_Demo/vendor/GLFW"
 	include "OpenGL_Demo/vendor/GLAD"
 	include "OpenGL_Demo/vendor/ImGui"
+	--include "OpenGL_Demo/vendor/yaml-cpp"
+	--include "OpenGL_Demo/vendor/boost"
 	--include "OpenGL_Demo/vendor/assimp"
 
 group ""
@@ -40,9 +46,7 @@ project "OpenGL_Demo"
 
 	pchheader "pch.h"
 	pchsource "OpenGL_Demo/src/pch.cpp"
-
 	
-
 	files
 	{
 		"%{prj.name}/src/**.h",
@@ -53,7 +57,6 @@ project "OpenGL_Demo"
 		"%{prj.name}/vendor/stb_image/**.h",
 	}
 	
-
 	defines
 	{
 		"_CRT_SECURE_NO_WARNINGS"
@@ -63,13 +66,15 @@ project "OpenGL_Demo"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/stb_image",
-		"%{prj.name}/vendor/spdlog/include",
+		"%{prj.name}/vendor/boost",
+		--"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.cereal}"
 	}
 
 	links 
@@ -77,6 +82,7 @@ project "OpenGL_Demo"
 		"GLFW",
 		"GLAD",
 		"ImGui",
+		--"OpenGL_Demo/vendor/lib/libboost_serialization-vc143-mt-sgd-x64-1_79.lib",
 		"OpenGL_Demo/vendor/assimp/lib/assimp-vc143-mt.lib",
 		"opengl32.lib"
 	}
@@ -120,12 +126,14 @@ project "Sandbox"
 
 	includedirs
 	{
-		"OpenGL_Demo/vendor/spdlog/include",
+		--"OpenGL_Demo/vendor/spdlog/include",
 		"OpenGL_Demo/src",
 		"OpenGL_Demo/vendor",
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.cereal}"
 	}
 
 	links

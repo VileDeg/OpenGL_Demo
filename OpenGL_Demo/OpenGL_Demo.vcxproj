@@ -58,7 +58,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;HZ_BUILD_DLL;GLFW_INCLUDE_NONE;HZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\stb_image;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\stb_image;vendor\boost;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;HZ_BUILD_DLL;GLFW_INCLUDE_NONE;HZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\stb_image;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\stb_image;vendor\boost;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -100,6 +100,8 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\GLContext.h" />
     <ClInclude Include="src\OpenGL_Demo.h" />
+    <ClInclude Include="src\renderer\MeshManager.h" />
+    <ClInclude Include="src\scene\SceneSerializer.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\assimp_import\Mesh.h" />
@@ -111,6 +113,7 @@
     <ClInclude Include="src\input\Keybind.h" />
     <ClInclude Include="src\math_headers.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\platform\WindowsUtils.h" />
     <ClInclude Include="src\renderer\Buffer.h" />
     <ClInclude Include="src\renderer\Framebuffer.h" />
     <ClInclude Include="src\renderer\Light.h" />
@@ -543,6 +546,8 @@
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\GLContext.cpp" />
+    <ClCompile Include="src\renderer\MeshManager.cpp" />
+    <ClCompile Include="src\scene\SceneSerializer.cpp" />
     <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\assimp_import\Mesh.cpp" />
@@ -551,6 +556,7 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\platform\WindowsUtils.cpp" />
     <ClCompile Include="src\renderer\Buffer.cpp" />
     <ClCompile Include="src\renderer\Framebuffer.cpp" />
     <ClCompile Include="src\renderer\Mesh.cpp">

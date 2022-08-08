@@ -19,6 +19,9 @@
     <Filter Include="src\input">
       <UniqueIdentifier>{0C5966B5-78C3-1A2C-C101-CCD12DABF880}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\platform">
+      <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\renderer">
       <UniqueIdentifier>{936D1A48-7FD0-A9EC-2856-E2A21498756F}</UniqueIdentifier>
     </Filter>
@@ -92,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\WindowsUtils.h">
+      <Filter>src\platform</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\Buffer.h">
       <Filter>src\renderer</Filter>
@@ -1377,6 +1383,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\scene\SceneSerializer.h" />
+    <ClInclude Include="src\renderer\MeshManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp">
@@ -1402,6 +1410,9 @@
     </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\WindowsUtils.cpp">
+      <Filter>src\platform</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\Buffer.cpp">
       <Filter>src\renderer</Filter>
@@ -1436,5 +1447,7 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\renderer\MeshManager.cpp" />
   </ItemGroup>
 </Project>

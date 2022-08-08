@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="tests">
-      <UniqueIdentifier>{78756B10-E489-93C1-AD0B-372119DF8FF2}</UniqueIdentifier>
+    <Filter Include="scenes">
+      <UniqueIdentifier>{A602591B-92A4-83F1-7B5F-974567A00A42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{C3795900-AF05-880B-18B4-880B045F880B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Editor.h" />
-    <ClInclude Include="src\ui\SceneHierarchyPanel.h" />
-    <ClInclude Include="src\scenes\TestScene.h" />
+    <ClInclude Include="src\scenes\TestScene.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\SceneHierarchyPanel.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Editor.cpp" />
-    <ClCompile Include="src\ui\SceneHierarchyPanel.cpp" />
-    <ClCompile Include="src\scenes\TestScene.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\shaders\colorAttrib.shader" />
-    <None Include="res\shaders\normalMap.shader" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\scenes\TestScene.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\SceneHierarchyPanel.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
