@@ -19,13 +19,4 @@ private:
     unsigned m_Id;
     int      m_Count;
     Ref<EBO> m_EBO;
-private:
-    friend class cereal::access;
-    template<typename Archive>
-    void serialize(Archive& ar)
-    {
-        ar& cereal::make_nvp("ID", m_Id);
-        ar& cereal::make_nvp("Count", m_Count);
-        ar& cereal::make_nvp("IndexBuffer", m_EBO);
-    }
 };

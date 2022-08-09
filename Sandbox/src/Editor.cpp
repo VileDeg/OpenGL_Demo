@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Editor.h"
 #include "scenes/TestScene.h"
 #include "scene/SceneSerializer.h"

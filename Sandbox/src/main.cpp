@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Editor.h"
 
 static constexpr const unsigned int SCR_WIDTH = 1600;

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "TestScene.h"
 #include "renderer/MeshManager.h"
 
@@ -126,11 +127,21 @@ void TestScene::OnUpdate(float deltaTime)
     DeltaTime = deltaTime;
     Renderer::BeginScene(m_Camera, LightOn ? 1 : 0, CastShadows);
 
-    if (RotateLight)
+    auto& view = m_Registry.view<TagComponent, TransformComponent, LightComponent>();
+    for (auto& entity : view)
+    {
+        auto& [tag, tr, light] = view.get(entity);
+        if (tag.Tag == "LightCube" && RotateLight)
+        {
+            tr.RotateAroundPoint(RotPoint, 150.f * deltaTime, RotAxis);
+        }
+    }
+
+    /*if (RotateLight)
     {
         auto& tr = m_LightCube.GetComponent<TransformComponent>();
         tr.RotateAroundPoint(RotPoint, 150.f * deltaTime, RotAxis);
-    }
+    }*/
 
     Scene::OnUpdate(deltaTime);
 
@@ -156,6 +167,8 @@ void TestScene::OnImGuiRender()
     ImGui::LabelText("Frame Rate", "%f", 1 / DeltaTime);
 
     ImGui::End();
+
+    MeshManager::UIStats();
 }
 
 TestScene::~TestScene()

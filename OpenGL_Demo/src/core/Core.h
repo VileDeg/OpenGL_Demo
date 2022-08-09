@@ -22,6 +22,14 @@ constexpr Ref<T> CreateRef(Args&& ... args)
 }
 
 template<typename T>
+using Weak = std::weak_ptr<T>;
+template<typename T, typename ... Args>
+constexpr Weak<T> CreateWeak(Args&& ... args)
+{
+	return std::weak_ptr<T>(std::make_shared<T>(std::forward<Args>(args)...));
+}
+
+template<typename T>
 using Scope = std::unique_ptr<T>;
 template<typename T, typename ... Args>
 constexpr Scope<T> CreateScope(Args&& ... args)

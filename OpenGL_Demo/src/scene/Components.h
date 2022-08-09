@@ -1,10 +1,12 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "renderer/Renderer.h"
 #include "renderer/Mesh.h"
 #include "renderer/Model.h"
-#include "renderer/Light.h"
 
 namespace Components
 {

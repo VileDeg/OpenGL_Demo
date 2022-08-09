@@ -29,5 +29,4 @@ private:
 private:
 	static constexpr const unsigned WINDOW_WIDTH		 = 1600;
 	static constexpr const unsigned WINDOW_HEIGHT		 = 900;
-	static constexpr const char*    SCENE_FILE_BASE_PATH = "res/scenes/";
 };

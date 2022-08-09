@@ -66,8 +66,7 @@ project "OpenGL_Demo"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/stb_image",
-		"%{prj.name}/vendor/boost",
-		--"%{prj.name}/vendor/spdlog/include",
+
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
@@ -82,7 +81,6 @@ project "OpenGL_Demo"
 		"GLFW",
 		"GLAD",
 		"ImGui",
-		--"OpenGL_Demo/vendor/lib/libboost_serialization-vc143-mt-sgd-x64-1_79.lib",
 		"OpenGL_Demo/vendor/assimp/lib/assimp-vc143-mt.lib",
 		"opengl32.lib"
 	}
@@ -117,6 +115,9 @@ project "Sandbox"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	pchheader "pch.h"
+	pchsource "Sandbox/src/pch.cpp"
 
 	files
 	{

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "math_headers.h"
+#include <glm/glm.hpp>
 #include "GeoData.h"
 
 float GeoData::m_QuadVertices[84] = {};

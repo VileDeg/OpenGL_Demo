@@ -1,11 +1,8 @@
 #pragma once
-#include "math_headers.h"
+#include <glm/glm.hpp>
 #include "renderer/Texture.h"
 #include "renderer/VertexArray.h"
 #include "geometry/GeoData.h"
-
-#include <cereal/archives/json.hpp>
-#include <cereal/access.hpp>
 
 #define MAX_BONE_INFLUENCE 4
 
@@ -35,36 +32,28 @@ enum class TexType
 
 struct MeshData //Data needed to construct a primitive mesh.
 {
-    //const float* vertexData = nullptr; // const void*
-    //std::size_t size{};
-    //unsigned vertexCount{};
     Primitive primType;
     std::unordered_map<TexType, std::vector<std::string>> textures{};
-};
 
-bool operator==(const MeshData& lhs, const MeshData& rhs);
+    MeshData() = default;
+    MeshData(const MeshData& data) = default;
+
+    friend bool operator==(const MeshData& lhs, const MeshData& rhs)
+    {
+        return (lhs.primType == rhs.primType &&
+            lhs.textures == rhs.textures);
+    }
+};
 
 class Mesh
 {
 public:
-    Mesh() {}
-    Mesh(const Mesh& m) 
-        : m_UniformColor(m.m_UniformColor), m_VAO(m.m_VAO),
-        m_VBO(m.m_VBO), m_EBO(m.m_EBO),
-        m_Textures(m.m_Textures)
-    {}
     //For model import
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
         std::unordered_map<TexType, std::vector<std::string>> textures);
 
-    //For primitives
-    Mesh(const MeshData& data);
-    /*Mesh(const void* vertexData, std::size_t size, unsigned vertexCount,
-        std::unordered_map<TexType, std::vector<std::string>> textures);*/
-
     Ref<VAO> Vao() { return m_VAO; }
-    Ref<VBO> Vbo() { return m_VBO; }
-    Ref<EBO> Ebo() { return m_EBO; }
+
     const glm::vec4& UniformColor() const { return m_UniformColor; }
 
     std::unordered_map<TexType, std::vector<Ref<Texture>>>& Textures()
@@ -72,6 +61,16 @@ public:
 
     ~Mesh() {}
 
+    friend bool operator==(const Mesh& lhs, const Mesh& rhs)
+    {
+        return std::tie(lhs.m_UniformColor, lhs.m_VAO, lhs.m_VBO, lhs.m_EBO, lhs.m_Textures) ==
+            std::tie(rhs.m_UniformColor, rhs.m_VAO, rhs.m_VBO, rhs.m_EBO, rhs.m_Textures);
+    }
+
+private:
+    friend class MeshManager;
+    //For primitives. Called by MeshManager
+    Mesh(const MeshData& data);
 private:
     glm::vec4 m_UniformColor;
 
@@ -80,17 +79,6 @@ private:
     Ref<EBO> m_EBO;
 
     std::unordered_map<TexType, std::vector<Ref<Texture>>> m_Textures;
-    
-private:
-    friend class cereal::access;
-    /*template<typename Archive>
-    void serialize(Archive& ar)
-    {
-        ar & cereal::make_nvp("VertexArray", m_VAO);
-        ar & cereal::make_nvp("VertexBuffer", m_VBO);
-        ar & cereal::make_nvp("IndexBuffer", m_EBO);
-        ar & cereal::make_nvp("Textures", m_Textures);
-    }*/
 };
 
 struct MeshInstance
@@ -99,25 +87,4 @@ struct MeshInstance
     bool HasTextures{ true };
     bool NormalsOut{ true };
     glm::vec4 Color{ 1.f, 0.f, 1.f, 1.f }; //magenta;
-
-    MeshInstance() = default;
-    MeshInstance(const MeshInstance& mi)
-        : mesh(mi.mesh), HasTextures(mi.HasTextures),
-        NormalsOut(mi.NormalsOut), Color(mi.Color) {}
-    MeshInstance(MeshInstance&& mi)
-        : mesh(mi.mesh), HasTextures(mi.HasTextures),
-        NormalsOut(mi.NormalsOut), Color(mi.Color) {}
-    MeshInstance(Ref<Mesh> mesh, bool hasTex = true, bool normOut = true)
-        : mesh(mesh), HasTextures(hasTex),
-        NormalsOut(normOut), Color(mesh->UniformColor()) {}
-    MeshInstance& operator=(MeshInstance& mi)
-    { 
-        if (this == &mi)
-            return *this;
-        mesh = mi.mesh;
-        HasTextures = mi.HasTextures;
-        NormalsOut = mi.NormalsOut;
-        Color = mi.Color;
-        return *this; 
-    };
 };

@@ -1,10 +1,4 @@
 #pragma once
-#include <cereal/archives/json.hpp>
-#include <cereal/access.hpp>
-
-/////////////////////////////////////////////////////////
-//Layout/////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
 
 class VertexLayout
 {
@@ -38,20 +32,7 @@ public:
 private:
     std::vector<VertexAttribute> m_Attribs;
     unsigned m_Stride;
-
-private:
-    friend class cereal::access;
-    template<typename Archive>
-    void serialize(Archive& ar)
-    {
-        ar& cereal::make_nvp("Stride", m_Stride);
-        ar& cereal::make_nvp("VertexAttributes", m_Attribs);
-    }
 };
-
-/////////////////////////////////////////////////////////
-//VBO////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
 
 class VBO
 {
@@ -74,21 +55,7 @@ private:
     unsigned m_Id;
     int m_Count;
     VertexLayout m_Layout;
-
-private:
-    friend class cereal::access;
-    template<typename Archive>
-    void serialize(Archive& ar)
-    {
-        ar& cereal::make_nvp("ID", m_Id);
-        ar& cereal::make_nvp("Count", m_Count);
-        ar& cereal::make_nvp("Layout", m_Layout);
-    }
 };
-
-/////////////////////////////////////////////////////////
-//EBO////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
 
 class EBO
 {
@@ -107,20 +74,7 @@ public:
 private:
     unsigned int m_Id;
     unsigned int m_Count;
-
-private:
-    friend class cereal::access;
-    template<typename Archive>
-    void serialize(Archive& ar)
-    {
-        ar& cereal::make_nvp("ID", m_Id);
-        ar& cereal::make_nvp("Count", m_Count);
-    }
 };
-
-/////////////////////////////////////////////////////////
-//UBO////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
 
 class ShaderBlock
 {
@@ -142,6 +96,5 @@ public:
 private:
     std::string m_Name;
     unsigned m_Id;
-    //enum Type m_Type;
     unsigned m_TypeUInt;
 };

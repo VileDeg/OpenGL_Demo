@@ -40,11 +40,11 @@ namespace cereal
 	}
 
 	template<typename Archive>
-	static void serialize(Archive& ar, VertexLayout::VertexAttribute& attrib)
+	static void serialize(Archive& ar, TransformComponent& tr)
 	{
-		ar & cereal::make_nvp("Type", attrib.type);
-		ar & cereal::make_nvp("Count", attrib.count);
-		ar & cereal::make_nvp("Normalized", attrib.normalized);
+		ar& cereal::make_nvp("Pos", tr.Position);
+		ar& cereal::make_nvp("Quat", tr.Quaternion);
+		ar& cereal::make_nvp("Scale", tr.Scale);
 	}
 
 	template<typename Archive>
@@ -52,14 +52,6 @@ namespace cereal
 	{
 		ar & cereal::make_nvp("PrimitiveType", data.primType);
 		ar & cereal::make_nvp("Textures", data.textures);
-	}
-
-	template<typename Archive>
-	static void serialize(Archive& ar, TransformComponent& tr)
-	{
-		ar & cereal::make_nvp("Pos", tr.Position);
-		ar & cereal::make_nvp("Quat", tr.Quaternion);
-		ar & cereal::make_nvp("Scale", tr.Scale);
 	}
 
 	template<class Archive>
@@ -114,8 +106,6 @@ namespace cereal
 	}
 }
 
-//void SceneSerializer::SaveScene(const std::string& filePath) {}
-//void SceneSerializer::LoadScene(const std::string& filePath) {}
 void SceneSerializer::SaveScene(const std::string& filePath)
 {
 	std::ofstream ofs(filePath);
@@ -152,9 +142,10 @@ void SceneSerializer::LoadScene(const std::string& filePath)
 
 	cereal::JSONInputArchive ia(ifs);
 
-	//m_Scene->m_Registry.clear();
 	Renderer::ClearState();
-	m_Scene->m_Registry = entt::registry();
+	MeshManager::Clear();
+	m_Scene->m_Registry.clear();
+
 	size_t entity_count{};
 	ia & entity_count;
 	for (size_t i = 0; i < entity_count; ++i)

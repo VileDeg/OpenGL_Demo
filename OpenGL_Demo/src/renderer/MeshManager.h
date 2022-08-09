@@ -1,15 +1,17 @@
 #pragma once
 #include "renderer/Mesh.h"
 
+
 class MeshManager
 {
 public:
 	static Ref<Mesh> GetMesh(const MeshData& data);
-	
 	static const MeshData& GetMData(Ref<Mesh> mesh);
+	static void Clear();
+	static void UIStats();
 
 private:
-	static std::vector<Ref<Mesh>> Meshes;
+	static std::vector<Mesh> Meshes;
 	static std::vector<MeshData> MData;
 
 	template<typename T>

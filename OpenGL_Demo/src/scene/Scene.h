@@ -19,7 +19,7 @@ private:
 	void RenderScene();
 	void RenderSceneDepth();
 	void RenderShadow();
-private:
+protected:
 	entt::registry m_Registry;
 
 	friend class Entity;

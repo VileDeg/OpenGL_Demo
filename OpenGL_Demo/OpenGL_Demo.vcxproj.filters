@@ -54,19 +54,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Camera.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GLContext.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\OpenGL_Demo.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Transform.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Window.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\assimp_import\Mesh.h">
@@ -78,7 +66,13 @@
     <ClInclude Include="src\core\Core.h">
       <Filter>src\core</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\GLContext.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
     <ClInclude Include="src\core\Log.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Window.h">
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="src\geometry\GeoData.h">
@@ -90,9 +84,6 @@
     <ClInclude Include="src\input\Keybind.h">
       <Filter>src\input</Filter>
     </ClInclude>
-    <ClInclude Include="src\math_headers.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -102,13 +93,16 @@
     <ClInclude Include="src\renderer\Buffer.h">
       <Filter>src\renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\renderer\Camera.h">
+      <Filter>src\renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\renderer\Framebuffer.h">
       <Filter>src\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\Light.h">
+    <ClInclude Include="src\renderer\Mesh.h">
       <Filter>src\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\Mesh.h">
+    <ClInclude Include="src\renderer\MeshManager.h">
       <Filter>src\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\Model.h">
@@ -133,6 +127,9 @@
       <Filter>src\scene</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\Scene.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\SceneSerializer.h">
       <Filter>src\scene</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
@@ -1383,27 +1380,22 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\SceneSerializer.h" />
-    <ClInclude Include="src\renderer\MeshManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GLContext.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Transform.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Window.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\assimp_import\Mesh.cpp">
       <Filter>src\assimp_import</Filter>
     </ClCompile>
     <ClCompile Include="src\assimp_import\Model.cpp">
       <Filter>src\assimp_import</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\GLContext.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Window.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geometry\GeoData.cpp">
+      <Filter>src\geometry</Filter>
     </ClCompile>
     <ClCompile Include="src\imgui\ImguiLayer.cpp">
       <Filter>src\imgui</Filter>
@@ -1417,10 +1409,16 @@
     <ClCompile Include="src\renderer\Buffer.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\renderer\Camera.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\renderer\Framebuffer.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\Mesh.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\MeshManager.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\Model.cpp">
@@ -1444,11 +1442,11 @@
     <ClCompile Include="src\scene\Scene.cpp">
       <Filter>src\scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\SceneSerializer.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\SceneSerializer.cpp" />
-    <ClCompile Include="src\geometry\GeoData.cpp" />
-    <ClCompile Include="src\renderer\MeshManager.cpp" />
   </ItemGroup>
 </Project>

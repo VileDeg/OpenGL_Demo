@@ -10,6 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Editor.h" />
+    <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\scenes\TestScene.h">
       <Filter>scenes</Filter>
     </ClInclude>
@@ -20,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\pch.cpp" />
     <ClCompile Include="src\scenes\TestScene.cpp">
       <Filter>scenes</Filter>
     </ClCompile>
