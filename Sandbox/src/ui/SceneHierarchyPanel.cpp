@@ -82,7 +82,6 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	}
 }
 
-
 static bool DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
 {
 	bool wasUsed = false;
@@ -180,9 +179,9 @@ static void DrawComponent(const std::string& name, Entity entity, UIFunction uiF
 		ImGui::Separator();
 		bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
 		ImGui::PopStyleVar();
-		ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.75f);
+		ImGui::SameLine(contentRegionAvailable.x - lineHeight*0.45f);
 		ImGui::PushFont(boldFont);
-		if (ImGui::Button("...", ImVec2{ lineHeight*1.25f, lineHeight}))
+		if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
 		{
 			ImGui::OpenPopup("ComponentSettings");
 		}
@@ -222,7 +221,6 @@ static const std::string TexTypeToStr(const TexType tt)
 			return "Height";
 	}
 }
-
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
@@ -274,7 +272,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				ImGui::Checkbox("HasTextures", &mi.HasTextures);
 				ImGui::Checkbox("NormalsOut", &mi.NormalsOut);
 				ImGui::ColorEdit4("Color", glm::value_ptr(mi.Color));
-				for (auto& [texType, texVector] : mi.mesh.Textures())
+				for (auto& [texType, texVector] : mi.mesh->Textures())
 				{
 					if (texVector.empty())
 						continue;

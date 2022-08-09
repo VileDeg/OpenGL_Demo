@@ -8,7 +8,7 @@
 
 namespace Components
 {
-	constexpr const int NUMBER_OF_COMPONENTS = 3;
+	constexpr const int NUMBER_OF_COMPONENTS = 4;
 }
 
 struct TagComponent
@@ -84,7 +84,7 @@ struct ModelComponent
 	}
 
 	ModelComponent() = default;
-	ModelComponent(Mesh& mesh, bool hasTex = true, bool normOut = true)
+	ModelComponent(Ref<Mesh> mesh, bool hasTex = true, bool normOut = true)
 	{
 		mis.push_back({ mesh, hasTex, normOut });
 	}

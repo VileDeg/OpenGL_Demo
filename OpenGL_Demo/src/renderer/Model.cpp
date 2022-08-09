@@ -51,7 +51,7 @@ void Model::processNode(aiNode* node, const aiScene* scene, aiMatrix4x4& parentT
     }
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& nodeTransform)
+Ref<Mesh> Model::processMesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& nodeTransform)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -154,11 +154,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& n
         map[TexType::Height  ].push_back(m_Directory + x);
     }
 
-    auto m = Mesh(vertices, indices, map);
-   /* glm::vec4 col = { color.r, color.g, color.b, 1.0f };
-    m.UniformColor = col;*/
     // return a mesh object created from the extracted mesh data
-    return m;
+    return CreateRef<Mesh>(vertices, indices, map);
 }
 
 // checks all material textures of a given type and loads the textures if they're not loaded yet.

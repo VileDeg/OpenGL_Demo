@@ -79,9 +79,8 @@ void Renderer::Init(unsigned width, unsigned height)
 
 void Renderer::Draw(const glm::mat4& modelMat, MeshInstance& mi)
 {
-
 	auto& Mesh = mi.mesh;
-	auto& tex = Mesh.Textures();
+	auto& tex = Mesh->Textures();
 	auto& diff = tex[TexType::Diffuse];
 	auto& spec = tex[TexType::Specular];
 	auto& norm = tex[TexType::Normal];
@@ -131,12 +130,12 @@ void Renderer::Draw(const glm::mat4& modelMat, MeshInstance& mi)
 	sh->setMat4f("u_ModelMat", modelMat);
 	
 	if (mi.NormalsOut)
-		GLDraw(Mesh.Vao());
+		GLDraw(Mesh->Vao());
 	else
 	{
 		glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
 		sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-		GLDraw(Mesh.Vao());
+		GLDraw(Mesh->Vao());
 		sh->setInt("reverse_normals", 0); // and of course disable it
 		glEnable(GL_CULL_FACE);
 	}
@@ -149,15 +148,15 @@ void Renderer::DrawDepth(const glm::mat4& modelMat, const MeshInstance& mi)
 	BindShader(sh);
 	sh->setMat4f("u_ModelMat", modelMat);
 
-	BindVAO(Mesh.Vao());
+	BindVAO(Mesh->Vao());
 
 	if (mi.NormalsOut)
-		GLDraw(Mesh.Vao());
+		GLDraw(Mesh->Vao());
 	else
 	{
 		glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
 		sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-		GLDraw(Mesh.Vao());
+		GLDraw(Mesh->Vao());
 		sh->setInt("reverse_normals", 0); // and of course disable it
 		glEnable(GL_CULL_FACE);
 	}
@@ -260,8 +259,9 @@ void Renderer::CreateSkybox()
 	};
 
 	s_Data->skyboxData.SkyboxVAO = CreateRef<VAO>();
+	auto& gd = GeoData::GetData(Primitive::Skybox);
 	s_Data->skyboxData.SkyboxVBO = CreateRef<VBO>(
-		GeoData::SKYBOX_DATA, sizeof(GeoData::SKYBOX_DATA), 36);
+		gd.data, gd.size, gd.count);
 	VertexLayout layout{ {GL_FLOAT, 3, GL_FALSE} };
 	s_Data->skyboxData.SkyboxVBO->SetLayout(layout);
 	s_Data->skyboxData.SkyboxVAO->AddBuffer(*s_Data->skyboxData.SkyboxVBO, nullptr);
@@ -337,6 +337,13 @@ void Renderer::SetRenderImageSize(const unsigned width, const unsigned height)
 	
 }
 
+void Renderer::ClearState()
+{
+	s_Data->boundVaoId = 0;
+	s_Data->boundShaderId = 0;
+	s_Data->TexSlotId.clear();
+}
+
 void Renderer::BeginScene(const Camera& cam, unsigned lightCount, bool castShadows)
 {
 	SceneData data = { cam.GetProjViewMat(), cam.Position(), lightCount, castShadows };
@@ -353,21 +360,22 @@ void Renderer::EndScene()
 	s_Data->DefaultFramebuffer->Unbind(s_Data->viewportWidth, s_Data->viewportHeight);
 }
 
-void Renderer::Clear(std::bitset<3> bufferBits)
+void Renderer::Clear(int mode)
 {
 	int buffers = 0;
-	if (bufferBits[0])
+	switch (mode)
 	{
-		buffers |= GL_COLOR_BUFFER_BIT;
-	}
-	if (bufferBits[1])
-	{
-		buffers |= GL_DEPTH_BUFFER_BIT;
-	}
-	if (bufferBits[2])
-	{
+	case 3:
 		buffers |= GL_STENCIL_BUFFER_BIT;
+	case 2:
+		buffers |= GL_DEPTH_BUFFER_BIT;
+	case 1:
+		buffers |= GL_COLOR_BUFFER_BIT;
+		break;
+	default:
+		ASSERT(false, "Invalid mode.");
 	}
+	
 	glClear(buffers);
 }
 

@@ -2,6 +2,7 @@
 #include "math_headers.h"
 #include "renderer/Texture.h"
 #include "renderer/VertexArray.h"
+#include "geometry/GeoData.h"
 
 #include <cereal/archives/json.hpp>
 #include <cereal/access.hpp>
@@ -32,6 +33,17 @@ enum class TexType
     None = -1, Diffuse, Specular, Normal, Height
 };
 
+struct MeshData //Data needed to construct a primitive mesh.
+{
+    //const float* vertexData = nullptr; // const void*
+    //std::size_t size{};
+    //unsigned vertexCount{};
+    Primitive primType;
+    std::unordered_map<TexType, std::vector<std::string>> textures{};
+};
+
+bool operator==(const MeshData& lhs, const MeshData& rhs);
+
 class Mesh
 {
 public:
@@ -46,8 +58,9 @@ public:
         std::unordered_map<TexType, std::vector<std::string>> textures);
 
     //For primitives
-    Mesh(const void* vertexData, std::size_t size, unsigned vertexCount,
-        std::unordered_map<TexType, std::vector<std::string>> textures);
+    Mesh(const MeshData& data);
+    /*Mesh(const void* vertexData, std::size_t size, unsigned vertexCount,
+        std::unordered_map<TexType, std::vector<std::string>> textures);*/
 
     Ref<VAO> Vao() { return m_VAO; }
     Ref<VBO> Vbo() { return m_VBO; }
@@ -70,19 +83,19 @@ private:
     
 private:
     friend class cereal::access;
-    template<typename Archive>
+    /*template<typename Archive>
     void serialize(Archive& ar)
     {
         ar & cereal::make_nvp("VertexArray", m_VAO);
         ar & cereal::make_nvp("VertexBuffer", m_VBO);
         ar & cereal::make_nvp("IndexBuffer", m_EBO);
         ar & cereal::make_nvp("Textures", m_Textures);
-    }
+    }*/
 };
 
 struct MeshInstance
 {
-    Mesh mesh;
+    Ref<Mesh> mesh;
     bool HasTextures{ true };
     bool NormalsOut{ true };
     glm::vec4 Color{ 1.f, 0.f, 1.f, 1.f }; //magenta;
@@ -94,9 +107,9 @@ struct MeshInstance
     MeshInstance(MeshInstance&& mi)
         : mesh(mi.mesh), HasTextures(mi.HasTextures),
         NormalsOut(mi.NormalsOut), Color(mi.Color) {}
-    MeshInstance(Mesh& mesh, bool hasTex = true, bool normOut = true)
+    MeshInstance(Ref<Mesh> mesh, bool hasTex = true, bool normOut = true)
         : mesh(mesh), HasTextures(hasTex),
-        NormalsOut(normOut), Color(mesh.UniformColor()) {}
+        NormalsOut(normOut), Color(mesh->UniformColor()) {}
     MeshInstance& operator=(MeshInstance& mi)
     { 
         if (this == &mi)

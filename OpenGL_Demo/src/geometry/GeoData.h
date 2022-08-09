@@ -1,19 +1,27 @@
 #pragma once
 
-struct VBOData
-{
-	const void* data;
-	const std::size_t size;
-	const unsigned count;
-};
-
 enum class Primitive
 {
-	None=-1, Cube, Plane
+	None=-1, Cube, Plane, Skybox
 };
 
-namespace GeoData
+class GeoData
 {
+private:
+	struct VBOData
+	{
+		const void* data;
+		const std::size_t size;
+		const unsigned count;
+	};
+public:
+	static void Init();
+	static VBOData GetData(Primitive primType);
+private:
+	static void CalcPlaneVertices();
+private:
+	static float m_QuadVertices[84];
+
 	static constexpr const float CUBE_DATA[] =
 	{
 		// Back face
@@ -58,7 +66,7 @@ namespace GeoData
 		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f, 0.0f,  1.0f, 0.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,// bottom-right
 		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f, 0.0f,  0.0f, 1.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,// top-left
 		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f, 0.0f,  0.0f, 0.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f// bottom-left        
-		
+
 	};
 	static constexpr const float SKYBOX_DATA[] =
 	{
@@ -105,18 +113,5 @@ namespace GeoData
 		-1.0f, -1.0f,  1.0f,
 		 1.0f, -1.0f,  1.0f
 	};
-	static VBOData GetData(Primitive primType)
-	{
-		switch (primType)
-		{			
-		case Primitive::Cube:
-			return {CUBE_DATA, sizeof(CUBE_DATA), 36};
-		case Primitive::Plane:
-			return { CUBE_DATA, sizeof(CUBE_DATA), 36 };
-		default:
-			return{ nullptr, 0, 0 };
-		}
-		ASSERT(false, "GetData error.");
-	}
-}
+};
 

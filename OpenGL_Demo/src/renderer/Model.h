@@ -11,13 +11,13 @@ public:
     Model(std::string const& path, bool gamma = false);
     
 
-    std::vector<Mesh>& Meshes() { return m_Meshes; }
+    std::vector<Ref<Mesh>> Meshes() { return m_Meshes; }
 private:
     void loadModel(std::string const& shortPath);
 
     void processNode(aiNode* node, const aiScene* scene, aiMatrix4x4& parentTransform);
 
-    Mesh processMesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& nodeTransform);
+    Ref<Mesh> processMesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& nodeTransform);
         
     // checks all material textures of a given type and 
     // loads the textures if they're not loaded yet.
@@ -26,7 +26,7 @@ private:
         aiTextureType type);
 private:
     std::vector<std::string> m_TexturesLoaded;
-    std::vector<Mesh>        m_Meshes;
+    std::vector<Ref<Mesh>>        m_Meshes;
     std::string              m_Directory;
     bool                     m_GammaCorrection;
 private:

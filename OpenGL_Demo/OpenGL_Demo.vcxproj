@@ -545,6 +545,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\geometry\GeoData.cpp" />
     <ClCompile Include="src\GLContext.cpp" />
     <ClCompile Include="src\renderer\MeshManager.cpp" />
     <ClCompile Include="src\scene\SceneSerializer.cpp" />

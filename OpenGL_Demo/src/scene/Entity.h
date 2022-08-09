@@ -63,34 +63,45 @@ private:
 	template<class Archive>
 	void save(Archive& ar) const
 	{
-		std::bitset<Components::NUMBER_OF_COMPONENTS> componentsSet{};
+		std::bitset<Components::NUMBER_OF_COMPONENTS> config(0b0);
+
 		if (HasComponent<TagComponent>())
-			componentsSet[0] = 1;
+			config[0] = 0b1;
 		if (HasComponent<TransformComponent>())
-			componentsSet[1] = 1;
+			config[1] = 0b1;
 		if (HasComponent<ModelComponent>())
-			componentsSet[2] = 1;
-		ar& cereal::make_nvp("ComponentConfiguration", componentsSet); //.to_string()
+			config[2] = 0b1;
+		if (HasComponent<LightComponent>())
+			config[3] = 0b1;
+
+		ar & cereal::make_nvp("ComponentConfiguration", config.to_string());
 
 		if (HasComponent<TagComponent>())
 		{
-			ar & cereal::make_nvp("Tag", GetComponent<TagComponent>().Tag);
+			ar & cereal::make_nvp("TagComponent", GetComponent<TagComponent>().Tag);
 		}
 		if (HasComponent<TransformComponent>())
 		{
-			ar & cereal::make_nvp("Transform", GetComponent<TransformComponent>());
+			ar & cereal::make_nvp("TransformComponent", GetComponent<TransformComponent>());
 		}
 		if (HasComponent<ModelComponent>())
 		{
-			ar & cereal::make_nvp("Model", GetComponent<ModelComponent>());
+			ar & cereal::make_nvp("ModelComponent", GetComponent<ModelComponent>());
+		}
+		if (HasComponent<LightComponent>())
+		{
+			ar & cereal::make_nvp("LightComponent", GetComponent<LightComponent>());
 		}
 	}
 	template<typename Archive>
 	void load(Archive& ar)
 	{
-		std::bitset<Components::NUMBER_OF_COMPONENTS> componentsSet;
-		ar & componentsSet; //.to_string()
-		if (componentsSet[0])
+		std::string str{};
+
+		ar & str;
+		
+		std::bitset<Components::NUMBER_OF_COMPONENTS> config(str);
+		if (config[0])
 		{
 			if (!HasComponent<TagComponent>())
 			{
@@ -98,7 +109,7 @@ private:
 			}
 			ar & GetComponent<TagComponent>().Tag;
 		}
-		if (componentsSet[1])
+		if (config[1])
 		{
 			if (!HasComponent<TransformComponent>())
 			{
@@ -106,9 +117,13 @@ private:
 			}
 			ar & GetComponent<TransformComponent>();
 		}
-		if (componentsSet[2])
+		if (config[2])
 		{
 			ar & AddComponent<ModelComponent>();
+		}
+		if (config[3])
+		{
+			ar & AddComponent<LightComponent>();
 		}
 	}
 };

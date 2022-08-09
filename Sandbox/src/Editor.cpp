@@ -11,6 +11,7 @@ Editor::Editor()
 
     Renderer::Init(WINDOW_WIDTH, WINDOW_HEIGHT);
     ImguiLayer::Init(windowHandle, "Sandbox");
+    GeoData::Init();
 
     m_Camera = CreateRef<Camera>(*m_Window, glm::vec3(0.f, 0.f, 10.f));
     m_Window->SetCamera(m_Camera);
@@ -30,7 +31,7 @@ void Editor::Run()
         m_Context->UpdateWindows();
 
         Renderer::SetClearColor(0.049f, 0.0f, 0.1f, 1.f);
-        Renderer::Clear(0b111);
+        Renderer::Clear(3);
         
         m_ActiveScene->OnUpdate(m_Window->DeltaTime());
         

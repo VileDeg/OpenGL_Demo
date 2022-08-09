@@ -52,7 +52,7 @@ private:
 		unsigned LightsCount;
 		unsigned boundVaoId;
 		unsigned boundShaderId;
-		unsigned boundFramebufferId;
+		//unsigned boundFramebufferId;
 		unsigned viewportWidth;
 		unsigned viewportHeight;
 		SkyboxData skyboxData;
@@ -75,6 +75,7 @@ public:
 	static void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
 
 	static void Init(unsigned width, unsigned height);
+	static void ClearState();
 	static void LoadShaders();
 	static void CreateSkybox();
 
@@ -90,7 +91,7 @@ public:
 	static void BindVAO(const Ref<VAO> vao);
 	static void BindTexture(const Ref<Texture> tex, const short slot);
 
-	static void Clear(std::bitset<3> bufferBits);
+	static void Clear(int mode);
 	static void SetClearColor(float r, float g, float b, float a);
 	static void ResetViewport();
 private:

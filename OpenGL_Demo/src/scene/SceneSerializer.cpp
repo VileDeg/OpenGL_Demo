@@ -9,6 +9,8 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/archives/json.hpp>
 
+#include "renderer/MeshManager.h"
+
 namespace cereal
 {
 	template<typename Archive>
@@ -46,6 +48,13 @@ namespace cereal
 	}
 
 	template<typename Archive>
+	void serialize(Archive& ar, MeshData& data)
+	{
+		ar & cereal::make_nvp("PrimitiveType", data.primType);
+		ar & cereal::make_nvp("Textures", data.textures);
+	}
+
+	template<typename Archive>
 	static void serialize(Archive& ar, TransformComponent& tr)
 	{
 		ar & cereal::make_nvp("Pos", tr.Position);
@@ -53,19 +62,55 @@ namespace cereal
 		ar & cereal::make_nvp("Scale", tr.Scale);
 	}
 
-	template<typename Archive>
-	static void serialize(Archive& ar, MeshInstance& mi)
+	template<class Archive>
+	void save(Archive& ar, const MeshInstance& mi)
 	{
-		ar & cereal::make_nvp("Mesh", mi.mesh);
 		ar & cereal::make_nvp("HasTextures", mi.HasTextures);
 		ar & cereal::make_nvp("NormalsOut", mi.NormalsOut);
 		ar & cereal::make_nvp("Color", mi.Color);
+		ar & cereal::make_nvp("MeshData", MeshManager::GetMData(mi.mesh));
+	}
+
+	template<class Archive>
+	void load(Archive& ar, MeshInstance& mi)
+	{
+		ar & mi.HasTextures;
+		ar & mi.NormalsOut;
+		ar & mi.Color;
+
+		MeshData mData;
+		ar & mData;
+		mi.mesh = MeshManager::GetMesh(mData);
 	}
 
 	template<typename Archive>
 	static void serialize(Archive& ar, ModelComponent& model)
 	{
 		ar & cereal::make_nvp("MeshInstances", model.mis);
+	}
+
+	template<typename Archive>
+	static void serialize(Archive& ar, Light& l)
+	{
+		ar & cereal::make_nvp("Position", l.position);
+		ar & cereal::make_nvp("Constant", l.constant);
+		ar & cereal::make_nvp("Direction", l.direction);
+		ar & cereal::make_nvp("Linear", l.linear);
+		ar & cereal::make_nvp("Ambient", l.ambient);
+		ar & cereal::make_nvp("Quadratic", l.quadratic);
+		ar & cereal::make_nvp("Diffuse", l.diffuse);
+		ar & cereal::make_nvp("CutOff", l.cutOff);
+		ar & cereal::make_nvp("Specular", l.specular);
+		ar & cereal::make_nvp("OuterCutOff", l.outerCutOff);
+		ar & cereal::make_nvp("Type", l.type);
+	}
+
+	template<typename Archive>
+	static void serialize(Archive& ar, LightComponent& l)
+	{
+		ar & cereal::make_nvp("LightData", l.Data);
+		ar & cereal::make_nvp("IsDynamic", l.IsDynamic);
+		ar & cereal::make_nvp("SSBOIndex", l.SSBOindex);
 	}
 }
 
@@ -107,7 +152,9 @@ void SceneSerializer::LoadScene(const std::string& filePath)
 
 	cereal::JSONInputArchive ia(ifs);
 
-	m_Scene->m_Registry.clear();
+	//m_Scene->m_Registry.clear();
+	Renderer::ClearState();
+	m_Scene->m_Registry = entt::registry();
 	size_t entity_count{};
 	ia & entity_count;
 	for (size_t i = 0; i < entity_count; ++i)

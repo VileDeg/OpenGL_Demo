@@ -1,12 +1,9 @@
 {
-    "NumberOfEntities": 16,
+    "NumberOfEntities": 15,
     "LightCube": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "LightCube",
-        "Transform": {
+        "ComponentConfiguration": "1111",
+        "TagComponent": "LightCube",
+        "TransformComponent": {
             "Pos": {
                 "X": 0.0,
                 "Y": 0.0,
@@ -24,105 +21,9 @@
                 "Z": 0.20000000298023225
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 2147483649,
-                                "data": {
-                                    "ID": 2,
-                                    "Count": 36,
-                                    "IndexBuffer": {
-                                        "ptr_wrapper": {
-                                            "id": 0
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2147483650,
-                                "data": {
-                                    "ID": 4,
-                                    "Count": 36,
-                                    "Layout": {
-                                        "Stride": 56,
-                                        "VertexAttributes": [
-                                            {
-                                                "Type": 5126,
-                                                "Count": 3,
-                                                "Normalized": 0
-                                            },
-                                            {
-                                                "Type": 5126,
-                                                "Count": 3,
-                                                "Normalized": 0
-                                            },
-                                            {
-                                                "Type": 5126,
-                                                "Count": 2,
-                                                "Normalized": 0
-                                            },
-                                            {
-                                                "Type": 5126,
-                                                "Count": 3,
-                                                "Normalized": 0
-                                            },
-                                            {
-                                                "Type": 5126,
-                                                "Count": 3,
-                                                "Normalized": 0
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 2147483651,
-                                            "data": {
-                                                "ID": 5,
-                                                "Type": 3553,
-                                                "BoundSlot": 0
-                                            }
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 2147483652,
-                                            "data": {
-                                                "ID": 6,
-                                                "Type": 3553,
-                                                "BoundSlot": 1
-                                            }
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": false,
                     "NormalsOut": true,
                     "Color": {
@@ -130,153 +31,69 @@
                         "Y": 1.0,
                         "Z": 1.0,
                         "W": 1.0
-                    }
-                }
-            ]
-        }
-    },
-    "Brickwall5": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Brickwall5",
-        "Transform": {
-            "Pos": {
-                "X": 0.0,
-                "Y": 15.0,
-                "Z": 0.0
-            },
-            "Quat": {
-                "X": 0.7071067690849304,
-                "Y": 0.0,
-                "Z": 0.0,
-                "W": 0.7071067690849304
-            },
-            "Scale": {
-                "X": 15.0,
-                "Y": 15.0,
-                "Z": 15.0
-            }
-        },
-        "Model": {
-            "MeshInstances": [
-                {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 2147483653,
-                                "data": {
-                                    "ID": 3,
-                                    "Count": 84,
-                                    "IndexBuffer": {
-                                        "ptr_wrapper": {
-                                            "id": 0
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2147483654,
-                                "data": {
-                                    "ID": 5,
-                                    "Count": 84,
-                                    "Layout": {
-                                        "Stride": 56,
-                                        "VertexAttributes": [
-                                            {
-                                                "Type": 5126,
-                                                "Count": 3,
-                                                "Normalized": 0
-                                            },
-                                            {
-                                                "Type": 5126,
-                                                "Count": 3,
-                                                "Normalized": 0
-                                            },
-                                            {
-                                                "Type": 5126,
-                                                "Count": 2,
-                                                "Normalized": 0
-                                            },
-                                            {
-                                                "Type": 5126,
-                                                "Count": 3,
-                                                "Normalized": 0
-                                            },
-                                            {
-                                                "Type": 5126,
-                                                "Count": 3,
-                                                "Normalized": 0
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
                         "Textures": [
                             {
                                 "key": 0,
                                 "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 2147483655,
-                                            "data": {
-                                                "ID": 7,
-                                                "Type": 3553,
-                                                "BoundSlot": 0
-                                            }
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 2147483656,
-                                            "data": {
-                                                "ID": 8,
-                                                "Type": 3553,
-                                                "BoundSlot": 2
-                                            }
-                                        }
-                                    }
+                                    "container2.png"
                                 ]
                             },
                             {
                                 "key": 1,
-                                "value": []
+                                "value": [
+                                    "container2_specular.png"
+                                ]
                             }
                         ]
-                    },
-                    "HasTextures": true,
-                    "NormalsOut": true,
-                    "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
                     }
                 }
             ]
+        },
+        "LightComponent": {
+            "LightData": {
+                "Position": {
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": 7.5
+                },
+                "Constant": 0.15000000596046449,
+                "Direction": {
+                    "X": -431602080.0,
+                    "Y": -431602080.0,
+                    "Z": -431602080.0
+                },
+                "Linear": 0.02250000089406967,
+                "Ambient": {
+                    "X": 0.4000000059604645,
+                    "Y": 0.4000000059604645,
+                    "Z": 0.4000000059604645
+                },
+                "Quadratic": 0.01600000075995922,
+                "Diffuse": {
+                    "X": 0.800000011920929,
+                    "Y": 0.800000011920929,
+                    "Z": 0.800000011920929
+                },
+                "CutOff": -431602080.0,
+                "Specular": {
+                    "X": 1.0,
+                    "Y": 1.0,
+                    "Z": 1.0
+                },
+                "OuterCutOff": -431602080.0,
+                "Type": 1
+            },
+            "IsDynamic": true,
+            "SSBOIndex": 0
         }
     },
     "Brickwall4": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Brickwall4",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall4",
+        "TransformComponent": {
             "Pos": {
                 "X": 0.0,
                 "Y": -15.0,
@@ -294,52 +111,9 @@
                 "Z": 15.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 5
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 6
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -347,18 +121,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Brickwall3": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Brickwall3",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall3",
+        "TransformComponent": {
             "Pos": {
                 "X": 15.0,
                 "Y": 0.0,
@@ -376,52 +164,9 @@
                 "Z": 15.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 5
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 6
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -429,18 +174,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Brickwall2": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Brickwall2",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall2",
+        "TransformComponent": {
             "Pos": {
                 "X": -15.0,
                 "Y": 0.0,
@@ -458,52 +217,9 @@
                 "Z": 15.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 5
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 6
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -511,18 +227,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Brickwall1": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Brickwall1",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall1",
+        "TransformComponent": {
             "Pos": {
                 "X": 0.0,
                 "Y": 0.0,
@@ -540,52 +270,9 @@
                 "Z": 15.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 5
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 6
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -593,18 +280,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Brickwall0": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Brickwall0",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall0",
+        "TransformComponent": {
             "Pos": {
                 "X": 0.0,
                 "Y": 0.0,
@@ -622,52 +323,9 @@
                 "Z": 15.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 5
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 6
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -675,18 +333,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Cube7": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Cube7",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Cube7",
+        "TransformComponent": {
             "Pos": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -704,52 +376,9 @@
                 "Z": 1.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -757,18 +386,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Cube6": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Cube6",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Cube6",
+        "TransformComponent": {
             "Pos": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -786,52 +429,9 @@
                 "Z": 1.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -839,18 +439,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Cube5": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Cube5",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Cube5",
+        "TransformComponent": {
             "Pos": {
                 "X": 1.0,
                 "Y": -1.0,
@@ -868,52 +482,9 @@
                 "Z": 1.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -921,18 +492,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Cube4": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Cube4",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Cube4",
+        "TransformComponent": {
             "Pos": {
                 "X": 1.0,
                 "Y": -1.0,
@@ -950,52 +535,9 @@
                 "Z": 1.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -1003,18 +545,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Cube3": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Cube3",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Cube3",
+        "TransformComponent": {
             "Pos": {
                 "X": -1.0,
                 "Y": 1.0,
@@ -1032,52 +588,9 @@
                 "Z": 1.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -1085,18 +598,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Cube2": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Cube2",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Cube2",
+        "TransformComponent": {
             "Pos": {
                 "X": -1.0,
                 "Y": 1.0,
@@ -1114,52 +641,9 @@
                 "Z": 1.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -1167,18 +651,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Cube1": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Cube1",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Cube1",
+        "TransformComponent": {
             "Pos": {
                 "X": -1.0,
                 "Y": -1.0,
@@ -1196,52 +694,9 @@
                 "Z": 1.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -1249,18 +704,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "Cube0": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "Cube0",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Cube0",
+        "TransformComponent": {
             "Pos": {
                 "X": -1.0,
                 "Y": -1.0,
@@ -1278,52 +747,9 @@
                 "Z": 1.0
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
@@ -1331,18 +757,32 @@
                         "Y": -431602080.0,
                         "Z": -431602080.0,
                         "W": -431602080.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]
         }
     },
     "WorldCenter": {
-        "ComponentConfiguration": {
-            "type": 0,
-            "data": 7
-        },
-        "Tag": "WorldCenter",
-        "Transform": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "WorldCenter",
+        "TransformComponent": {
             "Pos": {
                 "X": 0.0,
                 "Y": 0.0,
@@ -1360,52 +800,9 @@
                 "Z": 0.20000000298023225
             }
         },
-        "Model": {
+        "ModelComponent": {
             "MeshInstances": [
                 {
-                    "Mesh": {
-                        "VertexArray": {
-                            "ptr_wrapper": {
-                                "id": 1
-                            }
-                        },
-                        "VertexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 2
-                            }
-                        },
-                        "IndexBuffer": {
-                            "ptr_wrapper": {
-                                "id": 0
-                            }
-                        },
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 3
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    {
-                                        "ptr_wrapper": {
-                                            "id": 4
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": []
-                            }
-                        ]
-                    },
                     "HasTextures": false,
                     "NormalsOut": true,
                     "Color": {
@@ -1413,6 +810,23 @@
                         "Y": 1.0,
                         "Z": 1.0,
                         "W": 1.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 0,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "container2.png"
+                                ]
+                            },
+                            {
+                                "key": 1,
+                                "value": [
+                                    "container2_specular.png"
+                                ]
+                            }
+                        ]
                     }
                 }
             ]

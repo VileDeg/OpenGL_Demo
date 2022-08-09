@@ -1448,6 +1448,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\geometry\GeoData.cpp" />
     <ClCompile Include="src\renderer\MeshManager.cpp" />
   </ItemGroup>
 </Project>

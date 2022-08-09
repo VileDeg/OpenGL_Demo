@@ -23,9 +23,11 @@ void ImguiLayer::Init(GLFWwindow* window, const char* projectName)
 	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
 	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-	io.Fonts->AddFontFromFileTTF("res/fonts/CascadiaCode/static/CascadiaMono-Bold.ttf", 18.0f);
-	io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/CascadiaCode/CascadiaMono.ttf", 18.0f);
-	io.FontGlobalScale = s_FontScale;
+	io.Fonts->AddFontFromFileTTF("res/fonts/CascadiaCode/static/CascadiaMono-Bold.ttf", 18.0f * s_FontScale);
+	io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/CascadiaCode/CascadiaMono.ttf", 18.0f * s_FontScale);
+	//bold->Scale = font->Scale = s_FontScale;
+	//io.FontGlobalScale = s_FontScale;
+
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
