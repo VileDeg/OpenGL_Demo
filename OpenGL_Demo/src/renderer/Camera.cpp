@@ -3,16 +3,15 @@
 #include "core/Window.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera(Window& window, glm::vec3 position,
+Camera::Camera(glm::vec3 position,
     glm::vec3 up, float yaw, float pitch)
-    : m_Window(window),
-    m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
+        : m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
     m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
     m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch),
     m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE),
     m_ViewMat(glm::lookAt(m_Position, m_Position + m_Front, m_Up)),
     m_ProjMat(glm::perspective(glm::radians(m_Zoom),
-        (float)(m_Window.Width()) / m_Window.Height(),
+        (float)(Window::Width()) / Window::Height(),
         m_NearPlane, m_FarPlane))
 {
     UpdateCameraVectors();

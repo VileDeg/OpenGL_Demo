@@ -16,6 +16,8 @@ Scene::~Scene()
 
 Entity Scene::CreateEntity(const std::string& name)
 {
+	m_NumOfEntities++;
+
 	Entity entity = { m_Registry.create(), this };
 	entity.AddComponent<TransformComponent>();
 	auto& tag = entity.AddComponent<TagComponent>();
@@ -26,6 +28,7 @@ Entity Scene::CreateEntity(const std::string& name)
 
 void Scene::DestroyEntity(Entity entity)
 {
+	m_NumOfEntities--;
 	m_Registry.destroy(entity);
 }
 

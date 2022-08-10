@@ -10,13 +10,14 @@ public:
 	static void Clear();
 	static void UIStats();
 
-private:
-	static std::vector<Mesh> Meshes;
+	static std::vector<Ref<Mesh>> Meshes;
 	static std::vector<MeshData> MData;
+private:
 
 	template<typename T>
 	static bool getIndex(const std::vector<T>& vec, const T& item, size_t& index)
 	{
+
 		auto& iter = std::find(vec.begin(), vec.end(), item);
 		if (iter == vec.end())
 			return false;

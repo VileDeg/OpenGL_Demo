@@ -63,8 +63,11 @@ public:
 
     friend bool operator==(const Mesh& lhs, const Mesh& rhs)
     {
-        return std::tie(lhs.m_UniformColor, lhs.m_VAO, lhs.m_VBO, lhs.m_EBO, lhs.m_Textures) ==
-            std::tie(rhs.m_UniformColor, rhs.m_VAO, rhs.m_VBO, rhs.m_EBO, rhs.m_Textures);
+        return (lhs.m_UniformColor == rhs.m_UniformColor && lhs.m_VAO == rhs.m_VAO &&
+            lhs.m_VBO == rhs.m_VBO && lhs.m_EBO == rhs.m_EBO && lhs.m_Textures == rhs.m_Textures);
+            
+        /*return std::tie(lhs.m_UniformColor, lhs.m_VAO, lhs.m_VBO, lhs.m_EBO, lhs.m_Textures) ==
+            std::tie(rhs.m_UniformColor, rhs.m_VAO, rhs.m_VBO, rhs.m_EBO, rhs.m_Textures);*/
     }
 
 private:
@@ -72,13 +75,13 @@ private:
     //For primitives. Called by MeshManager
     Mesh(const MeshData& data);
 private:
-    glm::vec4 m_UniformColor;
+    glm::vec4 m_UniformColor{};
 
-    Ref<VAO> m_VAO;
-    Ref<VBO> m_VBO;
-    Ref<EBO> m_EBO;
+    Ref<VAO> m_VAO{};
+    Ref<VBO> m_VBO{};
+    Ref<EBO> m_EBO{};
 
-    std::unordered_map<TexType, std::vector<Ref<Texture>>> m_Textures;
+    std::unordered_map<TexType, std::vector<Ref<Texture>>> m_Textures{};
 };
 
 struct MeshInstance

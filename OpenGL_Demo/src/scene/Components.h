@@ -27,6 +27,7 @@ struct TransformComponent
 {
 	glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
 	glm::quat Quaternion{};
+	glm::vec3 EulerAngles{};
 	glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
 
 	void ScaleF(const float units)
@@ -37,10 +38,12 @@ struct TransformComponent
 	void RotateTo(const float angle, const glm::vec3& axis)
 	{
 		Quaternion = glm::angleAxis(glm::radians(angle), axis);
+		EulerAngles = glm::degrees(glm::eulerAngles(Quaternion));
 	}
 
 	void RotateTo(const glm::vec3& eulerAngles)
 	{
+		EulerAngles = eulerAngles;
 		Quaternion = glm::quat(glm::radians(eulerAngles));
 	}
 
@@ -50,11 +53,6 @@ struct TransformComponent
 		glm::quat quatRot = glm::angleAxis(glm::radians(angle), glm::normalize(axis));
 		glm::mat4 rotMat = glm::toMat4(quatRot);
 		Position = glm::vec3(rotMat * glm::vec4(iniPos,1.f)) + point;
-	}
-		
-	const glm::vec3& EulerAngles() const
-	{
-		return glm::eulerAngles(Quaternion);
 	}
 
 	glm::mat4 GetTransform() const

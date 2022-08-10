@@ -2,7 +2,7 @@
 #include "MeshManager.h"
 #include "imgui.h"
 
-std::vector<Mesh> MeshManager::Meshes{};
+std::vector<Ref<Mesh>> MeshManager::Meshes{};
 std::vector<MeshData>  MeshManager::MData{};
 
 void MeshManager::UIStats()
@@ -31,15 +31,18 @@ Ref<Mesh> MeshManager::GetMesh(const MeshData& data)
 	if (!getIndex<MeshData>(MData, data, index))
 	{
 		MData.push_back(data);
-		Meshes.push_back(Mesh(data));
-		return CreateRef<Mesh>(Meshes.back());
+		Ref<Mesh> m = Ref<Mesh>(new Mesh(data));
+		Meshes.push_back(m);
+		return m;
 	}
-	return CreateRef<Mesh>(Meshes[index]);
+	return Ref<Mesh>(Meshes[index]);
 }
 const MeshData& MeshManager::GetMData(Ref<Mesh> mesh)
 {
+	std::cout << "Meshes " << Meshes.size() << '\n';
+	std::cout << "MData " << MData.size() << '\n';
 	size_t index = 0;
-	ASSERT(getIndex<Mesh>(Meshes, *mesh, index), "Mesh data not found.");
+	ASSERT(getIndex<Ref<Mesh>>(Meshes, mesh, index), "Mesh data not found.");
 
 	return MData[index];
 }

@@ -1,10 +1,14 @@
 #include "pch.h"
 #include "ImguiLayer.h"
 
+#include <GLFW/glfw3.h>
+
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.cpp"
 #include "backends/imgui_impl_glfw.cpp"
-#include "GLFW/glfw3.h"
+
+#include "ImGuizmo.h"
+
 #include "platform/WindowsUtils.h"
 
 static std::string s_IniFilePath;
@@ -55,6 +59,8 @@ void ImguiLayer::Begin()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	ImGuizmo::BeginFrame();
 }
 
 void ImguiLayer::End(float width, float height)
@@ -85,6 +91,9 @@ void ImguiLayer::Shutdown()
 
 void ImguiLayer::SetDarkThemeColors()
 {
+	//Function code was taken unmodified from repository
+	//https://github.com/TheCherno/Hazel
+	//For license see vendor\Third-party_licenses\Hazel\LICENSE
 	auto& colors = ImGui::GetStyle().Colors;
 	colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
 

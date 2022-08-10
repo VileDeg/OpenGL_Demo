@@ -44,6 +44,7 @@ namespace cereal
 	{
 		ar& cereal::make_nvp("Pos", tr.Position);
 		ar& cereal::make_nvp("Quat", tr.Quaternion);
+		ar& cereal::make_nvp("EulerAngles", tr.EulerAngles);
 		ar& cereal::make_nvp("Scale", tr.Scale);
 	}
 
@@ -57,6 +58,7 @@ namespace cereal
 	template<class Archive>
 	void save(Archive& ar, const MeshInstance& mi)
 	{
+
 		ar & cereal::make_nvp("HasTextures", mi.HasTextures);
 		ar & cereal::make_nvp("NormalsOut", mi.NormalsOut);
 		ar & cereal::make_nvp("Color", mi.Color);
@@ -113,7 +115,7 @@ void SceneSerializer::SaveScene(const std::string& filePath)
 
 	cereal::JSONOutputArchive oa(ofs);
 
-	oa& cereal::make_nvp("NumberOfEntities", m_Scene->m_Registry.size());
+	oa& cereal::make_nvp("NumberOfEntities", m_Scene->m_NumOfEntities);
 
 	unsigned noTagCount = 0;
 	m_Scene->m_Registry.each([&](auto entityID)

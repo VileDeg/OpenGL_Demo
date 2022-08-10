@@ -1,5 +1,5 @@
 {
-    "NumberOfEntities": 10,
+    "NumberOfEntities": 15,
     "LightCube": {
         "ComponentConfiguration": "1111",
         "TagComponent": "LightCube",
@@ -14,6 +14,11 @@
                 "Y": 0.0,
                 "Z": 0.0,
                 "W": 0.0
+            },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
             },
             "Scale": {
                 "X": 0.20000000298023225,
@@ -90,6 +95,354 @@
             "SSBOIndex": 0
         }
     },
+    "Brickwall5": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall5",
+        "TransformComponent": {
+            "Pos": {
+                "X": 0.0,
+                "Y": 15.0,
+                "Z": 0.0
+            },
+            "Quat": {
+                "X": 0.7071067690849304,
+                "Y": 0.0,
+                "Z": 0.0,
+                "W": 0.7071067690849304
+            },
+            "EulerAngles": {
+                "X": 90.0,
+                "Y": -0.0,
+                "Z": 0.0
+            },
+            "Scale": {
+                "X": 15.0,
+                "Y": 15.0,
+                "Z": 15.0
+            }
+        },
+        "ModelComponent": {
+            "MeshInstances": [
+                {
+                    "HasTextures": true,
+                    "NormalsOut": true,
+                    "Color": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "Brickwall4": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall4",
+        "TransformComponent": {
+            "Pos": {
+                "X": 0.0,
+                "Y": -15.0,
+                "Z": 0.0
+            },
+            "Quat": {
+                "X": -0.7071067690849304,
+                "Y": -0.0,
+                "Z": -0.0,
+                "W": 0.7071067690849304
+            },
+            "EulerAngles": {
+                "X": -90.0,
+                "Y": -0.0,
+                "Z": 0.0
+            },
+            "Scale": {
+                "X": 15.0,
+                "Y": 15.0,
+                "Z": 15.0
+            }
+        },
+        "ModelComponent": {
+            "MeshInstances": [
+                {
+                    "HasTextures": true,
+                    "NormalsOut": true,
+                    "Color": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "Brickwall3": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall3",
+        "TransformComponent": {
+            "Pos": {
+                "X": 15.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
+            "Quat": {
+                "X": -0.0,
+                "Y": -0.7071067690849304,
+                "Z": -0.0,
+                "W": 0.7071067690849304
+            },
+            "EulerAngles": {
+                "X": -0.0,
+                "Y": -89.98021697998047,
+                "Z": 0.0
+            },
+            "Scale": {
+                "X": 15.0,
+                "Y": 15.0,
+                "Z": 15.0
+            }
+        },
+        "ModelComponent": {
+            "MeshInstances": [
+                {
+                    "HasTextures": true,
+                    "NormalsOut": true,
+                    "Color": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "Brickwall2": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall2",
+        "TransformComponent": {
+            "Pos": {
+                "X": -15.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
+            "Quat": {
+                "X": 0.0,
+                "Y": 0.7071067690849304,
+                "Z": 0.0,
+                "W": 0.7071067690849304
+            },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 89.98021697998047,
+                "Z": 0.0
+            },
+            "Scale": {
+                "X": 15.0,
+                "Y": 15.0,
+                "Z": 15.0
+            }
+        },
+        "ModelComponent": {
+            "MeshInstances": [
+                {
+                    "HasTextures": true,
+                    "NormalsOut": true,
+                    "Color": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "Brickwall1": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall1",
+        "TransformComponent": {
+            "Pos": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 15.0
+            },
+            "Quat": {
+                "X": 0.0,
+                "Y": 1.0,
+                "Z": 0.0,
+                "W": -4.371138828673793e-8
+            },
+            "EulerAngles": {
+                "X": 180.0,
+                "Y": -0.000005008956122765085,
+                "Z": 180.0
+            },
+            "Scale": {
+                "X": 15.0,
+                "Y": 15.0,
+                "Z": 15.0
+            }
+        },
+        "ModelComponent": {
+            "MeshInstances": [
+                {
+                    "HasTextures": true,
+                    "NormalsOut": true,
+                    "Color": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "Brickwall0": {
+        "ComponentConfiguration": "0111",
+        "TagComponent": "Brickwall0",
+        "TransformComponent": {
+            "Pos": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": -15.0
+            },
+            "Quat": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0,
+                "W": 0.0
+            },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
+            "Scale": {
+                "X": 15.0,
+                "Y": 15.0,
+                "Z": 15.0
+            }
+        },
+        "ModelComponent": {
+            "MeshInstances": [
+                {
+                    "HasTextures": true,
+                    "NormalsOut": true,
+                    "Color": {
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
+                    },
+                    "MeshData": {
+                        "PrimitiveType": 1,
+                        "Textures": [
+                            {
+                                "key": 0,
+                                "value": [
+                                    "brickwall.jpg"
+                                ]
+                            },
+                            {
+                                "key": 2,
+                                "value": [
+                                    "brickwall_normal.jpg"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
     "Cube7": {
         "ComponentConfiguration": "0111",
         "TagComponent": "Cube7",
@@ -105,6 +458,11 @@
                 "Z": 0.0,
                 "W": 0.0
             },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
             "Scale": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -117,10 +475,10 @@
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
                     },
                     "MeshData": {
                         "PrimitiveType": 0,
@@ -158,6 +516,11 @@
                 "Z": 0.0,
                 "W": 0.0
             },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
             "Scale": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -170,10 +533,10 @@
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
                     },
                     "MeshData": {
                         "PrimitiveType": 0,
@@ -211,6 +574,11 @@
                 "Z": 0.0,
                 "W": 0.0
             },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
             "Scale": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -223,10 +591,10 @@
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
                     },
                     "MeshData": {
                         "PrimitiveType": 0,
@@ -264,6 +632,11 @@
                 "Z": 0.0,
                 "W": 0.0
             },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
             "Scale": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -276,10 +649,10 @@
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
                     },
                     "MeshData": {
                         "PrimitiveType": 0,
@@ -317,6 +690,11 @@
                 "Z": 0.0,
                 "W": 0.0
             },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
             "Scale": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -329,10 +707,10 @@
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
                     },
                     "MeshData": {
                         "PrimitiveType": 0,
@@ -370,6 +748,11 @@
                 "Z": 0.0,
                 "W": 0.0
             },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
             "Scale": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -382,10 +765,10 @@
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
                     },
                     "MeshData": {
                         "PrimitiveType": 0,
@@ -423,6 +806,11 @@
                 "Z": 0.0,
                 "W": 0.0
             },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
             "Scale": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -435,10 +823,10 @@
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
+                        "X": 1.0,
+                        "Y": 0.0,
+                        "Z": 1.0,
+                        "W": 1.0
                     },
                     "MeshData": {
                         "PrimitiveType": 0,
@@ -476,6 +864,11 @@
                 "Z": 0.0,
                 "W": 0.0
             },
+            "EulerAngles": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
             "Scale": {
                 "X": 1.0,
                 "Y": 1.0,
@@ -488,61 +881,8 @@
                     "HasTextures": true,
                     "NormalsOut": true,
                     "Color": {
-                        "X": -431602080.0,
-                        "Y": -431602080.0,
-                        "Z": -431602080.0,
-                        "W": -431602080.0
-                    },
-                    "MeshData": {
-                        "PrimitiveType": 0,
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    "container2.png"
-                                ]
-                            },
-                            {
-                                "key": 1,
-                                "value": [
-                                    "container2_specular.png"
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-    },
-    "WorldCenter": {
-        "ComponentConfiguration": "0111",
-        "TagComponent": "WorldCenter",
-        "TransformComponent": {
-            "Pos": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": 0.0
-            },
-            "Quat": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": 0.0,
-                "W": 0.0
-            },
-            "Scale": {
-                "X": 0.20000000298023225,
-                "Y": 0.20000000298023225,
-                "Z": 0.20000000298023225
-            }
-        },
-        "ModelComponent": {
-            "MeshInstances": [
-                {
-                    "HasTextures": false,
-                    "NormalsOut": true,
-                    "Color": {
                         "X": 1.0,
-                        "Y": 1.0,
+                        "Y": 0.0,
                         "Z": 1.0,
                         "W": 1.0
                     },

@@ -4,7 +4,7 @@
 class TestScene : virtual public Scene
 {
 public:
-    TestScene(Window& window, Camera& camera);
+    TestScene(Camera& camera);
 	~TestScene() override;
 
     void OnUpdate(float deltaTime) override;
@@ -12,7 +12,6 @@ public:
 private:
 	void SetLightParams();
 private:
-    Window& m_Window;
     Camera& m_Camera;
     Ref<Mesh> m_CubeMesh;
     Ref<Mesh> m_BrickwallMesh;

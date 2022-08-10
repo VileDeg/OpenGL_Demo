@@ -7,24 +7,24 @@ class Window;
 class Camera
 {
 public:
-	Camera(Window& window, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
-	void MoveForward(float* deltaTime) {
+	void MoveForward(float deltaTime) {
 		m_Position +=
-			m_Front * m_MovementSpeed * *deltaTime;
+			m_Front * m_MovementSpeed * deltaTime;
 	}
-	void MoveBackward(float* deltaTime) {
+	void MoveBackward(float deltaTime) {
 		m_Position -=
-			m_Front * m_MovementSpeed * *deltaTime;
+			m_Front * m_MovementSpeed * deltaTime;
 	}
-	void MoveLeft(float* deltaTime) {
+	void MoveLeft(float deltaTime) {
 		m_Position -=
-			m_Right * m_MovementSpeed * *deltaTime;
+			m_Right * m_MovementSpeed * deltaTime;
 	}
-	void MoveRight(float* deltaTime) {
+	void MoveRight(float deltaTime) {
 		m_Position +=
-			m_Right * m_MovementSpeed * *deltaTime;
+			m_Right * m_MovementSpeed * deltaTime;
 	}
 
 	const float Speed() const { return m_MovementSpeed; }
@@ -53,7 +53,7 @@ public:
 private:
 	void UpdateCameraVectors();
 private:
-	Window& m_Window;
+	//Window& m_Window;
 
 	glm::mat4 m_ViewMat;
 	glm::mat4 m_ProjMat;

@@ -29,11 +29,11 @@ void TestScene::SetLightParams()
 }
 
 static int num = 2;
-TestScene::TestScene(Window& window, Camera& camera)
-    : m_Window(window), m_Camera(camera),
+TestScene::TestScene(Camera& camera)
+    : m_Camera(camera),
     m_CamSpeed(12.f)
 {
-    m_Window.HideCursor();
+    Window::HideCursor();
 
     SetLightParams();
    

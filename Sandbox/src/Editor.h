@@ -15,15 +15,17 @@ public:
 private:
 	void UIDrawMenuBar();
 	void UIDrawViewport();
+	void UIDrawGizmos();
 	void SaveSceneAs();
 	void LoadScene();
 private:
-	GLContext* m_Context;
-	Window*    m_Window;
+	/*GLContext* m_Context;
+	Window*    m_Window;*/
 
 	Ref<Camera> m_Camera;
 	Ref<Scene> m_ActiveScene;
 
+	int m_GizmoType = -1;
 	glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 	SceneHierarchyPanel m_SceneHierarchyPanel;
 private:

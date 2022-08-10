@@ -31,6 +31,9 @@
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\ImGuizmo">
+      <UniqueIdentifier>{73BF7F4C-DF4A-ED10-E85B-700554664911}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
     </Filter>
@@ -63,10 +66,7 @@
     <ClInclude Include="src\assimp_import\Model.h">
       <Filter>src\assimp_import</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\Core.h">
-      <Filter>src\core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\GLContext.h">
+    <ClInclude Include="src\core\Base.h">
       <Filter>src\core</Filter>
     </ClInclude>
     <ClInclude Include="src\core\Log.h">
@@ -131,6 +131,9 @@
     </ClInclude>
     <ClInclude Include="src\scene\SceneSerializer.h">
       <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h">
+      <Filter>vendor\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1380,6 +1383,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\input\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\assimp_import\Mesh.cpp">
@@ -1387,9 +1391,6 @@
     </ClCompile>
     <ClCompile Include="src\assimp_import\Model.cpp">
       <Filter>src\assimp_import</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\GLContext.cpp">
-      <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="src\core\Window.cpp">
       <Filter>src\core</Filter>
@@ -1445,8 +1446,13 @@
     <ClCompile Include="src\scene\SceneSerializer.cpp">
       <Filter>src\scene</Filter>
     </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
+      <Filter>vendor\ImGuizmo</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\glfwCallbacks.cpp" />
+    <ClCompile Include="src\input\Input.cpp" />
   </ItemGroup>
 </Project>

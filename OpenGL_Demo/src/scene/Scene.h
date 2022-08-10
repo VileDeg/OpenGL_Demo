@@ -21,6 +21,7 @@ private:
 	void RenderShadow();
 protected:
 	entt::registry m_Registry;
+	size_t m_NumOfEntities{};
 
 	friend class Entity;
 	friend class SceneHierarchyPanel;

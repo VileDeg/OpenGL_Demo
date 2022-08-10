@@ -85,6 +85,9 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
 static bool DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
 {
+	//Function code was taken unmodified from repository
+	//https://github.com/TheCherno/Hazel
+	//For license see vendor\Third-party_licenses\Hazel\LICENSE
 	bool wasUsed = false;
 	ImGuiIO& io = ImGui::GetIO();
 	auto boldFont = io.Fonts->Fonts[0];
@@ -166,6 +169,9 @@ static bool DrawVec3Control(const std::string& label, glm::vec3& values, float r
 template<typename T, typename UIFunction>
 static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
 {
+	//Modified function code was taken from repository
+	//https://github.com/TheCherno/Hazel
+	//For license see vendor\Third-party_licenses\Hazel\LICENSE
 	const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed
 		| ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 	ImGuiIO& io = ImGui::GetIO();
@@ -260,9 +266,9 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 		{
 			DrawVec3Control("Position", component.Position);
-			glm::vec3 rotation = glm::degrees(component.EulerAngles());
-			if (DrawVec3Control("Rotation", rotation))
-				component.Quaternion = glm::quat(glm::radians(rotation));
+			if (DrawVec3Control("Rotation", component.EulerAngles))
+				component.Quaternion = glm::quat(glm::radians(component.EulerAngles));
+
 			DrawVec3Control("Scale", component.Scale, 1.0f);
 		});
 

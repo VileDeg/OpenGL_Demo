@@ -8,7 +8,7 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
-#include "core/GLContext.h"
+#include "core/Window.h"
 
 namespace WinUtils
 {
@@ -45,7 +45,7 @@ namespace WinUtils
         ZeroMemory(&ofn, sizeof(ofn));
 
         ofn.lStructSize = sizeof(ofn);
-        ofn.hwndOwner = glfwGetWin32Window(GLContext::Get().GetWindow().Handle());;
+        ofn.hwndOwner = glfwGetWin32Window(Window::Handle());;
         ofn.lpstrFile = szFileName;
         ofn.nMaxFile = MAX_PATH;
         ofn.lpstrFilter = filter;
@@ -66,7 +66,7 @@ namespace WinUtils
         ZeroMemory(&ofn, sizeof(ofn));
 
         ofn.lStructSize = sizeof(ofn);
-        ofn.hwndOwner = glfwGetWin32Window(GLContext::Get().GetWindow().Handle());;
+        ofn.hwndOwner = glfwGetWin32Window(Window::Handle());;
         ofn.lpstrFile = szFileName;
         ofn.nMaxFile = MAX_PATH;
         ofn.lpstrFilter = filter;

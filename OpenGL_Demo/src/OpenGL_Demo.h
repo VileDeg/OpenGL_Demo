@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/GLContext.h"
 #include "core/Window.h"
 
 #include "renderer/Renderer.h"

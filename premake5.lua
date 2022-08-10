@@ -27,9 +27,6 @@ group "Dependencies"
 	include "OpenGL_Demo/vendor/GLFW"
 	include "OpenGL_Demo/vendor/GLAD"
 	include "OpenGL_Demo/vendor/ImGui"
-	--include "OpenGL_Demo/vendor/yaml-cpp"
-	--include "OpenGL_Demo/vendor/boost"
-	--include "OpenGL_Demo/vendor/assimp"
 
 group ""
 
@@ -39,7 +36,6 @@ project "OpenGL_Demo"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
-
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -51,10 +47,16 @@ project "OpenGL_Demo"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
+		
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/stb_image/**.h",
+		
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
+		
 	}
 	
 	defines
@@ -73,7 +75,8 @@ project "OpenGL_Demo"
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.assimp}",
-		"%{IncludeDir.cereal}"
+		"%{IncludeDir.cereal}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links 
@@ -84,6 +87,9 @@ project "OpenGL_Demo"
 		"OpenGL_Demo/vendor/assimp/lib/assimp-vc143-mt.lib",
 		"opengl32.lib"
 	}
+	
+	filter "files:vendor/ImGuizmo/**.cpp"
+	flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"

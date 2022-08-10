@@ -6,10 +6,9 @@ enum class KeyActionType
 	Camera = 42, CameraForward, CameraBackward, CameraRight, CameraLeft,
 };
 
-
 class Keybind
 {
-protected:
+public:
 	using actionType = std::function<void(void)>;
 public:
 	Keybind(int id, int glEventType) 
