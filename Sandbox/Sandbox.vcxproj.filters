@@ -14,6 +14,9 @@
     <ClInclude Include="src\scenes\TestScene.h">
       <Filter>scenes</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\EditorUI.h">
+      <Filter>ui</Filter>
+    </ClInclude>
     <ClInclude Include="src\ui\SceneHierarchyPanel.h">
       <Filter>ui</Filter>
     </ClInclude>
@@ -24,6 +27,9 @@
     <ClCompile Include="src\pch.cpp" />
     <ClCompile Include="src\scenes\TestScene.cpp">
       <Filter>scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\EditorUI.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\SceneHierarchyPanel.cpp">
       <Filter>ui</Filter>

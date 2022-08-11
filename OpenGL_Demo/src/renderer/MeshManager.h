@@ -1,14 +1,15 @@
 #pragma once
 #include "renderer/Mesh.h"
 
-
 class MeshManager
 {
+private:
+	typedef int ImGuiWindowFlags;
 public:
 	static Ref<Mesh> GetMesh(const MeshData& data);
 	static const MeshData& GetMData(Ref<Mesh> mesh);
 	static void Clear();
-	static void UIStats();
+	static void OnImGuiRender(ImGuiWindowFlags panelFlags);
 
 	static std::vector<Ref<Mesh>> Meshes;
 	static std::vector<MeshData> MData;

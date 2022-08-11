@@ -4,7 +4,7 @@
 class SceneSerializer
 {
 public:
-	SceneSerializer(const Ref<Scene>& scene)
+	SceneSerializer(Ref<Scene> scene)
 		: m_Scene(scene) {}
 	~SceneSerializer() {}
 

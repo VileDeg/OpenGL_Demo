@@ -66,8 +66,6 @@ GLFWwindow* Window::Open(const unsigned width, const unsigned height, const std:
 
 void Window::OnUpdate()
 {
-    //if (m_Params.paused)
-    //    return;
     CalcDeltaTime();
     if (m_Camera)
     {

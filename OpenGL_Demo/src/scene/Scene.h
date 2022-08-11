@@ -6,6 +6,8 @@ class Entity;
 
 class Scene
 {
+protected:
+	typedef int ImGuiWindowFlags;
 public:
 	Scene();
 	virtual ~Scene() = 0;
@@ -14,7 +16,7 @@ public:
 	void DestroyEntity(Entity entity);
 	
 	virtual void OnUpdate(float deltaTime);
-	virtual void OnImGuiRender() = 0;
+	virtual void OnImGuiRender(ImGuiWindowFlags panelFlags) = 0;
 private:
 	void RenderScene();
 	void RenderSceneDepth();

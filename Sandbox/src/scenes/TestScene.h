@@ -4,15 +4,15 @@
 class TestScene : virtual public Scene
 {
 public:
-    TestScene(Camera& camera);
+    TestScene(Ref<Camera> camera);
 	~TestScene() override;
 
     void OnUpdate(float deltaTime) override;
-    void OnImGuiRender() override;
+    void OnImGuiRender(ImGuiWindowFlags panelFlags) override;
 private:
 	void SetLightParams();
 private:
-    Camera& m_Camera;
+    Ref<Camera> m_Camera;
     Ref<Mesh> m_CubeMesh;
     Ref<Mesh> m_BrickwallMesh;
     Entity m_Cubes[8];

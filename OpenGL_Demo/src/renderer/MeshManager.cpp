@@ -5,9 +5,9 @@
 std::vector<Ref<Mesh>> MeshManager::Meshes{};
 std::vector<MeshData>  MeshManager::MData{};
 
-void MeshManager::UIStats()
+void MeshManager::OnImGuiRender(ImGuiWindowFlags panelFlags)
 {
-	ImGui::Begin("Mesh Manager");
+	ImGui::Begin("Mesh Manager", (bool*)0, panelFlags);
 
 	ImGui::Text("Meshes: ");
 	ImGui::SameLine();
@@ -37,6 +37,7 @@ Ref<Mesh> MeshManager::GetMesh(const MeshData& data)
 	}
 	return Ref<Mesh>(Meshes[index]);
 }
+
 const MeshData& MeshManager::GetMData(Ref<Mesh> mesh)
 {
 	std::cout << "Meshes " << Meshes.size() << '\n';

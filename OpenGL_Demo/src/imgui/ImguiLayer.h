@@ -1,16 +1,12 @@
 #pragma once
 
-
 struct GLFWwindow;
 
-class ImguiLayer
+namespace ImguiLayer
 {
-public:
-	static void Init(GLFWwindow* window, const char* projectName);
+	void Init(GLFWwindow* window, const char* projectName);
 
-	static void Begin();
-	static void End(float width, float height);
-	static void Shutdown();
-
-	static void SetDarkThemeColors();
+	void Begin();
+	void End(float width, float height);
+	void Shutdown();
 };

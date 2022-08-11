@@ -29,7 +29,7 @@ void TestScene::SetLightParams()
 }
 
 static int num = 2;
-TestScene::TestScene(Camera& camera)
+TestScene::TestScene(Ref<Camera> camera)
     : m_Camera(camera),
     m_CamSpeed(12.f)
 {
@@ -146,12 +146,13 @@ void TestScene::OnUpdate(float deltaTime)
     Scene::OnUpdate(deltaTime);
 
     Renderer::EndScene();
-    m_Camera.SetSpeed(m_CamSpeed);
+    m_Camera->SetSpeed(m_CamSpeed);
 }
 
-void TestScene::OnImGuiRender()
+void TestScene::OnImGuiRender(ImGuiWindowFlags panelFlags)
 {
-    ImGui::Begin("LevelMenu");
+    //ImGui::ShowDemoWindow();
+    ImGui::Begin("LevelMenu", (bool*)0, panelFlags);
     static float min = 0.0f;
     static int x, y, z;
     ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
@@ -168,7 +169,7 @@ void TestScene::OnImGuiRender()
 
     ImGui::End();
 
-    MeshManager::UIStats();
+    MeshManager::OnImGuiRender(panelFlags);
 }
 
 TestScene::~TestScene()

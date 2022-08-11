@@ -96,7 +96,7 @@ public:
 
 	static const unsigned GetFBColorAttachmentID();
 	static void SetRenderImageSize(const unsigned width, const unsigned height);
-	static void BeginScene(const Camera& cam, unsigned lightCount, bool castShadows);
+	static void BeginScene(Ref<Camera> cam, unsigned lightCount, bool castShadows);
 	static void EndScene();
 	static void Shutdown();
 

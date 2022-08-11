@@ -18,9 +18,8 @@ IncludeDir["ImGui"] = "OpenGL_Demo/vendor/imgui"
 IncludeDir["GLM"] = "OpenGL_Demo/vendor/GLM"
 IncludeDir["entt"] = "OpenGL_Demo/vendor/entt"
 IncludeDir["assimp"] = "OpenGL_Demo/vendor/assimp/include"
---IncludeDir["yaml_cpp"] = "OpenGL_Demo/vendor/yaml-cpp/include"
-IncludeDir["boost"] = "C:/Program Files/boost/boost_1_79_0"
 IncludeDir["ImGuizmo"] = "OpenGL_Demo/vendor/ImGuizmo"
+IncludeDir["stb_image"] = "OpenGL_Demo/vendor/stb_image"
 IncludeDir["cereal"] = "OpenGL_Demo/vendor/cereal"
 
 group "Dependencies"
@@ -56,7 +55,6 @@ project "OpenGL_Demo"
 		
 		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
 		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
-		
 	}
 	
 	defines
@@ -67,10 +65,10 @@ project "OpenGL_Demo"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/stb_image",
 
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
+		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.entt}",
@@ -88,7 +86,7 @@ project "OpenGL_Demo"
 		"opengl32.lib"
 	}
 	
-	filter "files:vendor/ImGuizmo/**.cpp"
+	filter "files:OpenGL_Demo/vendor/ImGuizmo/**.cpp"
 	flags { "NoPCH" }
 
 	filter "system:windows"
@@ -133,9 +131,11 @@ project "Sandbox"
 
 	includedirs
 	{
-		--"OpenGL_Demo/vendor/spdlog/include",
+		"Sandbox/src",
+
 		"OpenGL_Demo/src",
 		"OpenGL_Demo/vendor",
+
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.assimp}",

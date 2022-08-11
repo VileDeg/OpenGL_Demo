@@ -2,43 +2,44 @@
 #include "SceneHierarchyPanel.h"
 #include <imgui/imgui_internal.h>
 
-SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
+SceneHierarchyPanel::SceneHierarchyPanel(Ref<Scene> context)
 {
 	SetContext(context);
 }
 
-void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
+void SceneHierarchyPanel::SetContext(Ref<Scene> scene)
 {
-	m_Context = context;
+	m_Scene = scene;
 }
 
-void SceneHierarchyPanel::OnImGuiRender()
+void SceneHierarchyPanel::OnImGuiRender(ImGuiWindowFlags panelFlags)
 {
-	ImGui::Begin("Scene Hierarchy");
+	
+	ImGui::Begin("Scene Hierarchy", (bool*)0, panelFlags);
 
-	m_Context->m_Registry.each([&](auto entityID)
+	m_Scene->m_Registry.each([&](auto entityID)
 		{
-			Entity entity{ entityID , m_Context.get() };
+			Entity entity{ entityID , m_Scene.get() };
 			DrawEntityNode(entity);
 		});
 
 	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-		m_SelectionContext = {};
+		m_SelectedEntity = {};
 
 	// Right-click on blank space
 	if (ImGui::BeginPopupContextWindow(0, 1, false))
 	{
 		if (ImGui::MenuItem("Create Empty Entity"))
-			m_Context->CreateEntity("Empty Entity");
+			m_Scene->CreateEntity("Empty Entity");
 
 		ImGui::EndPopup();	
 	}
 
 	ImGui::End();
 
-	ImGui::Begin("Inspector");
-	if (m_SelectionContext)
-		DrawComponents(m_SelectionContext);
+	ImGui::Begin("Inspector", (bool*)0, panelFlags);
+	if (m_SelectedEntity)
+		DrawComponents(m_SelectedEntity);
 
 	ImGui::End();
 }
@@ -48,16 +49,16 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	auto& tag = entity.GetComponent<TagComponent>().Tag;
 
 	ImGuiTreeNodeFlags flags = 
-		((m_SelectionContext == entity) ?
+		((m_SelectedEntity == entity) ?
 			ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 	flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 	if (ImGui::IsItemClicked())
 	{
-		m_SelectionContext = entity;
+		m_SelectedEntity = entity;
 	}
 
-	bool entityDeleted = false;
+	bool entityDeleted = false; 
 	if (ImGui::BeginPopupContextItem())
 	{
 		if (ImGui::MenuItem("Delete Entity"))
@@ -77,9 +78,9 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
 	if (entityDeleted)
 	{
-		m_Context->DestroyEntity(entity);
-		if (m_SelectionContext == entity)
-			m_SelectionContext = {};
+		m_Scene->DestroyEntity(entity);
+		if (m_SelectedEntity == entity)
+			m_SelectedEntity = {};
 	}
 }
 
@@ -254,7 +255,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		if (ImGui::MenuItem("Model"))
 		{
-			m_SelectionContext.AddComponent<ModelComponent>();
+			m_SelectedEntity.AddComponent<ModelComponent>();
 			ImGui::CloseCurrentPopup();
 		}
 

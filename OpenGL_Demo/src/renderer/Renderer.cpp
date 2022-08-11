@@ -346,13 +346,13 @@ void Renderer::ClearState()
 	s_Data->TexSlotId.clear();
 }
 
-void Renderer::BeginScene(const Camera& cam, unsigned lightCount, bool castShadows)
+void Renderer::BeginScene(Ref<Camera> cam, unsigned lightCount, bool castShadows)
 {
-	SceneData data = { cam.GetProjViewMat(), cam.Position(), lightCount, castShadows };
+	SceneData data = { cam->GetProjViewMat(), cam->Position(), lightCount, castShadows };
 	s_Data->SceneUBO->Upload((const void*)&data, sizeof(data), 0);
 	
-	s_Data->ViewMat = cam.GetViewMat();
-	s_Data->ProjMat = cam.GetProjMat();
+	s_Data->ViewMat = cam->GetViewMat();
+	s_Data->ProjMat = cam->GetProjMat();
 
 	s_Data->DefaultFramebuffer->Bind();
 }

@@ -1,13 +1,9 @@
 #include "pch.h"
 #include "Editor.h"
 
-static constexpr const unsigned int SCR_WIDTH = 1600;
-static constexpr const unsigned int SCR_HEIGHT = 900;
-
 int main(void)
 {
-    Editor* editor = new Editor();
-    editor->Run();
-    delete editor;
+    Editor::Init();
+    Editor::Run();
     return 0;
 }
