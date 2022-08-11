@@ -1,10 +1,12 @@
 #pragma once
 
-#include "Scene.h"
+//#include "Scene.h"
 #include "entt.hpp"
 #include <cereal/access.hpp>
 #include <cereal/archives/json.hpp>
 #include <cereal/types/bitset.hpp>
+
+class Scene;
 
 class Entity
 {
@@ -48,14 +50,24 @@ public:
 	{
 		return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
 	}
-
 	bool operator!=(const Entity& other) const
 	{
 		return !(*this == other);
 	}
+
+	bool operator==(const entt::entity& rhs) const
+	{
+		return m_EntityHandle == rhs;
+	}
+	bool operator!=(const entt::entity& rhs) const
+	{
+		return !(*this == rhs);
+	}
+
 private:
 	entt::entity m_EntityHandle{ entt::null };
 	Scene* m_Scene = nullptr;
+
 
 private:
 	friend class cereal::access;

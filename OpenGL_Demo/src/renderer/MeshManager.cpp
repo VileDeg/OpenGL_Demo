@@ -9,7 +9,7 @@ void MeshManager::OnImGuiRender(ImGuiWindowFlags panelFlags)
 {
 	ImGui::Begin("Mesh Manager", (bool*)0, panelFlags);
 
-	ImGui::Text("Meshes: ");
+	ImGui::Text("Meshes:	  ");
 	ImGui::SameLine();
 	ImGui::Text(std::to_string(Meshes.size()).c_str());
 	ImGui::Text("Meshes Data: ");

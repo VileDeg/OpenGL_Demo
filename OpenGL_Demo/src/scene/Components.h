@@ -77,9 +77,21 @@ struct ModelComponent
 
 	void Draw(const glm::mat4& modelMat)
 	{
-		for (auto& mesh : mis)
+		for (auto& mi : mis)
 		{
-			Renderer::Draw(modelMat, mesh);
+			Renderer::Draw(modelMat, mi);
+		}
+	}
+
+	void DrawOutlined(const glm::mat4& modelMat, const glm::vec3& scale)
+	{
+		//float scale = 1.2f;
+		for (auto& mi : mis)
+		{
+			/*bool ht = mi.HasTextures;
+			mi.HasTextures = false;*/
+			Renderer::DrawOutlined(modelMat, mi, scale);
+			//mi.HasTextures = ht;
 		}
 	}
 

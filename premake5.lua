@@ -21,6 +21,7 @@ IncludeDir["assimp"] = "OpenGL_Demo/vendor/assimp/include"
 IncludeDir["ImGuizmo"] = "OpenGL_Demo/vendor/ImGuizmo"
 IncludeDir["stb_image"] = "OpenGL_Demo/vendor/stb_image"
 IncludeDir["cereal"] = "OpenGL_Demo/vendor/cereal"
+IncludeDir["magic_enum"] = "OpenGL_Demo/vendor/magic_enum"
 
 group "Dependencies"
 	include "OpenGL_Demo/vendor/GLFW"
@@ -74,7 +75,8 @@ project "OpenGL_Demo"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.assimp}",
 		"%{IncludeDir.cereal}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.magic_enum}"
 	}
 
 	links 
@@ -94,18 +96,16 @@ project "OpenGL_Demo"
 
 		defines
 		{
-			"HZ_PLATFORM_WINDOWS",
-			"HZ_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"
-		defines "HZ_DEBUG"
+		defines "DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "HZ_RELEASE"
+		defines "RELEASE"
 		runtime "Release"
 		optimize "on"
 
@@ -152,11 +152,11 @@ project "Sandbox"
 		systemversion "latest"
 		
 	filter "configurations:Debug"
-		defines "HZ_DEBUG"
+		defines "DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "HZ_RELEASE"
+		defines "RELEASE"
 		runtime "Release"
 		optimize "on"

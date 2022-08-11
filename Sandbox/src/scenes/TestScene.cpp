@@ -69,6 +69,8 @@ TestScene::TestScene(Ref<Camera> camera)
         }
     }
 
+    
+#if 1
     float scale = 15.f;
     for (int i = 0; i < 6; ++i)
     {
@@ -99,7 +101,7 @@ TestScene::TestScene(Ref<Camera> camera)
         m_Brickwalls[5].GetComponent<TransformComponent>().Position = { 0.f, scale, 0.f };
         m_Brickwalls[5].GetComponent<TransformComponent>().RotateTo(90.f, right);
     }
-
+#endif
     m_LightCube = CreateEntity("LightCube");
     m_LightCube.AddComponent<ModelComponent>(m_CubeMesh, false);
 
@@ -115,7 +117,7 @@ static float DeltaTime = 0.f;
 static bool  RotateLight = false;
 static bool  LightOn = true;
 static bool  CastShadows = true;
-static float LightRotSpeed = 100.f;
+static float LightRotSpeed = 150.f;
 
 static float PlaneAngle = 0.f;
 static glm::vec3 PlaneAxis = { 0.f, 1.f, 0.f };
@@ -133,7 +135,7 @@ void TestScene::OnUpdate(float deltaTime)
         auto& [tag, tr, light] = view.get(entity);
         if (tag.Tag == "LightCube" && RotateLight)
         {
-            tr.RotateAroundPoint(RotPoint, 150.f * deltaTime, RotAxis);
+            tr.RotateAroundPoint(RotPoint, LightRotSpeed * deltaTime, RotAxis);
         }
     }
 
@@ -151,25 +153,31 @@ void TestScene::OnUpdate(float deltaTime)
 
 void TestScene::OnImGuiRender(ImGuiWindowFlags panelFlags)
 {
-    //ImGui::ShowDemoWindow();
     ImGui::Begin("LevelMenu", (bool*)0, panelFlags);
-    static float min = 0.0f;
-    static int x, y, z;
-    ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
-    ImGui::Checkbox("Light On", &LightOn);
-    ImGui::Checkbox("Cast Shadows", &CastShadows);
-    ImGui::Checkbox("Rotate Light", &RotateLight);
-    ImGui::SliderFloat("Light Rot Speed", &LightRotSpeed, min, 300.f);
-    ImGui::SliderFloat3("Light Rot Point", glm::value_ptr(RotPoint), -15.f, 15.f);
 
-    ImGui::SliderFloat("Plane Angle", &PlaneAngle, min, 90.f);
-    ImGui::SliderFloat3("Plane Axis", glm::value_ptr(PlaneAxis), min, 1.0f);
-    
-    ImGui::LabelText("Frame Rate", "%f", 1 / DeltaTime);
+        static float min = 0.0f;
+        static int x, y, z;
+        ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
+        //ImGui::Checkbox("Light On", &LightOn);
+        ImGui::Checkbox("Cast Shadows", &CastShadows);
+        ImGui::Checkbox("Rotate Light", &RotateLight);
+        ImGui::SliderFloat("Light Rot Speed", &LightRotSpeed, min, 300.f);
+        ImGui::SliderFloat3("Light Rot Point", glm::value_ptr(RotPoint), -15.f, 15.f);
 
     ImGui::End();
 
     MeshManager::OnImGuiRender(panelFlags);
+
+    ImGui::Begin("Stats", (bool*)0, panelFlags);
+
+        ImGui::Text("Number of entities: ");
+        ImGui::SameLine();
+        ImGui::Text(std::to_string(m_NumOfEntities).c_str());
+        ImGui::Text("Frame Rate:	     ");
+        ImGui::SameLine();
+        ImGui::Text(std::to_string(1 / DeltaTime).c_str());
+
+    ImGui::End();
 }
 
 TestScene::~TestScene()

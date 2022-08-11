@@ -47,7 +47,7 @@ public:
 private:
     static void ProcessCameraInput();
     static void CalcDeltaTime();
-    static void SetGlobalSettings();
+    //static void SetGlobalSettings();
     static void SetCamKey(Key keyCode, KeyEvent eventType, Keybind::actionType func);
 
 private:

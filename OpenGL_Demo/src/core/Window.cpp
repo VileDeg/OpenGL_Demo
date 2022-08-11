@@ -52,7 +52,7 @@ GLFWwindow* Window::Open(const unsigned width, const unsigned height, const std:
     m_Params.height = height;
 
     SetKeybinds();
-    SetGlobalSettings();
+    //SetGlobalSettings();
 
     //glfwSetFramebufferSizeCallback(handle, s_fbSizeCallback);
     glfwSetKeyCallback(handle, s_keyCallback);
@@ -81,7 +81,7 @@ void Window::ProcessCameraInput()
 {
     for (auto key : m_CamKeys)
     {
-        if (glfwGetKey(m_Handle, key.GlId()) == key.GlType())
+        if (glfwGetKey(m_Handle, (int)key.GlId()) == (int)key.GlType())
             key.Exec();
     }
 }
@@ -94,11 +94,16 @@ void Window::CalcDeltaTime()
     m_LastFrame = currentFrame;
 }
 
-void Window::SetGlobalSettings()
-{
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-}
+//void Window::SetGlobalSettings()
+//{
+//    glEnable(GL_CULL_FACE);
+//
+//    glEnable(GL_DEPTH_TEST);
+//    glDepthFunc(GL_LESS);
+//    glEnable(GL_STENCIL_TEST);
+//    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+//    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+//}
 
 void Window::SetCamera(Ref<Camera> cam)
 {
@@ -129,7 +134,7 @@ void Window::Close()
 }
 void Window::SetCamKey(Key keyCode, KeyEvent eventType, Keybind::actionType func)
 {
-    Keybind kb((int)keyCode, (int)eventType);
+    Keybind kb(keyCode, eventType);
     kb.BindAction(func);
     m_CamKeys.push_back(kb);
 }
@@ -145,10 +150,10 @@ void Window::SetKeybinds()
     SetCamKey(Key::D, KeyEvent::Press, [&]() {
         m_Camera->MoveRight(m_DeltaTime); });
     
-    Input::SetKeybind(Key::Esc, KeyEvent::Press, [&]() { //Close window
+    Input::SetKeybind("Close window", Key::Esc, KeyEvent::Press, [&]() { //Close window
         if (!m_Params.cursorVisible) ShowCursor();
         else Close(); });
-    Input::SetKeybind(Key::C, KeyEvent::Press, [&]() { //Cursor toggle
+    Input::SetKeybind("Show/disable cursor", Key::C, KeyEvent::Press, [&]() { //Cursor toggle
         if (m_Params.cursorVisible) HideCursor();
         else ShowCursor(); });
 }

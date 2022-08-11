@@ -33,7 +33,7 @@ public:
 
 	const glm::mat4& GetProjMat()     const { return m_ProjMat;             }
 	const glm::mat4& GetViewMat()     const { return m_ViewMat;             }
-	const glm::mat4& GetProjViewMat() const { return m_ProjMat * m_ViewMat; }
+	const glm::mat4 GetProjViewMat() const { return m_ProjMat * m_ViewMat; }
 
 	const glm::vec3& Position()		  const { return m_Position; }
 	const glm::vec3& Up()			  const { return m_Up;       }

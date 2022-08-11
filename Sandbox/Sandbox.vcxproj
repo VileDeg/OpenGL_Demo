@@ -59,7 +59,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>HZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;..\OpenGL_Demo\src;..\OpenGL_Demo\vendor;..\OpenGL_Demo\vendor\GLM;..\OpenGL_Demo\vendor\entt;..\OpenGL_Demo\vendor\assimp\include;..\OpenGL_Demo\vendor\ImGuizmo;..\OpenGL_Demo\vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -76,7 +76,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>HZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;..\OpenGL_Demo\src;..\OpenGL_Demo\vendor;..\OpenGL_Demo\vendor\GLM;..\OpenGL_Demo\vendor\entt;..\OpenGL_Demo\vendor\assimp\include;..\OpenGL_Demo\vendor\ImGuizmo;..\OpenGL_Demo\vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

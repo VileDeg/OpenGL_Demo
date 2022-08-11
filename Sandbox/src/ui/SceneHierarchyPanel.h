@@ -9,7 +9,7 @@ public:
 
 	void SetContext(Ref<Scene> scene);
 
-	Entity GetSelectedEntity() const { return m_SelectedEntity; }
+	//Entity GetSelectedEntity() const { return m_SelectedEntity; }
 	
 	void OnImGuiRender(ImGuiWindowFlags panelFlags);
 private:
@@ -17,5 +17,5 @@ private:
 	void DrawComponents(Entity entity);
 private:
 	Ref<Scene> m_Scene;
-	Entity m_SelectedEntity;
+	//Entity m_SelectedEntity;
 };

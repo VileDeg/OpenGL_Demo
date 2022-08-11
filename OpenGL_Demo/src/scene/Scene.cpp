@@ -4,15 +4,11 @@
 #include <glm/glm.hpp>
 #include "Entity.h"
 #include "renderer/Renderer.h"
+#include <glad/glad.h>
 
-Scene::Scene()
-{
+Scene::Scene() {}
 
-}
-
-Scene::~Scene()
-{
-}
+Scene::~Scene() {}
 
 Entity Scene::CreateEntity(const std::string& name)
 {
@@ -34,11 +30,24 @@ void Scene::DestroyEntity(Entity entity)
 
 void Scene::RenderScene()
 {
-	auto& view = m_Registry.view<TransformComponent, ModelComponent, TagComponent>();
-	for (auto& entity : view)
+	auto& group = m_Registry.group<TransformComponent, ModelComponent, TagComponent>();
+
+	for (auto& entity : group)
 	{
-		auto& [transform, model, tag] = view.get(entity);
-		model.Draw(transform);
+		auto& [transform, model, tag] = group.get(entity);
+
+		if (m_SelectedEntity != entity)
+		{
+			model.Draw(transform);
+		}
+	}
+
+	//Draw selected entity after all others to avoid if-checking every iteration
+	//and to make selection outline appear on top of all objects.
+	if ((bool)m_SelectedEntity)
+	{
+		auto& [transform, model, tag] = group.get(m_SelectedEntity);
+		model.DrawOutlined(transform, transform.Scale);
 	}
 }
 
@@ -75,10 +84,12 @@ void Scene::RenderShadow()
 
 void Scene::OnUpdate(float deltaTime)
 {
+	//Renderer::Clear(GLBuffer::Color | GLBuffer::Depth | GLBuffer::Stencil);
+
 	RenderShadow();
 
 	RenderScene();
-
-	Renderer::DrawSkybox();
+	
+	//Renderer::DrawSkybox();
 }
 

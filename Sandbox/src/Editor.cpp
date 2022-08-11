@@ -43,9 +43,6 @@ namespace Editor
 
             Window::OnUpdate();
 
-            Renderer::SetClearColor(0.049f, 0.0f, 0.1f, 1.f);
-            Renderer::Clear(3);
-
             m_ActiveScene->OnUpdate(Window::DeltaTime());
 
             EditorUI::Render();

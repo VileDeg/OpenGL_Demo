@@ -19,22 +19,23 @@ namespace EditorUI
 
         ImGuiWindowFlags m_PanelFlags = ImGuiWindowFlags_None;
         bool m_PanelsMovable = false;
+        bool m_DisplayControls = false;
 
         void SetKeybinds()
         {
-            Input::SetKeybind(Key::Q, KeyEvent::Press, [&]() {
+            Input::SetKeybind("Gizmo None", Key::Q, KeyEvent::Press, [&]() {
                 if (Window::CursorVisible())
                     m_GizmoType = -1;
                 });
-            Input::SetKeybind(Key::W, KeyEvent::Press, [&]() {
+            Input::SetKeybind("Gizmo Translate", Key::W, KeyEvent::Press, [&]() {
                 if (Window::CursorVisible())
                     m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
                 });
-            Input::SetKeybind(Key::E, KeyEvent::Press, [&]() {
+            Input::SetKeybind("Gizmo Rotate", Key::E, KeyEvent::Press, [&]() {
                 if (Window::CursorVisible())
                     m_GizmoType = ImGuizmo::OPERATION::ROTATE;
                 });
-            Input::SetKeybind(Key::R, KeyEvent::Press, [&]() {
+            Input::SetKeybind("Gizmo Scale", Key::R, KeyEvent::Press, [&]() {
                 if (Window::CursorVisible())
                     m_GizmoType = ImGuizmo::OPERATION::SCALE;
                 });
@@ -59,8 +60,21 @@ namespace EditorUI
 
                 if (ImGui::BeginMenu("Dockspace"))
                 {
-                    ImGui::Checkbox("Movable Panels", &m_PanelsMovable);
+                    if (ImGui::MenuItem("Movable Panels", NULL, &m_PanelsMovable))
+                    {
+                        if (m_PanelsMovable)
+                            m_PanelFlags &= ~ImGuiWindowFlags_NoMove;
+                        else
+                            m_PanelFlags |= ImGuiWindowFlags_NoMove;
+                    }
 
+                    ImGui::EndMenu();
+                }
+
+                if (ImGui::BeginMenu("Controls"))
+                {
+                    ImGui::MenuItem("Display Controls", NULL, &m_DisplayControls);
+                    
                     ImGui::EndMenu();
                 }
 
@@ -70,7 +84,7 @@ namespace EditorUI
 
         void UIDrawGizmos()
         {
-            Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+            Entity selectedEntity = m_ActiveScene->SelectedEntity();
 
             if (selectedEntity && m_GizmoType != -1)
             {
@@ -166,6 +180,7 @@ namespace EditorUI
     {
         ImguiLayer::Begin();
 
+        //ImGui::ShowDemoWindow();
         static bool opt_fullscreen = true;
         static bool opt_padding = false;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -221,8 +236,6 @@ namespace EditorUI
 
         UIDrawMenuBar();
 
-        m_PanelFlags |= !m_PanelsMovable ? ImGuiWindowFlags_NoMove : 0;
-
         m_SceneHierarchyPanel.OnImGuiRender(m_PanelFlags);
 
         UIDrawViewport();
@@ -230,6 +243,11 @@ namespace EditorUI
         ImGui::End();
 
         m_ActiveScene->OnImGuiRender(m_PanelFlags);
+
+        if (m_DisplayControls)
+            Input::UIDisplayControlsInfo(&m_DisplayControls, m_PanelFlags);
+
+        
 
         ImguiLayer::End(Window::Width(), Window::Height());
     }
