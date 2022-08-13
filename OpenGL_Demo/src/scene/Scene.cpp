@@ -35,19 +35,22 @@ void Scene::RenderScene()
 	for (auto& entity : group)
 	{
 		auto& [transform, model, tag] = group.get(entity);
-
+		/*if (tag.Tag != "Cube0")
+			continue;*/
 		if (m_SelectedEntity != entity)
 		{
-			model.Draw(transform);
+			model.Draw((int)entity, transform);
 		}
 	}
+
+	Renderer::DrawSkybox();
 
 	//Draw selected entity after all others to avoid if-checking every iteration
 	//and to make selection outline appear on top of all objects.
 	if ((bool)m_SelectedEntity)
 	{
 		auto& [transform, model, tag] = group.get(m_SelectedEntity);
-		model.DrawOutlined(transform, transform.Scale);
+		model.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
 	}
 }
 
@@ -90,6 +93,6 @@ void Scene::OnUpdate(float deltaTime)
 
 	RenderScene();
 	
-	//Renderer::DrawSkybox();
+	
 }
 

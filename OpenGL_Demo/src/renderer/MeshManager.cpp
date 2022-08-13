@@ -40,8 +40,6 @@ Ref<Mesh> MeshManager::GetMesh(const MeshData& data)
 
 const MeshData& MeshManager::GetMData(Ref<Mesh> mesh)
 {
-	std::cout << "Meshes " << Meshes.size() << '\n';
-	std::cout << "MData " << MData.size() << '\n';
 	size_t index = 0;
 	ASSERT(getIndex<Ref<Mesh>>(Meshes, mesh, index), "Mesh data not found.");
 

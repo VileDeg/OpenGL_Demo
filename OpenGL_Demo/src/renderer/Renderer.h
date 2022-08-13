@@ -41,8 +41,8 @@ enum class ShaderType
 
 namespace Renderer
 {
-	void Draw(const glm::mat4& modelMat, MeshInstance& mi);
-	void DrawOutlined(const glm::mat4& modelMat, MeshInstance& mi, const glm::vec3& modelScale);
+	void Draw(int drawID, const glm::mat4& modelMat, MeshInstance& mi);
+	void DrawOutlined(int drawID, const glm::mat4& modelMat, MeshInstance& mi);
 	void DrawDepth(const glm::mat4& modelMat, const MeshInstance& mi);
 	void ShadowRenderSetup(glm::vec3 lightPos);
 	void ShadowRenderEnd();
@@ -55,7 +55,8 @@ namespace Renderer
 	void Init(unsigned width, unsigned height);
 	void ClearState();
 	
-	unsigned GetFBColorAttachmentID();
+	const Ref<Framebuffer>& GetMainFB();
+	//unsigned GetFBMainColorAttachmentID();
 	void SetRenderImageSize(const unsigned width, const unsigned height);
 	void BeginScene(Ref<Camera> cam, unsigned lightCount, bool castShadows);
 	void EndScene();

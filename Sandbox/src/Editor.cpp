@@ -11,7 +11,7 @@ namespace Editor
     {
         constexpr const unsigned WINDOW_WIDTH = 1600;
         constexpr const unsigned WINDOW_HEIGHT = 900;
-        constexpr const float DOCKSPACE_MIN_PANEL_WIDTH = 340.f;
+        constexpr const float    DOCKSPACE_MIN_PANEL_WIDTH = 340.f;
 
         Ref<Camera>    m_Camera{};
         Ref<TestScene> m_ActiveScene{};
@@ -25,7 +25,7 @@ namespace Editor
         ImguiLayer::Init(Window::Handle(), "Sandbox");
         GeoData::Init();
 
-        m_Camera = CreateRef<Camera>(glm::vec3(0.f, 0.f, 10.f));
+        m_Camera = CreateRef<Camera>(glm::vec3(0.f, 15.f, 30.f));
         Window::SetCamera(m_Camera);
 
         m_ActiveScene = CreateRef<TestScene>(m_Camera);
@@ -42,6 +42,11 @@ namespace Editor
                 continue;
 
             Window::OnUpdate();
+
+            Renderer::GetMainFB()->Bind();
+            Renderer::Clear(GLBuffer::Color | GLBuffer::Depth | GLBuffer::Stencil);
+            Renderer::GetMainFB()->ClearIntAttachment(-1);
+           
 
             m_ActiveScene->OnUpdate(Window::DeltaTime());
 

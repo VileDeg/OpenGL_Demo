@@ -19,7 +19,8 @@ void main()
 
 #shader fragment
 #version 420 core
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int  DrawID;
 
 in vec3 TexCoords;
 
@@ -28,4 +29,5 @@ layout(binding=8) uniform samplerCube u_SkyboxTex;
 void main()
 {
 	FragColor = texture(u_SkyboxTex, TexCoords);
+	DrawID	  = -1;
 }

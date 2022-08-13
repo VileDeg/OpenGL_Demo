@@ -545,7 +545,6 @@
     <ClCompile Include="src\assimp_import\Mesh.cpp" />
     <ClCompile Include="src\assimp_import\Model.cpp" />
     <ClCompile Include="src\core\Window.cpp" />
-    <ClCompile Include="src\core\glfwCallbacks.cpp" />
     <ClCompile Include="src\geometry\GeoData.cpp" />
     <ClCompile Include="src\imgui\ImguiLayer.cpp" />
     <ClCompile Include="src\input\Input.cpp" />

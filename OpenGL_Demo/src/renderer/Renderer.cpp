@@ -89,7 +89,7 @@ namespace Renderer
 		s_Data->viewportWidth = width;
 		s_Data->viewportHeight = height;
 		s_Data->DefaultFramebuffer = CreateRef<Framebuffer>();
-		s_Data->DefaultFramebuffer->ResetForRender(width, height);
+		s_Data->DefaultFramebuffer->Invalidate(width, height);
 		
 		s_Data->DepthMap = CreateRef<Texture>(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 		s_Data->DepthMapFBO = CreateRef<Framebuffer>();
@@ -126,7 +126,7 @@ namespace Renderer
 		glClearColor(0.049f, 0.0f, 0.1f, 1.f); //Dark purple
 	}
 
-	void Draw(const glm::mat4& modelMat, MeshInstance& mi)
+	void Draw(int drawID, const glm::mat4& modelMat, MeshInstance& mi)
 	{
 		auto& Mesh = mi.mesh;
 		auto& tex = Mesh->Textures();
@@ -175,6 +175,7 @@ namespace Renderer
 		}
 
 		sh->setMat4f("u_ModelMat", modelMat);
+		sh->setInt  ("u_DrawId", drawID);
 
 		if (mi.NormalsOut)
 			GLDraw(Mesh->Vao());
@@ -188,31 +189,30 @@ namespace Renderer
 		}
 	}
 
-	void DrawOutlined(const glm::mat4& modelMat, MeshInstance& mi, const glm::vec3& modelScale)
+	void DrawOutlined(int drawID, const glm::mat4& modelMat, MeshInstance& mi)
 	{
 		glClear(GL_STENCIL_BUFFER_BIT);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
 		glStencilMask(0xFF);
 
-		Draw(modelMat, mi);
+		Draw(drawID, modelMat, mi);
 
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
 
-		//glm::vec3 iniScale = { modelMat[0][0], modelMat[1][1], modelMat[2][2] };
-		float avScale = modelScale.x + modelScale.y + modelScale.z;
-		avScale /= 3.f;
-		float scale = 1.f + s_Data->outlineBorderScale / avScale;
-		glm::mat4 newMat = glm::scale(modelMat, glm::vec3(scale));
+		glm::mat4 newMat = modelMat;
+		newMat[0][0] += 0.1f;
+		newMat[1][1] += 0.1f;
+		newMat[2][2] += 0.1f;
+
 		Ref<Shader> sh = s_Data->Shader[ShaderType::UniformColor];
 		BindShader(sh);
 		sh->setFloat4("u_Color", s_Data->outlineColor);
-		/*std::cout << "Color: (" << s_Data->outlineColor.x << ", " << s_Data->outlineColor.y <<
-			", " << s_Data->outlineColor.z << ", " << s_Data->outlineColor.w << ")\n";*/
 
 		sh->setMat4f("u_ModelMat", newMat);
+		sh->setInt	("u_DrawId", drawID);
 		GLDraw(mi.mesh->Vao());
 
 		glStencilMask(0xFF);
@@ -276,7 +276,7 @@ namespace Renderer
 		s_Data->DefaultFramebuffer->Bind();
 		//ResetViewport();
 		//s_Data->DepthMapFBO->Unbind(s_Data->viewportWidth, s_Data->viewportHeight);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
 	void DrawSkybox()
@@ -313,16 +313,16 @@ namespace Renderer
 		return lightIndex - 1;
 	}
 
-	unsigned GetFBColorAttachmentID()
+	const Ref<Framebuffer>& Renderer::GetMainFB()
 	{
-		return s_Data->DefaultFramebuffer->GetColorAttachmentId();
+		return s_Data->DefaultFramebuffer;
 	}
 
 	void SetRenderImageSize(const unsigned width, const unsigned height)
 	{
 		s_Data->viewportWidth = width;
 		s_Data->viewportHeight = height;
-		s_Data->DefaultFramebuffer->ResetForRender(width, height);
+		s_Data->DefaultFramebuffer->Invalidate(width, height);
 
 	}
 
@@ -342,11 +342,14 @@ namespace Renderer
 		s_Data->ProjMat = cam->GetProjMat();
 
 		s_Data->DefaultFramebuffer->Bind();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		
+		/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		s_Data->DefaultFramebuffer->ClearIntAttachment(-1);*/
 	}
 
 	void EndScene()
 	{
+		
 		s_Data->DefaultFramebuffer->Unbind(s_Data->viewportWidth, s_Data->viewportHeight);
 	}
 

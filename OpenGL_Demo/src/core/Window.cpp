@@ -4,172 +4,262 @@
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 
-GLFWwindow*          Window::m_Handle{};
-Window::WindowParams Window::m_Params{};
-Ref<Camera>          Window::m_Camera{};
-std::string          Window::m_Name{};
-float                Window::m_DeltaTime{};
-float                Window::m_LastFrame{};
-std::vector<Keybind> Window::m_CamKeys{};
-bool                 Window::m_GladInit = false;
-
-GLFWwindow* Window::Open(const unsigned width, const unsigned height, const std::string& name)
+namespace Window
 {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    namespace
+    {
+        void s_fbSizeCallback(GLFWwindow* window, int width, int height);
+        void s_iconifyCallback(GLFWwindow* window, int minimized);
+
+        void s_cursorPosCallback(GLFWwindow* window, double xpos, double ypos);
+        void s_scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+        void s_keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
+        void s_DebugMessageCallback(unsigned source,
+            unsigned type, unsigned id, unsigned severity,
+            int length, const char* message, const void* userParam);
+
+        GLFWwindow*          m_Handle{};
+        WindowParams         m_Params{};
+        Ref<Camera>          m_Camera{};
+        std::string          m_Name{};
+        float                m_DeltaTime{};
+        float                m_LastFrame{};
+        std::vector<Keybind> m_CamKeys{};
+        bool                 m_GladInit = false;
+        float                m_MouseScrollSensivity = 6.f;
+    }
+
+    GLFWwindow* Open(const unsigned width, const unsigned height, const std::string& name)
+    {
+        glfwInit();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    GLFWwindow* handle = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
-    if (handle == NULL)
-    {
-        std::cerr << "Failed to create GLFW window\n";
-        glfwTerminate();
-        return nullptr;
-    }
-    glfwMakeContextCurrent(handle);
-
-    if (!m_GladInit)
-    {
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        GLFWwindow* handle = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
+        if (handle == NULL)
         {
-            std::cout << "Failed to initialize GLAD" << std::endl;
+            std::cerr << "Failed to create GLFW window\n";
+            glfwTerminate();
+            return nullptr;
         }
-        m_GladInit = true;
+        glfwMakeContextCurrent(handle);
+
+        if (!m_GladInit)
+        {
+            if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+            {
+                std::cout << "Failed to initialize GLAD" << std::endl;
+            }
+            m_GladInit = true;
 #ifdef _DEBUG
-        glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback(s_DebugMessageCallback, nullptr);
+            glEnable(GL_DEBUG_OUTPUT);
+            glDebugMessageCallback(s_DebugMessageCallback, nullptr);
 #endif
+        }
+
+        m_Handle = handle;
+        m_Name = name;
+        m_Params.width = width;
+        m_Params.height = height;
+
+        SetKeybinds();
+
+        //glfwSetFramebufferSizeCallback(handle, s_fbSizeCallback);
+        glfwSetKeyCallback(handle, s_keyCallback);
+        glfwSetWindowIconifyCallback(handle, s_iconifyCallback);
+
+        glfwSetCursorPosCallback(m_Handle, s_cursorPosCallback);
+        glfwSetScrollCallback(m_Handle, s_scrollCallback);
+
+        return handle;
     }
 
-    m_Handle = handle;
-    m_Name = name;
-    m_Params.width = width;
-    m_Params.height = height;
-
-    SetKeybinds();
-    //SetGlobalSettings();
-
-    //glfwSetFramebufferSizeCallback(handle, s_fbSizeCallback);
-    glfwSetKeyCallback(handle, s_keyCallback);
-    glfwSetWindowIconifyCallback(handle, s_iconifyCallback);
-
-    glfwSetCursorPosCallback(m_Handle, s_cursorPosCallback);
-    glfwSetScrollCallback(m_Handle, s_scrollCallback);
-
-    return handle;
-}
-
-void Window::OnUpdate()
-{
-    CalcDeltaTime();
-    if (m_Camera)
+    void OnUpdate()
     {
-        if (!m_Params.cursorVisible)
+        CalcDeltaTime();
+        if (m_Camera)
         {
-            ProcessCameraInput();
-            m_Camera->OnUpdate();
+            if (!m_Params.cursorVisible)
+            {
+                Input::ProcessCameraInput(m_Handle);
+                m_Camera->OnUpdate();
+            }
         }
     }
-}
 
-void Window::ProcessCameraInput()
-{
-    for (auto key : m_CamKeys)
+    void CalcDeltaTime()
     {
-        if (glfwGetKey(m_Handle, (int)key.GlId()) == (int)key.GlType())
-            key.Exec();
+        static float m_LastFrame = 0.0f;
+        float currentFrame = glfwGetTime();
+        m_DeltaTime = currentFrame - m_LastFrame;
+        m_LastFrame = currentFrame;
     }
-}
 
-void Window::CalcDeltaTime()
-{
-    static float m_LastFrame = 0.0f;
-    float currentFrame = glfwGetTime();
-    m_DeltaTime = currentFrame - m_LastFrame;
-    m_LastFrame = currentFrame;
-}
+    GLFWwindow* Handle() { return m_Handle; }
 
-//void Window::SetGlobalSettings()
-//{
-//    glEnable(GL_CULL_FACE);
-//
-//    glEnable(GL_DEPTH_TEST);
-//    glDepthFunc(GL_LESS);
-//    glEnable(GL_STENCIL_TEST);
-//    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-//    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-//}
+    bool Paused() { return m_Params.paused; }
+    int Width() { return m_Params.width; }
+    int Height() { return m_Params.height; }
 
-void Window::SetCamera(Ref<Camera> cam)
-{
-    m_Camera = cam;
-}
+    float DeltaTime() { return m_DeltaTime; }
 
-bool Window::KeyPressed(Key keyCode)
-{
-    return glfwGetKey(m_Handle, static_cast<int>(keyCode)) == GLFW_PRESS;
-}
+    bool CursorVisible() { return m_Params.cursorVisible; }
 
-bool Window::IsOpen()
-{
-    return !glfwWindowShouldClose(m_Handle);
-}
+    void SetCamera(Ref<Camera> cam)
+    {
+        m_Camera = cam;
+    }
 
-void Window::HideCursor() {
-    glfwSetInputMode(m_Handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    m_Params.cursorVisible = false;
-}
-void Window::ShowCursor() {
-    glfwSetInputMode(m_Handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    m_Params.cursorVisible = true;
-}
-void Window::Close()
-{
-    glfwSetWindowShouldClose(m_Handle, true);
-}
-void Window::SetCamKey(Key keyCode, KeyEvent eventType, Keybind::actionType func)
-{
-    Keybind kb(keyCode, eventType);
-    kb.BindAction(func);
-    m_CamKeys.push_back(kb);
-}
-void Window::SetKeybinds()
-{
-    //Camera controls
-    SetCamKey(Key::W, KeyEvent::Press, [&]() {
-        m_Camera->MoveForward(m_DeltaTime); });
-    SetCamKey(Key::A, KeyEvent::Press, [&]() {
-        m_Camera->MoveLeft(m_DeltaTime); });
-    SetCamKey(Key::S, KeyEvent::Press, [&]() {
-        m_Camera->MoveBackward(m_DeltaTime); });
-    SetCamKey(Key::D, KeyEvent::Press, [&]() {
-        m_Camera->MoveRight(m_DeltaTime); });
-    
-    Input::SetKeybind("Close window", Key::Esc, KeyEvent::Press, [&]() { //Close window
-        if (!m_Params.cursorVisible) ShowCursor();
-        else Close(); });
-    Input::SetKeybind("Show/disable cursor", Key::C, KeyEvent::Press, [&]() { //Cursor toggle
-        if (m_Params.cursorVisible) HideCursor();
-        else ShowCursor(); });
-}
+    bool KeyPressed(Key keyCode)
+    {
+        return glfwGetKey(m_Handle, static_cast<int>(keyCode)) == GLFW_PRESS;
+    }
+
+    bool IsOpen()
+    {
+        return !glfwWindowShouldClose(m_Handle);
+    }
+
+    void HideCursor() {
+        glfwSetInputMode(m_Handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        m_Params.cursorVisible = false;
+    }
+
+    void ShowCursor() {
+        glfwSetInputMode(m_Handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        m_Params.cursorVisible = true;
+    }
+
+    void Close()
+    {
+        glfwSetWindowShouldClose(m_Handle, true);
+    }
+
+    void SetKeybinds()
+    {
+        //Camera controls
+        /*Input::SetCameraKeybind("Forward", Key::W, KeyEvent::Press, [&]() {
+            m_Camera->MoveForward(m_DeltaTime); });
+        Input::SetCameraKeybind("Left", Key::A, KeyEvent::Press, [&]() {
+            m_Camera->MoveLeft(m_DeltaTime); });
+        Input::SetCameraKeybind("Backward", Key::S, KeyEvent::Press, [&]() {
+            m_Camera->MoveBackward(m_DeltaTime); });
+        Input::SetCameraKeybind("Right", Key::D, KeyEvent::Press, [&]() {
+            m_Camera->MoveRight(m_DeltaTime); });*/
+
+        Input::SetKeybind("Close window", Key::Esc, KeyEvent::Press, [&]() { //Close window
+            if (!m_Params.cursorVisible) ShowCursor();
+            else Close(); });
+        //Input::SetKeybind("Show/disable cursor", Key::C, KeyEvent::Press, [&]() { //Cursor toggle
+        //    if (m_Params.cursorVisible) HideCursor();
+        //    else ShowCursor(); });
+    }
+
+    void GLFWTerminate()
+    {
+        glfwTerminate();
+    }
+
+    void GLFWSwapBuffers()
+    {
+        glfwSwapBuffers(m_Handle);
+    }
+
+    void GLFWPollEvents()
+    {
+        glfwPollEvents();
+    }
+
+    namespace
+    {
+        void s_fbSizeCallback(GLFWwindow* window, int width, int height)
+        {
+            m_Params.width = width;
+            m_Params.height = height;
+        }
+
+        void s_iconifyCallback(GLFWwindow* window, int minimized)
+        {
+                m_Params.paused = (bool)minimized;
+        }
+
+        void s_cursorPosCallback(GLFWwindow* window, double xposIn, double yposIn)
+        {
+            if (!m_Camera)
+                return;
+            static bool firstMouseUse = true;
+            float xpos = static_cast<float>(xposIn);
+            float ypos = static_cast<float>(yposIn);
 
 
-void Window::GLFWTerminate()
-{
-    glfwTerminate();
-}
+            if (firstMouseUse)
+            {
+                m_Params.cursorX = xpos;
+                m_Params.cursorY = ypos;
+                firstMouseUse = false;
+            }
 
-void Window::GLFWSwapBuffers()
-{
-    glfwSwapBuffers(m_Handle);
-}
+            float xoffset = xpos - m_Params.cursorX;
+            float yoffset = m_Params.cursorY - ypos;
 
-void Window::GLFWPollEvents()
-{
-    glfwPollEvents();
+            m_Params.cursorX = xpos;
+            m_Params.cursorY = ypos;
+
+            //!m_Params.cursorVisible && 
+            if (glfwGetMouseButton(m_Handle, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS ||
+                glfwGetKey(m_Handle, GLFW_KEY_LEFT_ALT) || glfwGetKey(m_Handle, GLFW_KEY_RIGHT_ALT))
+                m_Camera->ProcessMouseMovement(xoffset, yoffset);
+            else if (glfwGetMouseButton(m_Handle, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
+            {
+                m_Camera->MoveLeft(xoffset * DeltaTime());
+                m_Camera->MoveDown(yoffset * DeltaTime());
+            }
+            /*else
+                firstMouseUse = true;*/
+        }
+
+        void s_scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+        {
+            /*WindowParams& params =
+                *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));*/
+            //std::cout << "Mouse callback (" << xoffset << ", " << yoffset << ")\n";
+            if (!m_Camera)
+                return;
+            //m_Camera->ProcessMouseScroll((float)yoffset * m_MouseScrollSensivity * DeltaTime());
+            m_Camera->MoveForward(yoffset * m_MouseScrollSensivity * DeltaTime());
+        }
+
+        void s_keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
+        {
+            /*WindowParams& params =
+                *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));*/
+
+            Input::ProcessInput(key, action);
+
+            /* for (auto kb : params.keys)
+             {
+                 if (key == kb.GlId() && action == kb.GlType())
+                     kb.Exec();s
+             }*/
+        }
+
+#define GL_DEBUG_SEVERITY_NOTIFICATION 0x826B
+#define GL_DEBUG_TYPE_ERROR            0x824C
+
+        void s_DebugMessageCallback(unsigned source,
+            unsigned type, unsigned id, unsigned severity,
+            int length, const char* message, const void* userParam)
+        {
+            if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+                return;
+            fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+                (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+                type, severity, message);
+        }
+    }
 }

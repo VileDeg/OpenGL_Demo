@@ -75,22 +75,22 @@ struct ModelComponent
 {
 	std::vector<MeshInstance> mis;
 
-	void Draw(const glm::mat4& modelMat)
+	void Draw(int drawID, const glm::mat4& modelMat)
 	{
 		for (auto& mi : mis)
 		{
-			Renderer::Draw(modelMat, mi);
+			Renderer::Draw(drawID, modelMat, mi);
 		}
 	}
 
-	void DrawOutlined(const glm::mat4& modelMat, const glm::vec3& scale)
+	void DrawOutlined(int drawID, const glm::mat4& modelMat)
 	{
 		//float scale = 1.2f;
 		for (auto& mi : mis)
 		{
 			/*bool ht = mi.HasTextures;
 			mi.HasTextures = false;*/
-			Renderer::DrawOutlined(modelMat, mi, scale);
+			Renderer::DrawOutlined(drawID, modelMat, mi);
 			//mi.HasTextures = ht;
 		}
 	}

@@ -31,9 +31,9 @@ void TestScene::SetLightParams()
 static int num = 2;
 TestScene::TestScene(Ref<Camera> camera)
     : m_Camera(camera),
-    m_CamSpeed(12.f)
+    m_CamSpeed(6.f)
 {
-    Window::HideCursor();
+    //Window::HideCursor();
 
     SetLightParams();
    
@@ -70,7 +70,7 @@ TestScene::TestScene(Ref<Camera> camera)
     }
 
     
-#if 1
+#if 0
     float scale = 15.f;
     for (int i = 0; i < 6; ++i)
     {

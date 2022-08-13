@@ -1,13 +1,13 @@
 {
-    "NumberOfEntities": 13,
+    "NumberOfEntities": 10,
     "LightCube": {
         "ComponentConfiguration": "1111",
         "TagComponent": "LightCube",
         "TransformComponent": {
             "Pos": {
-                "X": 3.397392988204956,
-                "Y": -1.2615364789962769,
-                "Z": 1.0577914714813233
+                "X": -0.3630393445491791,
+                "Y": 0.0,
+                "Z": 7.750001907348633
             },
             "Quat": {
                 "X": 0.0,
@@ -95,186 +95,12 @@
             "SSBOIndex": 0
         }
     },
-    "Brickwall4": {
-        "ComponentConfiguration": "0111",
-        "TagComponent": "Brickwall4",
-        "TransformComponent": {
-            "Pos": {
-                "X": 0.0,
-                "Y": -15.0,
-                "Z": 0.0
-            },
-            "Quat": {
-                "X": -0.7071067690849304,
-                "Y": -0.0,
-                "Z": -0.0,
-                "W": 0.7071067690849304
-            },
-            "EulerAngles": {
-                "X": -90.0,
-                "Y": -0.0,
-                "Z": 0.0
-            },
-            "Scale": {
-                "X": 15.0,
-                "Y": 15.0,
-                "Z": 15.0
-            }
-        },
-        "ModelComponent": {
-            "MeshInstances": [
-                {
-                    "HasTextures": true,
-                    "NormalsOut": true,
-                    "Color": {
-                        "X": 1.0,
-                        "Y": 0.0,
-                        "Z": 1.0,
-                        "W": 1.0
-                    },
-                    "MeshData": {
-                        "PrimitiveType": 1,
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    "brickwall.jpg"
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    "brickwall_normal.jpg"
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-    },
-    "Brickwall1": {
-        "ComponentConfiguration": "0111",
-        "TagComponent": "Brickwall1",
-        "TransformComponent": {
-            "Pos": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": 15.0
-            },
-            "Quat": {
-                "X": 0.0,
-                "Y": 1.0,
-                "Z": 0.0,
-                "W": -4.371138828673793e-8
-            },
-            "EulerAngles": {
-                "X": 180.0,
-                "Y": -0.000005008956122765085,
-                "Z": 180.0
-            },
-            "Scale": {
-                "X": 15.0,
-                "Y": 15.0,
-                "Z": 15.0
-            }
-        },
-        "ModelComponent": {
-            "MeshInstances": [
-                {
-                    "HasTextures": true,
-                    "NormalsOut": true,
-                    "Color": {
-                        "X": 1.0,
-                        "Y": 0.0,
-                        "Z": 1.0,
-                        "W": 1.0
-                    },
-                    "MeshData": {
-                        "PrimitiveType": 1,
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    "brickwall.jpg"
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    "brickwall_normal.jpg"
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-    },
-    "Brickwall0": {
-        "ComponentConfiguration": "0111",
-        "TagComponent": "Brickwall0",
-        "TransformComponent": {
-            "Pos": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": -15.0
-            },
-            "Quat": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": 0.0,
-                "W": 0.0
-            },
-            "EulerAngles": {
-                "X": 0.0,
-                "Y": 0.0,
-                "Z": 0.0
-            },
-            "Scale": {
-                "X": 15.0,
-                "Y": 15.0,
-                "Z": 15.0
-            }
-        },
-        "ModelComponent": {
-            "MeshInstances": [
-                {
-                    "HasTextures": true,
-                    "NormalsOut": true,
-                    "Color": {
-                        "X": 1.0,
-                        "Y": 0.0,
-                        "Z": 1.0,
-                        "W": 1.0
-                    },
-                    "MeshData": {
-                        "PrimitiveType": 1,
-                        "Textures": [
-                            {
-                                "key": 0,
-                                "value": [
-                                    "brickwall.jpg"
-                                ]
-                            },
-                            {
-                                "key": 2,
-                                "value": [
-                                    "brickwall_normal.jpg"
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-    },
     "Cube7": {
         "ComponentConfiguration": "0111",
         "TagComponent": "Cube7",
         "TransformComponent": {
             "Pos": {
-                "X": 1.0,
+                "X": 4.515273094177246,
                 "Y": 1.0,
                 "Z": 1.0
             },
@@ -290,9 +116,9 @@
                 "Z": 0.0
             },
             "Scale": {
-                "X": 0.999992847442627,
-                "Y": 0.9999964833259583,
-                "Z": 1.0000041723251343
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
             }
         },
         "ModelComponent": {
@@ -390,15 +216,15 @@
         "TagComponent": "Cube5",
         "TransformComponent": {
             "Pos": {
-                "X": 1.0,
-                "Y": -1.0,
+                "X": 4.400887966156006,
+                "Y": -2.8120181560516359,
                 "Z": 1.0
             },
             "Quat": {
                 "X": 0.0,
                 "Y": 0.0,
                 "Z": 0.0,
-                "W": 0.0
+                "W": 1.0
             },
             "EulerAngles": {
                 "X": 0.0,
@@ -506,15 +332,15 @@
         "TagComponent": "Cube3",
         "TransformComponent": {
             "Pos": {
-                "X": -1.0,
-                "Y": 1.0,
+                "X": -3.117604970932007,
+                "Y": 2.4729604721069338,
                 "Z": 1.0
             },
             "Quat": {
                 "X": 0.0,
                 "Y": 0.0,
                 "Z": 0.0,
-                "W": 0.0
+                "W": 1.0
             },
             "EulerAngles": {
                 "X": 0.0,
@@ -566,13 +392,13 @@
             "Pos": {
                 "X": -1.0,
                 "Y": 1.0,
-                "Z": -1.0
+                "Z": -5.256998538970947
             },
             "Quat": {
                 "X": 0.0,
                 "Y": 0.0,
                 "Z": 0.0,
-                "W": 0.0
+                "W": 1.0
             },
             "EulerAngles": {
                 "X": 0.0,
@@ -622,25 +448,25 @@
         "TagComponent": "Cube1",
         "TransformComponent": {
             "Pos": {
-                "X": -1.0,
-                "Y": -1.0,
+                "X": -2.8642148971557619,
+                "Y": -2.8538596630096437,
                 "Z": 1.0
             },
             "Quat": {
                 "X": 0.0,
-                "Y": 0.0,
+                "Y": 0.3497611880302429,
                 "Z": 0.0,
-                "W": 0.0
+                "W": 0.9368389248847961
             },
             "EulerAngles": {
                 "X": 0.0,
-                "Y": 0.0,
+                "Y": 40.94541931152344,
                 "Z": 0.0
             },
             "Scale": {
-                "X": 1.0,
+                "X": 0.9999998211860657,
                 "Y": 1.0,
-                "Z": 1.0
+                "Z": 0.9999998211860657
             }
         },
         "ModelComponent": {
@@ -680,25 +506,25 @@
         "TagComponent": "Cube0",
         "TransformComponent": {
             "Pos": {
-                "X": -1.0,
+                "X": -4.070691108703613,
                 "Y": -1.0,
-                "Z": -1.0
+                "Z": -2.567814826965332
             },
             "Quat": {
-                "X": 0.0,
+                "X": 0.4624950587749481,
                 "Y": 0.0,
                 "Z": 0.0,
-                "W": 0.0
+                "W": 0.8866218328475952
             },
             "EulerAngles": {
-                "X": 0.0,
+                "X": 55.09645462036133,
                 "Y": 0.0,
                 "Z": 0.0
             },
             "Scale": {
                 "X": 1.0,
-                "Y": 1.0,
-                "Z": 1.0
+                "Y": 0.9999996423721314,
+                "Z": 0.9999998211860657
             }
         },
         "ModelComponent": {

@@ -16,6 +16,7 @@
 /* Function keys */
 #define GLFW_KEY_ESCAPE             256
 #define GLFW_KEY_LEFT_CONTROL       341
+#define GLFW_KEY_LEFT_ALT           342
 #define GLFW_KEY_MENU               348
 #define GLFW_KEY_LAST               GLFW_KEY_MENU
 /* end */
@@ -26,7 +27,7 @@ enum class Key : int
 	Space = GLFW_KEY_SPACE,
 	Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine,
 	A = GLFW_KEY_A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
-	Esc = GLFW_KEY_ESCAPE, LeftCtrl = GLFW_KEY_LEFT_CONTROL
+	Esc = GLFW_KEY_ESCAPE, LeftCtrl = GLFW_KEY_LEFT_CONTROL, LeftAlt
 };
 
 #define GLFW_RELEASE 0
@@ -34,6 +35,14 @@ enum class Key : int
 enum class KeyEvent 
 {
 	None = -1, Release = GLFW_RELEASE, Press, Repeat
+};
+
+#define GLFW_MOUSE_BUTTON_1         0
+#define GLFW_MOUSE_BUTTON_LEFT		GLFW_MOUSE_BUTTON_1
+
+enum class MouseButton
+{
+	None=-1, Left= GLFW_MOUSE_BUTTON_LEFT, Right, Middle
 };
 
 class Keybind

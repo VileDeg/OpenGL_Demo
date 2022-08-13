@@ -69,10 +69,10 @@ void ImguiLayer::Begin()
 	ImGui::NewFrame();
 
 	//Turn off mouse input if cursor if disabled.
-	if (!Window::CursorVisible())
+	/*if (!Window::CursorVisible())
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
 	else
-		ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+		ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;*/
 
 	ImGuizmo::BeginFrame();
 }

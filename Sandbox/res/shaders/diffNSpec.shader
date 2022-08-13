@@ -19,6 +19,7 @@ layout(std140) uniform SceneData
     uniform int  u_LightsCount;
     uniform uint u_CastShadows;
 };
+
 uniform bool reverse_normals;
 uniform mat4 u_ModelMat;
 
@@ -37,7 +38,8 @@ void main()
 #shader fragment
 #version 460 core
 
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int  DrawID;
 
 in VS_OUT{
     vec3 FragPos;
@@ -83,6 +85,8 @@ uniform Material material;
 uniform samplerCube depthMap;
 uniform float far_plane;
 
+uniform int u_DrawId;
+
 // function prototypes
 float ShadowCalculation(vec3 fragPos, vec3 lightPos);
 
@@ -121,6 +125,8 @@ void main()
     }
 
     FragColor = vec4(lighting, 1.0);
+
+    DrawID = u_DrawId;
 }
 
 float ShadowCalculation(vec3 fragPos, vec3 lightPos)

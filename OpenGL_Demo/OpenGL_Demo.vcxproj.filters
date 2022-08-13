@@ -1397,9 +1397,6 @@
     <ClCompile Include="src\core\Window.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\glfwCallbacks.cpp">
-      <Filter>src\core</Filter>
-    </ClCompile>
     <ClCompile Include="src\geometry\GeoData.cpp">
       <Filter>src\geometry</Filter>
     </ClCompile>

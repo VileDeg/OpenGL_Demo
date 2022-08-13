@@ -16,13 +16,14 @@ void main()
 
 #shader fragment
 #version 330 core
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int  DrawID;
 
 uniform vec4 u_Color;
-
-out vec4 FragColor;
+uniform int  u_DrawId;
 
 void main()
 {
-
 	FragColor = u_Color;
+	DrawID = u_DrawId;
 }

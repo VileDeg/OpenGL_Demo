@@ -15,6 +15,12 @@ namespace EditorUI
         Ref<Scene> m_ActiveScene;
 		int m_GizmoType = -1;
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
+        glm::vec2 m_ViewportBounds[2]{};
+        bool m_ViewportFocused = false;
+        bool m_ViewportHovered = false;
+
+        Entity m_HoveredEntity{};
+
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 
         ImGuiWindowFlags m_PanelFlags = ImGuiWindowFlags_None;
@@ -24,19 +30,15 @@ namespace EditorUI
         void SetKeybinds()
         {
             Input::SetKeybind("Gizmo None", Key::Q, KeyEvent::Press, [&]() {
-                if (Window::CursorVisible())
                     m_GizmoType = -1;
                 });
             Input::SetKeybind("Gizmo Translate", Key::W, KeyEvent::Press, [&]() {
-                if (Window::CursorVisible())
                     m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
                 });
             Input::SetKeybind("Gizmo Rotate", Key::E, KeyEvent::Press, [&]() {
-                if (Window::CursorVisible())
                     m_GizmoType = ImGuizmo::OPERATION::ROTATE;
                 });
             Input::SetKeybind("Gizmo Scale", Key::R, KeyEvent::Press, [&]() {
-                if (Window::CursorVisible())
                     m_GizmoType = ImGuizmo::OPERATION::SCALE;
                 });
         }
@@ -91,9 +93,10 @@ namespace EditorUI
                 ImGuizmo::SetOrthographic(false);
                 ImGuizmo::SetDrawlist();
 
-                float windowWidth = (float)ImGui::GetWindowWidth();
-                float windowHeight = (float)ImGui::GetWindowHeight();
-                ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+               /* float windowWidth = (float)ImGui::GetWindowWidth();
+                float windowHeight = (float)ImGui::GetWindowHeight();*/
+                //ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+                ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
                 // Camera
                 const glm::mat4& cameraProjection = m_Camera->GetProjMat();
@@ -143,9 +146,17 @@ namespace EditorUI
 
             ImGui::Begin("Viewport", (bool*)0, m_PanelFlags);
 
+                auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+                auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+                auto viewportOffset = ImGui::GetWindowPos();
+                m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+                m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+                m_ViewportFocused = ImGui::IsWindowFocused();
+                m_ViewportHovered = ImGui::IsWindowHovered();
+
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             unsigned textureID = 0;
-            textureID = Renderer::GetFBColorAttachmentID();
+            textureID = Renderer::GetMainFB()->GetColorAttachmentId(0);
             if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
             {
                 Renderer::SetRenderImageSize(
@@ -153,13 +164,36 @@ namespace EditorUI
 
                 m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-                m_Camera->UpdateProjMat(viewportPanelSize.x, viewportPanelSize.y);
+                m_Camera->SetViewportDimensions(viewportPanelSize.x, viewportPanelSize.y);
+                //m_Camera->UpdateProjMat(viewportPanelSize.x, viewportPanelSize.y);
             }
             ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y },
                 ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
             // Gizmos
             UIDrawGizmos();
+
+            //Mouse picking
+            auto [mx, my] = ImGui::GetMousePos();
+            mx -= m_ViewportBounds[0].x;
+            my -= m_ViewportBounds[0].y;
+            glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+            my = viewportSize.y - my;
+            int mouseX = (int)mx;
+            int mouseY = (int)my;
+
+            if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+            {
+                Renderer::GetMainFB()->Bind();
+                int pixelData = Renderer::GetMainFB()->ReadPixelInt(mouseX, mouseY);
+                Renderer::GetMainFB()->Unbind((unsigned)viewportPanelSize.x, (unsigned)viewportPanelSize.y);
+                m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+                if (Input::IsMouseButtonDown(MouseButton::Left))
+                {
+                    if (m_ViewportHovered && !ImGuizmo::IsOver())
+                        m_ActiveScene->SelectEntity(m_HoveredEntity);
+                }
+            }
 
             ImGui::End();
             ImGui::PopStyleVar();
@@ -247,7 +281,7 @@ namespace EditorUI
         if (m_DisplayControls)
             Input::UIDisplayControlsInfo(&m_DisplayControls, m_PanelFlags);
 
-        
+        //ImGui::ShowDemoWindow();
 
         ImguiLayer::End(Window::Width(), Window::Height());
     }

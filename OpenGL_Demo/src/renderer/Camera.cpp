@@ -14,6 +14,9 @@ Camera::Camera(glm::vec3 position,
         (float)(Window::Width()) / Window::Height(),
         m_NearPlane, m_FarPlane))
 {
+    m_Front = glm::normalize(glm::vec3(0.f) - position);
+    m_Pitch = glm::degrees(glm::asin(m_Front.y)); //Look down to world origin by default
+   
     UpdateCameraVectors();
 }
 
@@ -24,7 +27,14 @@ void Camera::OnUpdate()
     m_ProjViewMat = m_ProjMat * m_ViewMat;
 }
 
-void Camera::UpdateProjMat(const unsigned width, const unsigned height)
+void Camera::SetViewportDimensions(unsigned width, unsigned height)
+{
+    m_ViewportDim.x = width;
+    m_ViewportDim.y = height;
+    UpdateProjMat(width, height);
+}
+
+void Camera::UpdateProjMat(unsigned width, unsigned height)
 {
     m_ProjMat = glm::perspective(glm::radians(m_Zoom),
         (float)(width) / height,
@@ -65,9 +75,11 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPi
 
 void Camera::ProcessMouseScroll(float yoffset)
 {
-    m_Zoom -= (float)yoffset;
+    MoveBackward(yoffset);
+    /*m_Zoom -= (float)yoffset;
     if (m_Zoom < 1.0f)
         m_Zoom = 1.0f;
-    if (m_Zoom > 45.0f)
-        m_Zoom = 45.0f;
+    if (m_Zoom > ZOOM_MAX)
+        m_Zoom = ZOOM_MAX;
+    UpdateProjMat(m_ViewportDim.x, m_ViewportDim.y);*/
 }
