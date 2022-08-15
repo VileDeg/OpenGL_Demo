@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SceneHierarchyPanel.h"
 #include <imgui/imgui_internal.h>
+#include <magic_enum/magic_enum.hpp>
 
 using namespace Component;
 
@@ -22,7 +23,8 @@ void SceneHierarchyPanel::OnImGuiRender(ImGuiWindowFlags panelFlags)
 	m_Scene->m_Registry.each([&](auto entityID)
 		{
 			Entity entity{ entityID , m_Scene.get() };
-			DrawEntityNode(entity);
+			if (entity.GetComponent<Transform>().Parent == nullptr)
+				DrawEntityNode(entity);
 		});
 
 	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
@@ -71,10 +73,21 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
 	if (opened)
 	{
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-		bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
-		if (opened)
-			ImGui::TreePop();
+		auto& tr = entity.GetComponent<Transform>();
+		for (auto& child : tr.Children)
+		{
+			//Entity childEnt{ child->Entity, m_Scene.get()};
+			DrawEntityNode(child->Entity);
+			/*auto& tag = childEnt.GetComponent<Tag>().String;
+			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+			bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)childEnt, flags, tag.c_str());
+			if (opened)
+			{
+				DrawEntityNode
+				ImGui::TreePop();
+			}*/
+			
+		}
 		ImGui::TreePop();
 	}
 
@@ -217,21 +230,6 @@ static void DrawComponent(const std::string& name, Entity entity, UIFunction uiF
 	}
 }
 
-static const std::string TexTypeToStr(const Texture::Type tt)
-{
-	switch (tt)
-	{
-		case Texture::Type::Diffuse:
-			return "Diffuse";
-		case Texture::Type::Specular:
-			return "Specular";
-		case Texture::Type::Normal:
-			return "Normal";
-		case Texture::Type::Height:
-			return "Height";
-	}
-}
-
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
 	if (entity.HasComponent<Tag>())
@@ -255,42 +253,34 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
 	if (ImGui::BeginPopup("AddComponent"))
 	{
-		if (ImGui::MenuItem("Model"))
-		{
-			m_Scene->m_SelectedEntity.AddComponent<Model>();
-			ImGui::CloseCurrentPopup();
-		}
+		
 
 		ImGui::EndPopup();
 	}
 
 	ImGui::PopItemWidth();
 
-	DrawComponent<Transform>("Transform", entity, [](auto& component)
+	DrawComponent<Transform>("Transform", entity, [](auto& tr)
 		{
-			DrawVec3Control("Position", component.Position);
-			if (DrawVec3Control("Rotation", component.EulerAngles))
-				component.Quaternion = glm::quat(glm::radians(component.EulerAngles));
+			DrawVec3Control("Position", tr.Position);
+			if (DrawVec3Control("Rotation", tr.EulerAngles))
+				tr.Quaternion = glm::quat(glm::radians(tr.EulerAngles));
 
-			DrawVec3Control("Scale", component.Scale, 1.0f);
+			DrawVec3Control("Scale", tr.Scale, 1.0f);
 		});
 
-	DrawComponent<Model>("Model", entity, [](auto& component)
+	DrawComponent<MeshInstance>("MeshInstance", entity, [](auto& mi)
 		{
-			for (auto& mesh : component.Meshes)
+			ImGui::Checkbox("HasTextures", &mi.HasTextures);
+			ImGui::ColorEdit4("Color", glm::value_ptr(mi.Color));
+			for (auto& [texType, texVector] : mi.PMesh->Textures())
 			{
-				/*ImGui::Checkbox("HasTextures", &mesh.HasTextures);
-				ImGui::Checkbox("NormalsOut", &mesh.NormalsOut);
-				ImGui::ColorEdit4("Color", glm::value_ptr(mesh.Color));*/
-				for (auto& [texType, texVector] : mesh->Textures())
+				if (texVector.empty())
+					continue;
+				ImGui::Text(magic_enum::enum_name(texType).data());
+				for (auto& tex : texVector)
 				{
-					if (texVector.empty())
-						continue;
-					ImGui::Text(TexTypeToStr(texType).c_str());
-					for (auto& tex : texVector)
-					{
-						ImGui::Image((void*)tex->Id(), ImVec2{128, 128}, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-					}
+					ImGui::Image((void*)tex->Id(), ImVec2{128, 128}, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 				}
 			}
 		});

@@ -144,6 +144,11 @@ namespace Window
         m_Params.cursorVisible = true;
     }
 
+    void SetScrollingLocked(bool locked)
+    {
+        m_Params.scrollingLocked = locked;
+    }
+
     void Close()
     {
         glfwSetWindowShouldClose(m_Handle, true);
@@ -151,22 +156,9 @@ namespace Window
 
     void SetKeybinds()
     {
-        //Camera controls
-        /*Input::SetCameraKeybind("Forward", Key::W, KeyEvent::Press, [&]() {
-            m_Camera->MoveForward(m_DeltaTime); });
-        Input::SetCameraKeybind("Left", Key::A, KeyEvent::Press, [&]() {
-            m_Camera->MoveLeft(m_DeltaTime); });
-        Input::SetCameraKeybind("Backward", Key::S, KeyEvent::Press, [&]() {
-            m_Camera->MoveBackward(m_DeltaTime); });
-        Input::SetCameraKeybind("Right", Key::D, KeyEvent::Press, [&]() {
-            m_Camera->MoveRight(m_DeltaTime); });*/
-
         Input::SetKeybind("Close window", Key::Esc, KeyEvent::Press, [&]() { //Close window
             if (!m_Params.cursorVisible) ShowCursor();
             else Close(); });
-        //Input::SetKeybind("Show/disable cursor", Key::C, KeyEvent::Press, [&]() { //Cursor toggle
-        //    if (m_Params.cursorVisible) HideCursor();
-        //    else ShowCursor(); });
     }
 
     void GLFWTerminate()
@@ -234,10 +226,7 @@ namespace Window
 
         void s_scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
         {
-            /*WindowParams& params =
-                *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));*/
-            //std::cout << "Mouse callback (" << xoffset << ", " << yoffset << ")\n";
-            if (!m_Camera)
+            if (!m_Camera || m_Params.scrollingLocked)
                 return;
             //m_Camera->ProcessMouseScroll((float)yoffset * m_MouseScrollSensivity * DeltaTime());
             m_Camera->MoveForward(yoffset * m_MouseScrollSensivity * DeltaTime());
@@ -245,16 +234,7 @@ namespace Window
 
         void s_keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
         {
-            /*WindowParams& params =
-                *reinterpret_cast<WindowParams*>(glfwGetWindowUserPointer(window));*/
-
             Input::ProcessInput(key, action);
-
-            /* for (auto kb : params.keys)
-             {
-                 if (key == kb.GlId() && action == kb.GlType())
-                     kb.Exec();s
-             }*/
         }
 
 #define GL_DEBUG_SEVERITY_NOTIFICATION 0x826B

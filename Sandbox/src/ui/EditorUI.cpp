@@ -105,7 +105,7 @@ namespace EditorUI
 
                 // Entity transform
                 auto& tc = selectedEntity.GetComponent<Transform>();
-                glm::mat4 transform = tc.GetTransform();
+                glm::mat4 transform = tc.GetTransformNoParent();
 
                 // Snapping
                 bool snap = Window::KeyPressed(Key::LeftCtrl);
@@ -272,6 +272,9 @@ namespace EditorUI
 
         UIDrawMenuBar();
 
+        //Prevent camera Z movement if viewport is not hovered.
+        Window::SetScrollingLocked(!m_ViewportHovered);
+            
         m_SceneHierarchyPanel.OnImGuiRender(m_PanelFlags);
 
         UIDrawViewport();

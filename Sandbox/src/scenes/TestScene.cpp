@@ -33,11 +33,9 @@ void TestScene::SetLightParams()
 static int num = 2;
 TestScene::TestScene(Ref<Camera> camera)
     : m_Camera(camera), 
-    m_ImportedModel("deccer-cubes/SM_Deccer_Cubes_Textured.gltf"),
+   
     m_CamSpeed(6.f)
 {
-    
-
     SetLightParams();
    
     m_CubeMesh = MeshManager::GetPrimitiveMesh({ Primitive::Cube,
@@ -52,8 +50,8 @@ TestScene::TestScene(Ref<Camera> camera)
         }});
     
     m_WorldCenter = CreateEntity("WorldCenter");
-    m_WorldCenter.AddComponent<PrimitiveMesh>(m_CubeMesh, false);
-    m_WorldCenter.GetComponent<PrimitiveMesh>().Color = { 1.f, 1.f, 1.f, 1.f };
+    m_WorldCenter.AddComponent<MeshInstance>(m_CubeMesh, false);
+    m_WorldCenter.GetComponent<MeshInstance>().Color = { 1.f, 1.f, 1.f, 1.f };
     m_WorldCenter.GetComponent<Transform>().ScaleF(0.2f);
 
     float h = num - 1;
@@ -65,7 +63,7 @@ TestScene::TestScene(Ref<Camera> camera)
             {
                 int ind = i * num * num + j * num + k;
                 m_Cubes[ind] = CreateEntity("Cube" + std::to_string(ind));
-                m_Cubes[ind].AddComponent<PrimitiveMesh>(m_CubeMesh);
+                m_Cubes[ind].AddComponent<MeshInstance>(m_CubeMesh);
                 m_Cubes[ind].GetComponent<Transform>().Position = 
                     glm::vec3(i * 2.f - h, j * 2.f - h, k * 2.f - h);
             }
@@ -79,7 +77,7 @@ TestScene::TestScene(Ref<Camera> camera)
     for (int i = 0; i < 6; ++i)
     {
         m_Brickwalls[i] = CreateEntity("Brickwall" + std::to_string(i));
-        m_Brickwalls[i].AddComponent<PrimitiveMesh>(m_BrickwallMesh);
+        m_Brickwalls[i].AddComponent<MeshInstance>(m_BrickwallMesh);
 
         m_Brickwalls[i].GetComponent<Transform>().ScaleF(scale);
     }
@@ -107,19 +105,19 @@ TestScene::TestScene(Ref<Camera> camera)
     }
 #endif
     m_LightCube = CreateEntity("LightCube");
-    m_LightCube.AddComponent<PrimitiveMesh>(m_CubeMesh, false);
+    m_LightCube.AddComponent<MeshInstance>(m_CubeMesh, false);
 
-    m_LightCube.GetComponent<PrimitiveMesh>().Color = { 1.f, 1.f, 1.f, 1.f };
+    m_LightCube.GetComponent<MeshInstance>().Color = { 1.f, 1.f, 1.f, 1.f };
 
     m_LightCube.GetComponent<Transform>().Position = s_LightPos;
     m_LightCube.GetComponent<Transform>().ScaleF(0.2f);
 
     m_LightCube.AddComponent<Light>(m_PointLightParams, true);
 
-    m_Model = CreateEntity("ImportedModel");
-    
-    m_Model.AddComponent<Model>("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");
-    m_Model.GetComponent<Transform>().Position = {0.f, 10.f, 0.f};
+    ImportModel("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");
+    //m_Model = CreateEntity("ImportedModel");
+    /*m_Model.AddComponent<Model>("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");
+    m_Model.GetComponent<Transform>().Position = {0.f, 10.f, 0.f};*/
     //m_Model.GetComponent<Transform>().ScaleF(30.);
 }
 

@@ -10,11 +10,10 @@ class Scene;
 
 class Entity
 {
-private:
-
 public:
 	Entity() = default;
-	Entity(entt::entity handle, Scene* scene);
+	Entity(entt::entity handle, Scene* scene)
+		: m_EntityHandle(handle), m_Scene(scene) {}
 	Entity(const Entity& other) = default;
 
 	template<typename T, typename... Args>

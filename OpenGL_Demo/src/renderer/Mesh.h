@@ -46,7 +46,7 @@ public:
     struct ModelData //Data needed to construct an imported model mesh.
     {
         std::vector<Vertex> vertices{};
-        std::vector<unsigned int> indices{};
+        std::vector<unsigned> indices{};
         std::unordered_map<Texture::Type, std::vector<std::string>> textures{};
 
         ModelData() = default;

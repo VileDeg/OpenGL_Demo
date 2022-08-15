@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "SceneSerializer.h"
-#include "scene/Components.h"
+#include "scene/Component.h"
 #include "scene/Entity.h"
 
 #include <fstream>
@@ -13,6 +13,7 @@
 
 using namespace Component;
 
+#if 0
 namespace cereal
 {
 #if 1
@@ -107,7 +108,7 @@ namespace cereal
 	}
 
 	template<class Archive>
-	void save(Archive& ar, const PrimitiveMesh& pmesh)
+	void save(Archive& ar, const MeshInstance& pmesh)
 	{
 		ar& cereal::make_nvp("HasTextures", pmesh.HasTextures);
 		ar& cereal::make_nvp("Color", pmesh.Color);
@@ -116,7 +117,7 @@ namespace cereal
 	}
 
 	template<class Archive>
-	void load(Archive& ar, PrimitiveMesh& pmesh)
+	void load(Archive& ar, MeshInstance& pmesh)
 	{
 		ar& pmesh.HasTextures;
 		ar& pmesh.Color;
@@ -158,7 +159,14 @@ namespace cereal
 		}
 	}
 }
+#endif
 
+#if 1
+void SceneSerializer::SaveScene(const std::string& filePath) {}
+void SceneSerializer::LoadScene(const std::string& filePath) {}
+#endif
+
+#if 0
 void SceneSerializer::SaveScene(const std::string& filePath)
 {
 	std::ofstream ofs(filePath);
@@ -207,3 +215,4 @@ void SceneSerializer::LoadScene(const std::string& filePath)
 		ia & entity;
 	}
 }
+#endif

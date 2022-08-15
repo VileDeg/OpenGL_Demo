@@ -199,15 +199,30 @@ namespace Renderer
 
 		glm::vec3 pos = modelMat[3];
 		glm::vec3 scale = {glm::length(modelMat[0]), glm::length(modelMat[1]), glm::length(modelMat[2])};
+		float avScale = scale.x + scale.y + scale.z;
+		avScale /= 3.f;
 		float distToCam = glm::length(s_Data->Camera->Position() - pos);
-		glm::mat4 borderMat = glm::scale(modelMat, 
-			glm::vec3(1.f + s_Data->outlineBorderScale * distToCam / scale * 0.05f));
+		float borderWidth = s_Data->outlineBorderScale;
+		
+		glm::vec3 finScale = 
+			glm::vec3(borderWidth) / scale;
+
+		/*float min = 0.15f;
+		float max = 0.16f;
+		finScale.x = (finScale.x < min / scale.x) ? min / scale.x : ((finScale.x > max * scale.x) ? max * scale.x : finScale.x);
+		finScale.y = (finScale.y < min / scale.y) ? min / scale.y : ((finScale.y > max * scale.y) ? max * scale.y : finScale.y);
+		finScale.z = (finScale.z < min / scale.z) ? min / scale.z : ((finScale.z > max * scale.z) ? max * scale.z : finScale.z);*/
+
+		finScale *= distToCam * 0.025;
+
+		glm::mat4 outlineMat = glm::scale(modelMat, 
+			glm::vec3(finScale)+1.f);
 
 		Ref<Shader> sh = s_Data->Shader[ShaderType::UniformColor];
 		BindShader(sh);
 		sh->setFloat4("u_Color", s_Data->outlineColor);
 
-		sh->setMat4f("u_ModelMat", borderMat);
+		sh->setMat4f("u_ModelMat", outlineMat);
 		sh->setInt	("u_DrawId", drawID);
 
 		GLDraw(mesh->Vao());

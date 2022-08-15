@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "Scene.h"
-#include "Components.h"
+#include "Component.h"
 #include <glm/glm.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 #include "Entity.h"
 #include "renderer/Renderer.h"
 #include <glad/glad.h>
@@ -11,6 +12,12 @@ using namespace Component;
 Scene::Scene() {}
 
 Scene::~Scene() {}
+
+const Transform& Scene::GetTransformComponent(entt::entity entity)
+{
+	ASSERT(m_Registry.any_of<Transform>(entity), "");
+	return m_Registry.get<Transform>(entity);
+}
 
 Entity Scene::CreateEntity(const std::string& name)
 {
@@ -30,27 +37,54 @@ void Scene::DestroyEntity(Entity entity)
 	m_Registry.destroy(entity);
 }
 
-void Scene::RenderScene()
+Transform* Scene::PocessNodeData(const Import::Model::NodeData& nd, Transform* parent)
 {
-	auto& modelGroup = m_Registry.view<Transform, Model, Tag>();
+	Entity entity = CreateEntity(nd.name);
+	entity.AddComponent<MeshInstance>(nd.meshes[0]);
 
-	for (auto& entity : modelGroup)
+	auto& tr = entity.GetComponent<Transform>();
+	tr.Entity = entity;
+	Transform* pTr = &entity.GetComponent<Transform>();
+	tr.Parent = parent;
+
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(nd.transform, scale, rotation, translation, skew, perspective);
+
+	tr.Position = translation;
+	tr.Scale = scale;
+	tr.Quaternion = rotation;
+	tr.EulerAngles = glm::degrees(glm::eulerAngles(rotation));
+
+	for (auto& child : nd.childData)
 	{
-		auto& [transform, model, tag] = modelGroup.get(entity);
-		if (m_SelectedEntity != entity)
-		{
-			model.Draw((int)entity, transform);
-		}
+		tr.Children.push_back(PocessNodeData(child, pTr));
 	}
 
-	auto& pmeshGroup = m_Registry.view<Transform, PrimitiveMesh, Tag>();
+	return pTr;
+}
 
-	for (auto& entity : pmeshGroup)
+void Scene::ImportModel(const std::string& path)
+{
+	Import::Model m{path};
+	m_ImportedModels.push_back(m);
+	
+	PocessNodeData(m.m_NodeData, nullptr);
+}
+
+void Scene::RenderScene()
+{
+	auto& meshView = m_Registry.view<Transform, MeshInstance>();
+
+	for (auto& entity : meshView)
 	{
-		auto& [transform, model, tag] = pmeshGroup.get(entity);
+		auto& [transform, mi] = meshView.get(entity);
 		if (m_SelectedEntity != entity)
 		{
-			model.Draw((int)entity, transform);
+			mi.Draw((int)entity, transform);
 		}
 	}
 
@@ -60,34 +94,19 @@ void Scene::RenderScene()
 	//and to make selection outline appear on top of all objects.
 	if ((bool)m_SelectedEntity)
 	{
-		if (modelGroup.contains(m_SelectedEntity))
-		{
-			auto& [transform, model, tag] = modelGroup.get(m_SelectedEntity);
-			model.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
-		}
-		else if (pmeshGroup.contains(m_SelectedEntity))
-		{
-			auto& [transform, pmesh, tag] = pmeshGroup.get(m_SelectedEntity);
-			pmesh.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
-		}
+		ASSERT(meshView.contains(m_SelectedEntity), "");
+		auto& [transform, mi] = meshView.get(m_SelectedEntity);
+		mi.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
 	}
 }
 
 void Scene::RenderSceneDepth()
 {
-	auto& modelView = m_Registry.view<Transform, Model, Tag>();
-	for (auto& entity : modelView)
+	auto& meshView = m_Registry.view<Transform, MeshInstance>();
+	for (auto& entity : meshView)
 	{
-		auto& [transform, model, tag] = modelView.get(entity);
-		for (auto& m : model.Meshes)
-			Renderer::DrawDepth(transform, m);
-	}
-
-	auto& pmeshView = m_Registry.view<Transform, PrimitiveMesh, Tag>();
-	for (auto& entity : pmeshView)
-	{
-		auto& [transform, pmesh, tag] = pmeshView.get(entity);
-		Renderer::DrawDepth(transform, pmesh.PMesh);
+		auto& [transform, mi] = meshView.get(entity);
+		Renderer::DrawDepth(transform, mi.PMesh);
 	}
 }
 

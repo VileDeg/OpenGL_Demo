@@ -15,6 +15,7 @@ namespace Window
         float cursorX;
         float cursorY;
         bool cursorVisible;
+        bool scrollingLocked;
     };
 
     GLFWwindow* Open(const unsigned width, const unsigned height, const std::string& name);
@@ -24,7 +25,7 @@ namespace Window
     void SetCamera(Ref<Camera> cam);
     void OnUpdate();
 
-    void UpdateWindowDimensions();
+    void SetScrollingLocked(bool locked);
 
     bool Paused();
     int Width();

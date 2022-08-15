@@ -102,7 +102,7 @@
     <ClInclude Include="src\renderer\MeshManager.h">
       <Filter>src\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\Model.h">
+    <ClInclude Include="src\import\Model.h">
       <Filter>src\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\Renderer.h">
@@ -1380,6 +1380,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\scene\Component.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\Window.cpp">
@@ -1415,7 +1416,7 @@
     <ClCompile Include="src\renderer\MeshManager.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\Model.cpp">
+    <ClCompile Include="src\import\Model.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\Renderer.cpp">
@@ -1430,9 +1431,6 @@
     <ClCompile Include="src\renderer\VertexArray.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\Entity.cpp">
-      <Filter>src\scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\scene\Scene.cpp">
       <Filter>src\scene</Filter>
     </ClCompile>
@@ -1445,5 +1443,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\Component.cpp" />
   </ItemGroup>
 </Project>

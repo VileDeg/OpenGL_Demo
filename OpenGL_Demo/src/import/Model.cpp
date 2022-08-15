@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "Model.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <glad/glad.h> 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -9,7 +12,7 @@
 
 #include "renderer/MeshManager.h"
 
-namespace AssimpImport
+namespace Import
 {
     Model::Model(std::string const& shortPath, bool gamma)
         : m_GammaCorrection(gamma)
@@ -34,25 +37,34 @@ namespace AssimpImport
         m_Directory = path.substr(0, path.find_last_of('/') + 1);
         std::cout << "Dir: " << m_Directory << '\n';
 
-        aiMatrix4x4 transform = scene->mRootNode->mTransformation;
-        processNode(scene->mRootNode, scene, transform);
+        //aiMatrix4x4 transform = scene->mRootNode->mTransformation;
+        m_NodeData = processNode(scene->mRootNode, scene);
 
         std::cout << "Finished loading model at path :" << path << ".\n";
     }
 
-    void Model::processNode(aiNode* node, const aiScene* scene, aiMatrix4x4& parentTransform)
+    Model::NodeData Model::processNode(aiNode* node, const aiScene* scene)
     {
-        parentTransform *= node->mTransformation;
+        auto transform = node->mTransformation;
+
+        NodeData nodeData
+        {
+            std::string(node->mName.data),
+            glm::transpose(glm::make_mat4(&transform[0][0]))
+        };
+
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            m_Meshes.push_back(processMesh(mesh, scene, node->mTransformation));
+            nodeData.meshes.push_back(processMesh(mesh, scene, node->mTransformation));
+            //m_Meshes.push_back(processMesh(mesh, scene, node->mTransformation));
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
-            processNode(node->mChildren[i], scene, parentTransform);
+            nodeData.childData.push_back(processNode(node->mChildren[i], scene));
         }
+        return nodeData;
     }
 
     Ref<Mesh> Model::processMesh(aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& nodeTransform)
@@ -66,16 +78,16 @@ namespace AssimpImport
             Mesh::Vertex vertex;
             glm::vec3 vector;
             // positions
-            glm::mat4 tf;
+            /*glm::mat4 tf;
             for (int i = 0; i < 4; ++i)
                 for (int j = 0; j < 4; ++j)
-                    tf[i][j] = nodeTransform[i][j];
+                    tf[i][j] = nodeTransform[i][j];*/
             auto v = mesh->mVertices[i];
-            glm::vec4 gv = { v.x, v.y, v.z, 1.0f };
-            glm::vec4 vert = gv * tf;
-            vector.x = vert.x;
-            vector.y = vert.y;
-            vector.z = vert.z;
+            /*glm::vec4 gv = { v.x, v.y, v.z, 1.0f };
+            glm::vec4 vert = gv * tf;*/
+            vector.x = v.x; //vert
+            vector.y = v.y; //vert
+            vector.z = v.z; //vert
             vertex.Position = vector;
             // normals
             if (mesh->HasNormals())
