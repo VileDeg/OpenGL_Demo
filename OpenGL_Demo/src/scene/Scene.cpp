@@ -6,6 +6,8 @@
 #include "renderer/Renderer.h"
 #include <glad/glad.h>
 
+using namespace Component;
+
 Scene::Scene() {}
 
 Scene::~Scene() {}
@@ -15,9 +17,9 @@ Entity Scene::CreateEntity(const std::string& name)
 	m_NumOfEntities++;
 
 	Entity entity = { m_Registry.create(), this };
-	entity.AddComponent<TransformComponent>();
-	auto& tag = entity.AddComponent<TagComponent>();
-	tag.Tag = name.empty() ? "Entity" : name;
+	entity.AddComponent<Transform>();
+	auto& tag = entity.AddComponent<Tag>();
+	tag.String = name.empty() ? "Entity" : name;
 
 	return entity;
 }
@@ -30,13 +32,22 @@ void Scene::DestroyEntity(Entity entity)
 
 void Scene::RenderScene()
 {
-	auto& group = m_Registry.group<TransformComponent, ModelComponent, TagComponent>();
+	auto& modelGroup = m_Registry.view<Transform, Model, Tag>();
 
-	for (auto& entity : group)
+	for (auto& entity : modelGroup)
 	{
-		auto& [transform, model, tag] = group.get(entity);
-		/*if (tag.Tag != "Cube0")
-			continue;*/
+		auto& [transform, model, tag] = modelGroup.get(entity);
+		if (m_SelectedEntity != entity)
+		{
+			model.Draw((int)entity, transform);
+		}
+	}
+
+	auto& pmeshGroup = m_Registry.view<Transform, PrimitiveMesh, Tag>();
+
+	for (auto& entity : pmeshGroup)
+	{
+		auto& [transform, model, tag] = pmeshGroup.get(entity);
 		if (m_SelectedEntity != entity)
 		{
 			model.Draw((int)entity, transform);
@@ -49,25 +60,40 @@ void Scene::RenderScene()
 	//and to make selection outline appear on top of all objects.
 	if ((bool)m_SelectedEntity)
 	{
-		auto& [transform, model, tag] = group.get(m_SelectedEntity);
-		model.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
+		if (modelGroup.contains(m_SelectedEntity))
+		{
+			auto& [transform, model, tag] = modelGroup.get(m_SelectedEntity);
+			model.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
+		}
+		else if (pmeshGroup.contains(m_SelectedEntity))
+		{
+			auto& [transform, pmesh, tag] = pmeshGroup.get(m_SelectedEntity);
+			pmesh.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
+		}
 	}
 }
 
 void Scene::RenderSceneDepth()
 {
-	auto& view = m_Registry.view<TransformComponent, ModelComponent, TagComponent>();
-	for (auto& entity : view)
+	auto& modelView = m_Registry.view<Transform, Model, Tag>();
+	for (auto& entity : modelView)
 	{
-		auto& [transform, model, tag] = view.get(entity);
-		for (auto& m : model.mis)
+		auto& [transform, model, tag] = modelView.get(entity);
+		for (auto& m : model.Meshes)
 			Renderer::DrawDepth(transform, m);
+	}
+
+	auto& pmeshView = m_Registry.view<Transform, PrimitiveMesh, Tag>();
+	for (auto& entity : pmeshView)
+	{
+		auto& [transform, pmesh, tag] = pmeshView.get(entity);
+		Renderer::DrawDepth(transform, pmesh.PMesh);
 	}
 }
 
 void Scene::RenderShadow()
 {
-	auto& view = m_Registry.view<TransformComponent, LightComponent>();
+	auto& view = m_Registry.view<Transform, Light>();
 	for (auto& entity : view)
 	{
 		auto& [transform, light] = view.get(entity);

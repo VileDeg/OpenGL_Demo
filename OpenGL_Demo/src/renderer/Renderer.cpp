@@ -29,9 +29,10 @@ namespace Renderer
 			std::unordered_map<ShaderType, Ref<Shader>> Shader;
 			Ref<ShaderBlock> SceneUBO;
 			Ref<ShaderBlock> LightSSBO;
-			Ref<Framebuffer> DefaultFramebuffer;
+			Ref<Framebuffer> ViewportFB;
 			Ref<Framebuffer> DepthMapFBO;
 			Ref<Texture> DepthMap;
+			Ref<Camera> Camera;
 
 			glm::mat4 ViewMat = glm::mat4(1.f);
 			glm::mat4 ProjMat = glm::mat4(1.f);
@@ -83,13 +84,13 @@ namespace Renderer
 		void BindTexture(const Ref<Texture> tex, const short slot);
 	}
 
-	void Init(unsigned width, unsigned height)
+	void Init(Ref<Framebuffer> viewportfb, unsigned width, unsigned height)
 	{
 		s_Data = new RenderData();
 		s_Data->viewportWidth = width;
 		s_Data->viewportHeight = height;
-		s_Data->DefaultFramebuffer = CreateRef<Framebuffer>();
-		s_Data->DefaultFramebuffer->Invalidate(width, height);
+		s_Data->ViewportFB = viewportfb;
+		s_Data->ViewportFB->Invalidate(width, height);
 		
 		s_Data->DepthMap = CreateRef<Texture>(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 		s_Data->DepthMapFBO = CreateRef<Framebuffer>();
@@ -126,16 +127,16 @@ namespace Renderer
 		glClearColor(0.049f, 0.0f, 0.1f, 1.f); //Dark purple
 	}
 
-	void Draw(int drawID, const glm::mat4& modelMat, MeshInstance& mi)
+
+	void DrawMesh(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh, bool withTextures, glm::vec4 color)
 	{
-		auto& Mesh = mi.mesh;
-		auto& tex = Mesh->Textures();
-		auto& diff = tex[TexType::Diffuse];
-		auto& spec = tex[TexType::Specular];
-		auto& norm = tex[TexType::Normal];
+		auto& tex = mesh->Textures();
+		auto& diff = tex[Texture::Type::Diffuse];
+		auto& spec = tex[Texture::Type::Specular];
+		auto& norm = tex[Texture::Type::Normal];
 		Ref<Shader> sh = nullptr;
 
-		if (mi.HasTextures)
+		if (withTextures)
 		{
 			if (!diff.empty() && !norm.empty())
 			{
@@ -162,84 +163,73 @@ namespace Renderer
 			}
 			else
 			{
+				//Mesh has no textues. Most likely error.
 				sh = s_Data->Shader[ShaderType::UniformColor];
 				BindShader(sh);
-				sh->setFloat4("u_Color", mi.Color);
+				sh->setFloat4("u_Color", { 1.f, 0.f, 1.f, 1.f }); //magenta
 			}
 		}
 		else
 		{
+			//Mesh has no textues. Most likely error.
 			sh = s_Data->Shader[ShaderType::UniformColor];
 			BindShader(sh);
-			sh->setFloat4("u_Color", mi.Color);
+			sh->setFloat4("u_Color", color); //magenta
 		}
 
 		sh->setMat4f("u_ModelMat", modelMat);
-		sh->setInt  ("u_DrawId", drawID);
+		sh->setInt("u_DrawId", drawID);
 
-		if (mi.NormalsOut)
-			GLDraw(Mesh->Vao());
-		else
-		{
-			glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-			sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-			GLDraw(Mesh->Vao());
-			sh->setInt("reverse_normals", 0); // and of course disable it
-			glEnable(GL_CULL_FACE);
-		}
+		GLDraw(mesh->Vao());
 	}
 
-	void DrawOutlined(int drawID, const glm::mat4& modelMat, MeshInstance& mi)
+	void DrawOutlined(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh,
+		bool withTextures, glm::vec4 color)
 	{
 		glClear(GL_STENCIL_BUFFER_BIT);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
 		glStencilMask(0xFF);
 
-		Draw(drawID, modelMat, mi);
+		DrawMesh(drawID, modelMat, mesh, withTextures, color);
 
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
 
-		glm::mat4 newMat = modelMat;
-		newMat[0][0] += 0.1f;
-		newMat[1][1] += 0.1f;
-		newMat[2][2] += 0.1f;
+		glm::vec3 pos = modelMat[3];
+		glm::vec3 scale = {glm::length(modelMat[0]), glm::length(modelMat[1]), glm::length(modelMat[2])};
+		float distToCam = glm::length(s_Data->Camera->Position() - pos);
+		glm::mat4 borderMat = glm::scale(modelMat, 
+			glm::vec3(1.f + s_Data->outlineBorderScale * distToCam / scale * 0.05f));
 
 		Ref<Shader> sh = s_Data->Shader[ShaderType::UniformColor];
 		BindShader(sh);
 		sh->setFloat4("u_Color", s_Data->outlineColor);
 
-		sh->setMat4f("u_ModelMat", newMat);
+		sh->setMat4f("u_ModelMat", borderMat);
 		sh->setInt	("u_DrawId", drawID);
-		GLDraw(mi.mesh->Vao());
+
+		GLDraw(mesh->Vao());
 
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glEnable(GL_DEPTH_TEST);
 	}
 
-	void DrawDepth(const glm::mat4& modelMat, const MeshInstance& mi)
+	void DrawDepth(const glm::mat4& modelMat, Ref<Mesh> mesh)
 	{
-		auto Mesh = mi.mesh;
+
 		Ref<Shader> sh = s_Data->Shader[ShaderType::DepthShader];
 		BindShader(sh);
 		sh->setMat4f("u_ModelMat", modelMat);
 
-		BindVAO(Mesh->Vao());
+		BindVAO(mesh->Vao());
 
-		if (mi.NormalsOut)
-			GLDraw(Mesh->Vao());
-		else
-		{
-			glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
-			sh->setInt("reverse_normals", 1); // A small little hack to invert normals when drawing cube from the inside so lighting still works.
-			GLDraw(Mesh->Vao());
-			sh->setInt("reverse_normals", 0); // and of course disable it
-			glEnable(GL_CULL_FACE);
-		}
+		GLDraw(mesh->Vao());
 	}
+
+
 
 	void ShadowRenderSetup(glm::vec3 lightPos)
 	{
@@ -272,8 +262,8 @@ namespace Renderer
 
 	void ShadowRenderEnd()
 	{
-		//BindDefaultFramebuffer();
-		s_Data->DefaultFramebuffer->Bind();
+		//BindViewportFB();
+		s_Data->ViewportFB->Bind();
 		//ResetViewport();
 		//s_Data->DepthMapFBO->Unbind(s_Data->viewportWidth, s_Data->viewportHeight);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -313,18 +303,15 @@ namespace Renderer
 		return lightIndex - 1;
 	}
 
-	const Ref<Framebuffer>& Renderer::GetMainFB()
-	{
-		return s_Data->DefaultFramebuffer;
-	}
 
-	void SetRenderImageSize(const unsigned width, const unsigned height)
-	{
-		s_Data->viewportWidth = width;
-		s_Data->viewportHeight = height;
-		s_Data->DefaultFramebuffer->Invalidate(width, height);
 
-	}
+	//void SetRenderImageSize(const unsigned width, const unsigned height)
+	//{
+	//	s_Data->viewportWidth = width;
+	//	s_Data->viewportHeight = height;
+	//	s_Data->ViewportFB->Invalidate(width, height);
+
+	//}
 
 	void ClearState()
 	{
@@ -336,21 +323,22 @@ namespace Renderer
 	void BeginScene(Ref<Camera> cam, unsigned lightCount, bool castShadows)
 	{
 		SceneData data = { cam->GetProjViewMat(), cam->Position(), lightCount, castShadows };
+		s_Data->Camera = cam;
 		s_Data->SceneUBO->Upload((const void*)&data, sizeof(data), 0);
 
 		s_Data->ViewMat = cam->GetViewMat();
 		s_Data->ProjMat = cam->GetProjMat();
 
-		s_Data->DefaultFramebuffer->Bind();
+		s_Data->ViewportFB->Bind();
 		
 		/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		s_Data->DefaultFramebuffer->ClearIntAttachment(-1);*/
+		s_Data->ViewportFB->ClearIntAttachment(-1);*/
 	}
 
 	void EndScene()
 	{
 		
-		s_Data->DefaultFramebuffer->Unbind(s_Data->viewportWidth, s_Data->viewportHeight);
+		s_Data->ViewportFB->Unbind();
 	}
 
 	void Clear(int buffers)
@@ -363,10 +351,10 @@ namespace Renderer
 		glClearColor(r, g, b, a);
 	}
 
-	void ResetViewport()
-	{
-		glViewport(0, 0, s_Data->viewportWidth, s_Data->viewportHeight);
-	}
+	//void ResetViewport()
+	//{
+	//	glViewport(0, 0, s_Data->viewportWidth, s_Data->viewportHeight);
+	//}
 
 	void Shutdown()
 	{

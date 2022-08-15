@@ -2,6 +2,8 @@
 #include "TestScene.h"
 #include "renderer/MeshManager.h"
 
+using namespace Component;
+
 static glm::vec3 s_LightPos = { 0.0f, 0.0f, 7.5f };
 void TestScene::SetLightParams()
 {
@@ -30,28 +32,29 @@ void TestScene::SetLightParams()
 
 static int num = 2;
 TestScene::TestScene(Ref<Camera> camera)
-    : m_Camera(camera),
+    : m_Camera(camera), 
+    m_ImportedModel("deccer-cubes/SM_Deccer_Cubes_Textured.gltf"),
     m_CamSpeed(6.f)
 {
-    //Window::HideCursor();
+    
 
     SetLightParams();
    
-    m_CubeMesh = MeshManager::GetMesh({ Primitive::Cube,
+    m_CubeMesh = MeshManager::GetPrimitiveMesh({ Primitive::Cube,
         {
-            { TexType::Diffuse,  {"container2.png"         } },
-            { TexType::Specular, {"container2_specular.png"} }
+            { Texture::Type::Diffuse,  {"container2.png"         } },
+            { Texture::Type::Specular, {"container2_specular.png"} }
         }});
-    m_BrickwallMesh = MeshManager::GetMesh({ Primitive::Plane,
+    m_BrickwallMesh = MeshManager::GetPrimitiveMesh({ Primitive::Plane,
         {
-            { TexType::Diffuse, {"brickwall.jpg"       } },
-            { TexType::Normal,  {"brickwall_normal.jpg"} }
+            { Texture::Type::Diffuse, {"brickwall.jpg"       } },
+            { Texture::Type::Normal,  {"brickwall_normal.jpg"} }
         }});
     
     m_WorldCenter = CreateEntity("WorldCenter");
-    m_WorldCenter.AddComponent<ModelComponent>(m_CubeMesh, false);
-    m_WorldCenter.GetComponent<ModelComponent>().mis[0].Color = { 1.f, 1.f, 1.f, 1.f };
-    m_WorldCenter.GetComponent<TransformComponent>().ScaleF(0.2f);
+    m_WorldCenter.AddComponent<PrimitiveMesh>(m_CubeMesh, false);
+    m_WorldCenter.GetComponent<PrimitiveMesh>().Color = { 1.f, 1.f, 1.f, 1.f };
+    m_WorldCenter.GetComponent<Transform>().ScaleF(0.2f);
 
     float h = num - 1;
     for (int i = 0; i < num; ++i)
@@ -62,55 +65,62 @@ TestScene::TestScene(Ref<Camera> camera)
             {
                 int ind = i * num * num + j * num + k;
                 m_Cubes[ind] = CreateEntity("Cube" + std::to_string(ind));
-                m_Cubes[ind].AddComponent<ModelComponent>(m_CubeMesh);
-                m_Cubes[ind].GetComponent<TransformComponent>().
-                    Position = glm::vec3(i * 2.f - h, j * 2.f - h, k * 2.f - h);
+                m_Cubes[ind].AddComponent<PrimitiveMesh>(m_CubeMesh);
+                m_Cubes[ind].GetComponent<Transform>().Position = 
+                    glm::vec3(i * 2.f - h, j * 2.f - h, k * 2.f - h);
             }
         }
     }
 
     
-#if 0
-    float scale = 15.f;
+#if 1
+    float scale = 30.f;
+    float halfScale = scale * 0.5f;
     for (int i = 0; i < 6; ++i)
     {
         m_Brickwalls[i] = CreateEntity("Brickwall" + std::to_string(i));
-        m_Brickwalls[i].AddComponent<ModelComponent>(m_BrickwallMesh);
+        m_Brickwalls[i].AddComponent<PrimitiveMesh>(m_BrickwallMesh);
 
-        m_Brickwalls[i].GetComponent<TransformComponent>().ScaleF(scale);
+        m_Brickwalls[i].GetComponent<Transform>().ScaleF(scale);
     }
 
     const glm::vec3 up{ 0.f, 1.f, 0.f };
     const glm::vec3 right{ 1.f, 0.f, 0.f };
 
     {
-        m_Brickwalls[0].GetComponent<TransformComponent>().Position = { 0.f, 0.f, -scale };
+        m_Brickwalls[0].GetComponent<Transform>().Position = { 0.f, 0.f, -halfScale };
 
-        m_Brickwalls[1].GetComponent<TransformComponent>().Position = { 0.f, 0.f, scale };
-        m_Brickwalls[1].GetComponent<TransformComponent>().RotateTo(180.f, up);
+        m_Brickwalls[1].GetComponent<Transform>().Position = { 0.f, 0.f, halfScale };
+        m_Brickwalls[1].GetComponent<Transform>().RotateTo(180.f, up);
 
-        m_Brickwalls[2].GetComponent<TransformComponent>().Position = { -scale, 0.f, 0.f };
-        m_Brickwalls[2].GetComponent<TransformComponent>().RotateTo(90.f, up);
+        m_Brickwalls[2].GetComponent<Transform>().Position = { -halfScale, 0.f, 0.f };
+        m_Brickwalls[2].GetComponent<Transform>().RotateTo(90.f, up);
 
-        m_Brickwalls[3].GetComponent<TransformComponent>().Position = { scale, 0.f, 0.f };
-        m_Brickwalls[3].GetComponent<TransformComponent>().RotateTo(-90.f, up);
+        m_Brickwalls[3].GetComponent<Transform>().Position = { halfScale, 0.f, 0.f };
+        m_Brickwalls[3].GetComponent<Transform>().RotateTo(-90.f, up);
 
-        m_Brickwalls[4].GetComponent<TransformComponent>().Position = { 0.f, -scale, 0.f };
-        m_Brickwalls[4].GetComponent<TransformComponent>().RotateTo(-90.f, right);
+        m_Brickwalls[4].GetComponent<Transform>().Position = { 0.f, -halfScale, 0.f };
+        m_Brickwalls[4].GetComponent<Transform>().RotateTo(-90.f, right);
 
-        m_Brickwalls[5].GetComponent<TransformComponent>().Position = { 0.f, scale, 0.f };
-        m_Brickwalls[5].GetComponent<TransformComponent>().RotateTo(90.f, right);
+        m_Brickwalls[5].GetComponent<Transform>().Position = { 0.f, halfScale, 0.f };
+        m_Brickwalls[5].GetComponent<Transform>().RotateTo(90.f, right);
     }
 #endif
     m_LightCube = CreateEntity("LightCube");
-    m_LightCube.AddComponent<ModelComponent>(m_CubeMesh, false);
+    m_LightCube.AddComponent<PrimitiveMesh>(m_CubeMesh, false);
 
-    m_LightCube.GetComponent<ModelComponent>().mis[0].Color = { 1.f, 1.f, 1.f, 1.f };
+    m_LightCube.GetComponent<PrimitiveMesh>().Color = { 1.f, 1.f, 1.f, 1.f };
 
-    m_LightCube.GetComponent<TransformComponent>().Position = s_LightPos;
-    m_LightCube.GetComponent<TransformComponent>().ScaleF(0.2f);
+    m_LightCube.GetComponent<Transform>().Position = s_LightPos;
+    m_LightCube.GetComponent<Transform>().ScaleF(0.2f);
 
-    m_LightCube.AddComponent<LightComponent>(m_PointLightParams, true);
+    m_LightCube.AddComponent<Light>(m_PointLightParams, true);
+
+    m_Model = CreateEntity("ImportedModel");
+    
+    m_Model.AddComponent<Model>("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");
+    m_Model.GetComponent<Transform>().Position = {0.f, 10.f, 0.f};
+    //m_Model.GetComponent<Transform>().ScaleF(30.);
 }
 
 static float DeltaTime = 0.f;
@@ -129,11 +139,11 @@ void TestScene::OnUpdate(float deltaTime)
     DeltaTime = deltaTime;
     Renderer::BeginScene(m_Camera, LightOn ? 1 : 0, CastShadows);
 
-    auto& view = m_Registry.view<TagComponent, TransformComponent, LightComponent>();
+    auto& view = m_Registry.view<Tag, Transform, Light>();
     for (auto& entity : view)
     {
         auto& [tag, tr, light] = view.get(entity);
-        if (tag.Tag == "LightCube" && RotateLight)
+        if (tag.String == "LightCube" && RotateLight)
         {
             tr.RotateAroundPoint(RotPoint, LightRotSpeed * deltaTime, RotAxis);
         }

@@ -14,7 +14,8 @@ namespace GLBuffer {
 	};
 }
 
-struct Light
+
+struct LightData
 {
 	glm::vec3 position;
 	float constant;
@@ -41,9 +42,21 @@ enum class ShaderType
 
 namespace Renderer
 {
-	void Draw(int drawID, const glm::mat4& modelMat, MeshInstance& mi);
-	void DrawOutlined(int drawID, const glm::mat4& modelMat, MeshInstance& mi);
-	void DrawDepth(const glm::mat4& modelMat, const MeshInstance& mi);
+	//Render primitive mesh
+	//void DrawPrimitive(int drawID, const glm::mat4& modelMat, 
+	//	Ref<Mesh> mesh, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f },
+	//	bool hasTextures = true, bool normalsOut = true);
+	//Render imported mesh with textures
+	void DrawMesh(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh, 
+		bool withTextures, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f });
+	/*void DrawTextured(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh);
+	void DrawColored(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh, glm::vec4 color);*/
+	void DrawOutlined(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh,
+		bool withTextures, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f });
+	void DrawDepth(const glm::mat4& modelMat, Ref<Mesh> mesh);
+
+	//int GetHoveredObjectId(int x, int y);
+
 	void ShadowRenderSetup(glm::vec3 lightPos);
 	void ShadowRenderEnd();
 	
@@ -52,17 +65,17 @@ namespace Renderer
 	unsigned UploadLightData(const void* data);
 	void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
 
-	void Init(unsigned width, unsigned height);
+	void Init(Ref<Framebuffer> viewportfb, unsigned width, unsigned height);
 	void ClearState();
 	
-	const Ref<Framebuffer>& GetMainFB();
+	//const Ref<Framebuffer>& GetMainFB();
 	//unsigned GetFBMainColorAttachmentID();
-	void SetRenderImageSize(const unsigned width, const unsigned height);
+	//void SetRenderImageSize(const unsigned width, const unsigned height);
 	void BeginScene(Ref<Camera> cam, unsigned lightCount, bool castShadows);
 	void EndScene();
 	void Shutdown();
 
 	void Clear(int mode);
 	void SetClearColor(float r, float g, float b, float a);
-	void ResetViewport();
+	//void ResetViewport();
 };

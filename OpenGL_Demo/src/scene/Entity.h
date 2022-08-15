@@ -10,6 +10,8 @@ class Scene;
 
 class Entity
 {
+private:
+
 public:
 	Entity() = default;
 	Entity(entt::entity handle, Scene* scene);
@@ -68,41 +70,41 @@ private:
 	entt::entity m_EntityHandle{ entt::null };
 	Scene* m_Scene = nullptr;
 
-
 private:
 	friend class cereal::access;
 
 	template<class Archive>
 	void save(Archive& ar) const
 	{
-		std::bitset<Components::NUMBER_OF_COMPONENTS> config(0b0);
+		std::bitset<Component::NUMBER_OF_COMPONENTS> config(0b0);
 
-		if (HasComponent<TagComponent>())
-			config[0] = 0b1;
-		if (HasComponent<TransformComponent>())
-			config[1] = 0b1;
-		if (HasComponent<ModelComponent>())
-			config[2] = 0b1;
-		if (HasComponent<LightComponent>())
-			config[3] = 0b1;
+		config[0] = HasComponent<Tag>();
+		config[1] = HasComponent<Transform>();
+		config[2] = HasComponent<PrimitiveMesh>();
+		config[3] = HasComponent<Model>();
+		config[4] = HasComponent<Light>();
 
 		ar & cereal::make_nvp("ComponentConfiguration", config.to_string());
 
-		if (HasComponent<TagComponent>())
+		if (HasComponent<Tag>())
 		{
-			ar & cereal::make_nvp("TagComponent", GetComponent<TagComponent>().Tag);
+			ar & cereal::make_nvp("Tag", GetComponent<Tag>().String);
 		}
-		if (HasComponent<TransformComponent>())
+		if (HasComponent<Transform>())
 		{
-			ar & cereal::make_nvp("TransformComponent", GetComponent<TransformComponent>());
+			ar & cereal::make_nvp("Transform", GetComponent<Transform>());
 		}
-		if (HasComponent<ModelComponent>())
+		if (HasComponent<PrimitiveMesh>())
 		{
-			ar & cereal::make_nvp("ModelComponent", GetComponent<ModelComponent>());
+			ar & cereal::make_nvp("PrimitiveMesh", GetComponent<PrimitiveMesh>());
 		}
-		if (HasComponent<LightComponent>())
+		if (HasComponent<Model>())
 		{
-			ar & cereal::make_nvp("LightComponent", GetComponent<LightComponent>());
+			ar& cereal::make_nvp("Model", GetComponent<Model>());
+		}
+		if (HasComponent<Light>())
+		{
+			ar & cereal::make_nvp("Light", GetComponent<Light>());
 		}
 	}
 	template<typename Archive>
@@ -112,30 +114,34 @@ private:
 
 		ar & str;
 		
-		std::bitset<Components::NUMBER_OF_COMPONENTS> config(str);
+		std::bitset<Component::NUMBER_OF_COMPONENTS> config(str);
 		if (config[0])
 		{
-			if (!HasComponent<TagComponent>())
+			if (!HasComponent<Tag>())
 			{
-				AddComponent<TagComponent>();
+				AddComponent<Tag>();
 			}
-			ar & GetComponent<TagComponent>().Tag;
+			ar & GetComponent<Tag>().String;
 		}
 		if (config[1])
 		{
-			if (!HasComponent<TransformComponent>())
+			if (!HasComponent<Transform>())
 			{
-				AddComponent<TransformComponent>();
+				AddComponent<Transform>();
 			}
-			ar & GetComponent<TransformComponent>();
+			ar & GetComponent<Transform>();
 		}
 		if (config[2])
 		{
-			ar & AddComponent<ModelComponent>();
+			ar & AddComponent<PrimitiveMesh>();
 		}
 		if (config[3])
 		{
-			ar & AddComponent<LightComponent>();
+			ar & AddComponent<Model>();
+		}
+		if (config[4])
+		{
+			ar & AddComponent<Light>();
 		}
 	}
 };

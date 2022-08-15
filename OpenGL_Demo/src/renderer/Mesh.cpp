@@ -2,7 +2,7 @@
 #include "renderer/Mesh.h"
 #include "glad/glad.h"
 
-Mesh::Mesh(const MeshData& data)
+Mesh::Mesh(const PrimitiveData& data)
 {
     m_VAO = CreateRef<VAO>();
     auto gd = GeoData::GetData(data.primType);
@@ -30,13 +30,12 @@ Mesh::Mesh(const MeshData& data)
     }
 }
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
-    std::unordered_map<TexType, std::vector<std::string>> textures)
+Mesh::Mesh(const ModelData& data)
 {
     m_VAO = CreateRef<VAO>();
     m_VBO = CreateRef<VBO>(
-        (const void*)&vertices[0], vertices.size() * sizeof(Vertex), vertices.size());
-    m_EBO = CreateRef<EBO>(&indices[0], indices.size());
+        (const void*)&data.vertices[0], data.vertices.size() * sizeof(Vertex), data.vertices.size());
+    m_EBO = CreateRef<EBO>(&data.indices[0], data.indices.size());
     VertexLayout layout
     {
         {GL_FLOAT, 3, GL_FALSE}, //position
@@ -51,7 +50,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
     m_VBO->SetLayout(layout);
     m_VAO->AddBuffer(*m_VBO, m_EBO);
 
-    for (auto& [type, paths] : textures)
+    for (auto& [type, paths] : data.textures)
     {
         for (auto& p : paths)
         {

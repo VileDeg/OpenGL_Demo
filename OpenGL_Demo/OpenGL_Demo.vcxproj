@@ -69,7 +69,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mt.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mtd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -93,13 +93,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mt.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mtd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\OpenGL_Demo.h" />
-    <ClInclude Include="src\assimp_import\Mesh.h" />
-    <ClInclude Include="src\assimp_import\Model.h" />
     <ClInclude Include="src\core\Base.h" />
     <ClInclude Include="src\core\Log.h" />
     <ClInclude Include="src\core\Window.h" />
@@ -542,8 +540,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\assimp_import\Mesh.cpp" />
-    <ClCompile Include="src\assimp_import\Model.cpp" />
     <ClCompile Include="src\core\Window.cpp" />
     <ClCompile Include="src\geometry\GeoData.cpp" />
     <ClCompile Include="src\imgui\ImguiLayer.cpp" />

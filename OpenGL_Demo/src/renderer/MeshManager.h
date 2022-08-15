@@ -6,15 +6,20 @@ class MeshManager
 private:
 	typedef int ImGuiWindowFlags;
 public:
-	static Ref<Mesh> GetMesh(const MeshData& data);
-	static const MeshData& GetMData(Ref<Mesh> mesh);
+	static Ref<Mesh> GetPrimitiveMesh(const Mesh::PrimitiveData& data);
+	static Ref<Mesh> GetModelMesh(const Mesh::ModelData& data);
+
+	static const Mesh::PrimitiveData& GetPrimitiveMeshData(Ref<Mesh> mesh);
+	static const Mesh::ModelData& GetModelMeshData(Ref<Mesh> mesh);
+
 	static void Clear();
 	static void OnImGuiRender(ImGuiWindowFlags panelFlags);
 
-	static std::vector<Ref<Mesh>> Meshes;
-	static std::vector<MeshData> MData;
+	static std::vector<Ref<Mesh>>			PrimitiveMeshes;
+	static std::vector<Ref<Mesh>>			ModelMeshes;
+	static std::vector<Mesh::PrimitiveData> PrimitiveMeshData;
+	static std::vector<Mesh::ModelData>		ModelMeshData;
 private:
-
 	template<typename T>
 	static bool getIndex(const std::vector<T>& vec, const T& item, size_t& index)
 	{

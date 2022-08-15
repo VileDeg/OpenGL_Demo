@@ -60,12 +60,6 @@
     <ClInclude Include="src\OpenGL_Demo.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\assimp_import\Mesh.h">
-      <Filter>src\assimp_import</Filter>
-    </ClInclude>
-    <ClInclude Include="src\assimp_import\Model.h">
-      <Filter>src\assimp_import</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\Base.h">
       <Filter>src\core</Filter>
     </ClInclude>
@@ -1388,12 +1382,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\assimp_import\Mesh.cpp">
-      <Filter>src\assimp_import</Filter>
-    </ClCompile>
-    <ClCompile Include="src\assimp_import\Model.cpp">
-      <Filter>src\assimp_import</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\Window.cpp">
       <Filter>src\core</Filter>
     </ClCompile>

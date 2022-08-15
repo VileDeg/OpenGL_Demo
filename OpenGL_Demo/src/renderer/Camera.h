@@ -33,7 +33,7 @@ public:
 			m_Up * m_MovementSpeed * deltaTime;
 	}
 
-	void SetViewportDimensions(unsigned width, unsigned height);
+	//void SetViewportDimensions(unsigned width, unsigned height);
 
 	const float Speed() const { return m_MovementSpeed; }
 

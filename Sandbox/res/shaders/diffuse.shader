@@ -37,7 +37,8 @@ void main()
 #shader fragment
 #version 460 core
 
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int  DrawID;
 
 in VS_OUT{
     vec3 FragPos;
@@ -83,6 +84,8 @@ uniform Material material;
 uniform samplerCube depthMap;
 uniform float far_plane;
 
+uniform int u_DrawId;
+
 // function prototypes
 float ShadowCalculation(vec3 fragPos, vec3 lightPos);
 
@@ -126,6 +129,7 @@ void main()
     }
     else
         FragColor = texture(material.diffuse, fs_in.TexCoords);
+    DrawID = u_DrawId;
 }
 
 float ShadowCalculation(vec3 fragPos, vec3 lightPos)

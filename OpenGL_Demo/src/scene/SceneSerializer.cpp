@@ -11,8 +11,11 @@
 
 #include "renderer/MeshManager.h"
 
+using namespace Component;
+
 namespace cereal
 {
+#if 1
 	template<typename Archive>
 	static void serialize(Archive& ar, glm::quat& quat)
 	{
@@ -20,6 +23,13 @@ namespace cereal
 		ar& cereal::make_nvp("Y", quat.y);
 		ar& cereal::make_nvp("Z", quat.z);
 		ar& cereal::make_nvp("W", quat.w);
+	}
+
+	template<typename Archive>
+	static void serialize(Archive& ar, glm::vec2& vec)
+	{
+		ar& cereal::make_nvp("X", vec.x);
+		ar& cereal::make_nvp("Y", vec.y);
 	}
 
 	template<typename Archive>
@@ -38,9 +48,11 @@ namespace cereal
 		ar& cereal::make_nvp("Z", vec.z);
 		ar& cereal::make_nvp("W", vec.w);
 	}
+#endif
 
+#if 1
 	template<typename Archive>
-	static void serialize(Archive& ar, TransformComponent& tr)
+	static void serialize(Archive& ar, Transform& tr)
 	{
 		ar& cereal::make_nvp("Pos", tr.Position);
 		ar& cereal::make_nvp("Quat", tr.Quaternion);
@@ -49,62 +61,101 @@ namespace cereal
 	}
 
 	template<typename Archive>
-	void serialize(Archive& ar, MeshData& data)
+	static void serialize(Archive& ar, LightData& l)
+	{
+		ar& cereal::make_nvp("Position", l.position);
+		ar& cereal::make_nvp("Constant", l.constant);
+		ar& cereal::make_nvp("Direction", l.direction);
+		ar& cereal::make_nvp("Linear", l.linear);
+		ar& cereal::make_nvp("Ambient", l.ambient);
+		ar& cereal::make_nvp("Quadratic", l.quadratic);
+		ar& cereal::make_nvp("Diffuse", l.diffuse);
+		ar& cereal::make_nvp("CutOff", l.cutOff);
+		ar& cereal::make_nvp("Specular", l.specular);
+		ar& cereal::make_nvp("OuterCutOff", l.outerCutOff);
+		ar& cereal::make_nvp("Type", l.type);
+	}
+
+	template<typename Archive>
+	static void serialize(Archive& ar, Light& l)
+	{
+		ar& cereal::make_nvp("LightData", l.Data);
+		ar& cereal::make_nvp("IsDynamic", l.IsDynamic);
+		ar& cereal::make_nvp("SSBOIndex", l.SSBOindex);
+	}
+#endif
+
+	
+	template<typename Archive>
+	void serialize(Archive& ar, Mesh::Vertex& vertex)
+	{
+		ar & cereal::make_nvp("Position", vertex.Position);
+		ar & cereal::make_nvp("Normal", vertex.Normal);
+		ar & cereal::make_nvp("TexCoords", vertex.TexCoords);
+		ar & cereal::make_nvp("Tangent", vertex.Tangent);
+		ar & cereal::make_nvp("Bitangent", vertex.Bitangent);
+		ar & cereal::make_nvp("Color", vertex.Color);
+		ar & cereal::make_nvp("m_BoneIDs", vertex.m_BoneIDs);
+		ar & cereal::make_nvp("m_Weights", vertex.m_Weights);
+	}
+
+	template<typename Archive>
+	void serialize(Archive& ar, Mesh::PrimitiveData& data)
 	{
 		ar & cereal::make_nvp("PrimitiveType", data.primType);
 		ar & cereal::make_nvp("Textures", data.textures);
 	}
 
 	template<class Archive>
-	void save(Archive& ar, const MeshInstance& mi)
+	void save(Archive& ar, const PrimitiveMesh& pmesh)
 	{
-
-		ar & cereal::make_nvp("HasTextures", mi.HasTextures);
-		ar & cereal::make_nvp("NormalsOut", mi.NormalsOut);
-		ar & cereal::make_nvp("Color", mi.Color);
-		ar & cereal::make_nvp("MeshData", MeshManager::GetMData(mi.mesh));
+		ar& cereal::make_nvp("HasTextures", pmesh.HasTextures);
+		ar& cereal::make_nvp("Color", pmesh.Color);
+		ar& cereal::make_nvp("MeshData",
+			MeshManager::GetPrimitiveMeshData(pmesh.PMesh));
 	}
 
 	template<class Archive>
-	void load(Archive& ar, MeshInstance& mi)
+	void load(Archive& ar, PrimitiveMesh& pmesh)
 	{
-		ar & mi.HasTextures;
-		ar & mi.NormalsOut;
-		ar & mi.Color;
-
-		MeshData mData;
-		ar & mData;
-		mi.mesh = MeshManager::GetMesh(mData);
+		ar& pmesh.HasTextures;
+		ar& pmesh.Color;
+		Mesh::PrimitiveData pData;
+		ar& pData;
+		pmesh.PMesh = MeshManager::GetPrimitiveMesh(pData);
 	}
 
 	template<typename Archive>
-	static void serialize(Archive& ar, ModelComponent& model)
+	void serialize(Archive& ar, Mesh::ModelData& data)
 	{
-		ar & cereal::make_nvp("MeshInstances", model.mis);
+		ar& cereal::make_nvp("Vertices", data.vertices);
+		ar& cereal::make_nvp("Indices", data.indices);
+		ar& cereal::make_nvp("Textures", data.textures);
 	}
 
-	template<typename Archive>
-	static void serialize(Archive& ar, Light& l)
+	template<class Archive>
+	void save(Archive& ar, const Model& model)
 	{
-		ar & cereal::make_nvp("Position", l.position);
-		ar & cereal::make_nvp("Constant", l.constant);
-		ar & cereal::make_nvp("Direction", l.direction);
-		ar & cereal::make_nvp("Linear", l.linear);
-		ar & cereal::make_nvp("Ambient", l.ambient);
-		ar & cereal::make_nvp("Quadratic", l.quadratic);
-		ar & cereal::make_nvp("Diffuse", l.diffuse);
-		ar & cereal::make_nvp("CutOff", l.cutOff);
-		ar & cereal::make_nvp("Specular", l.specular);
-		ar & cereal::make_nvp("OuterCutOff", l.outerCutOff);
-		ar & cereal::make_nvp("Type", l.type);
+		ar& cereal::make_nvp("NumberOfMeshes", model.Meshes.size());
+		for (size_t i = 0; i < model.Meshes.size(); ++i)
+		{
+			ar & cereal::make_nvp("MeshData"+std::to_string(i), 
+				MeshManager::GetModelMeshData(model.Meshes[i]));
+		}
 	}
 
-	template<typename Archive>
-	static void serialize(Archive& ar, LightComponent& l)
+	template<class Archive>
+	void load(Archive& ar, Model& model)
 	{
-		ar & cereal::make_nvp("LightData", l.Data);
-		ar & cereal::make_nvp("IsDynamic", l.IsDynamic);
-		ar & cereal::make_nvp("SSBOIndex", l.SSBOindex);
+		size_t numfMeshes = 0;
+		ar& numfMeshes;
+		model.Meshes.resize(numfMeshes);
+		for (size_t i = 0; i < numfMeshes; ++i)
+		{
+			Mesh::ModelData mData;
+			ar & mData;
+			model.Meshes[i] = MeshManager::GetModelMesh(mData);
+		}
 	}
 }
 
@@ -125,8 +176,8 @@ void SceneSerializer::SaveScene(const std::string& filePath)
 				return;
 
 			std::string name;
-			if (entity.HasComponent<TagComponent>())
-				name = entity.GetComponent<TagComponent>().Tag;
+			if (entity.HasComponent<Tag>())
+				name = entity.GetComponent<Tag>().String;
 			else
 			{
 				name = "NoTagEntity" + std::to_string(noTagCount);

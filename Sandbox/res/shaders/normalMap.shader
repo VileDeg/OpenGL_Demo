@@ -68,7 +68,8 @@ void main()
 #shader fragment
 #version 460 core
 
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int  DrawID;
 
 in VS_OUT{
     vec3 FragPos;
@@ -111,6 +112,8 @@ uniform sampler2D normalMap;
 uniform samplerCube depthMap;
 uniform float far_plane;
 
+uniform int u_DrawId;
+
 float ShadowCalculation(vec3 fragPos, vec3 lightPos);
 
 void main()
@@ -149,7 +152,8 @@ void main()
     }
 
     FragColor = vec4(lighting, 1.0);
-    //FragColor = vec4(ambient + diffuse + specular, 1.0);
+    
+    DrawID = u_DrawId;
 }
 
 float ShadowCalculation(vec3 fragPos, vec3 lightPos)

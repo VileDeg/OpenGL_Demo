@@ -5,11 +5,15 @@
 #include <ImGuizmo.h>
 #include <glm/gtx/matrix_decompose.hpp>
 
+using namespace Component;
+
 namespace EditorUI
 {
 	namespace
 	{
 		constexpr const float DOCKSPACE_MIN_PANEL_WIDTH = 340.f;
+
+        Ref<Framebuffer> m_ViewportFramebuffer;
 
         Ref<Camera> m_Camera;
         Ref<Scene> m_ActiveScene;
@@ -93,9 +97,6 @@ namespace EditorUI
                 ImGuizmo::SetOrthographic(false);
                 ImGuizmo::SetDrawlist();
 
-               /* float windowWidth = (float)ImGui::GetWindowWidth();
-                float windowHeight = (float)ImGui::GetWindowHeight();*/
-                //ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
                 ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
                 // Camera
@@ -103,7 +104,7 @@ namespace EditorUI
                 glm::mat4 cameraView = m_Camera->GetViewMat();
 
                 // Entity transform
-                auto& tc = selectedEntity.GetComponent<TransformComponent>();
+                auto& tc = selectedEntity.GetComponent<Transform>();
                 glm::mat4 transform = tc.GetTransform();
 
                 // Snapping
@@ -151,21 +152,20 @@ namespace EditorUI
                 auto viewportOffset = ImGui::GetWindowPos();
                 m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
                 m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+                glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
                 m_ViewportFocused = ImGui::IsWindowFocused();
                 m_ViewportHovered = ImGui::IsWindowHovered();
 
-            ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+            //ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             unsigned textureID = 0;
-            textureID = Renderer::GetMainFB()->GetColorAttachmentId(0);
-            if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+            textureID = m_ViewportFramebuffer->GetColorAttachmentId(0);
+            if (m_ViewportSize != *((glm::vec2*)&viewportSize))
             {
-                Renderer::SetRenderImageSize(
-                    (unsigned)viewportPanelSize.x, (unsigned)viewportPanelSize.y);
+                m_ViewportFramebuffer->Invalidate(viewportSize.x, viewportSize.y);
 
-                m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+                m_ViewportSize = { viewportSize.x, viewportSize.y };
 
-                m_Camera->SetViewportDimensions(viewportPanelSize.x, viewportPanelSize.y);
-                //m_Camera->UpdateProjMat(viewportPanelSize.x, viewportPanelSize.y);
+                m_Camera->UpdateProjMat(viewportSize.x, viewportSize.y);
             }
             ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y },
                 ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
@@ -177,16 +177,17 @@ namespace EditorUI
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_ViewportBounds[0].x;
             my -= m_ViewportBounds[0].y;
-            glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+            
             my = viewportSize.y - my;
             int mouseX = (int)mx;
             int mouseY = (int)my;
 
             if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
             {
-                Renderer::GetMainFB()->Bind();
-                int pixelData = Renderer::GetMainFB()->ReadPixelInt(mouseX, mouseY);
-                Renderer::GetMainFB()->Unbind((unsigned)viewportPanelSize.x, (unsigned)viewportPanelSize.y);
+                m_ViewportFramebuffer->Bind();
+                int pixelData = m_ViewportFramebuffer->ReadPixelInt(mouseX, mouseY);
+                m_ViewportFramebuffer->Unbind();
+                
                 m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
                 if (Input::IsMouseButtonDown(MouseButton::Left))
                 {
@@ -202,8 +203,9 @@ namespace EditorUI
         
 	}
 
-    void EditorUI::Init(Ref<Camera> camera, Ref<Scene> activeScene)
+    void EditorUI::Init(Ref<Framebuffer> viewportFB, Ref<Camera> camera, Ref<Scene> activeScene)
     {
+        m_ViewportFramebuffer = viewportFB;
         m_Camera = camera;
         m_ActiveScene = activeScene;
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);

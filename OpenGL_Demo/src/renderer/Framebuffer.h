@@ -25,7 +25,7 @@ public:
 	void ClearIntAttachment(int clearVal);
 
 	void Bind();
-	void Unbind(const unsigned width, const unsigned height);
+	void Unbind();
 	const unsigned Id() const { return m_Id; }
 private:
 	/*int  m_ColorAtnNum{0};

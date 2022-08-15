@@ -27,12 +27,12 @@ void Camera::OnUpdate()
     m_ProjViewMat = m_ProjMat * m_ViewMat;
 }
 
-void Camera::SetViewportDimensions(unsigned width, unsigned height)
-{
-    m_ViewportDim.x = width;
-    m_ViewportDim.y = height;
-    UpdateProjMat(width, height);
-}
+//void Camera::SetViewportDimensions(unsigned width, unsigned height)
+//{
+//    m_ViewportDim.x = width;
+//    m_ViewportDim.y = height;
+//    UpdateProjMat(width, height);
+//}
 
 void Camera::UpdateProjMat(unsigned width, unsigned height)
 {

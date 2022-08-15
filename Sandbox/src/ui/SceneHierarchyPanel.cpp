@@ -2,6 +2,8 @@
 #include "SceneHierarchyPanel.h"
 #include <imgui/imgui_internal.h>
 
+using namespace Component;
+
 SceneHierarchyPanel::SceneHierarchyPanel(Ref<Scene> context)
 {
 	SetContext(context);
@@ -46,7 +48,7 @@ void SceneHierarchyPanel::OnImGuiRender(ImGuiWindowFlags panelFlags)
 
 void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 {
-	auto& tag = entity.GetComponent<TagComponent>().Tag;
+	auto& tag = entity.GetComponent<Tag>().String;
 
 	ImGuiTreeNodeFlags flags = 
 		((m_Scene->m_SelectedEntity == entity) ?
@@ -215,26 +217,26 @@ static void DrawComponent(const std::string& name, Entity entity, UIFunction uiF
 	}
 }
 
-static const std::string TexTypeToStr(const TexType tt)
+static const std::string TexTypeToStr(const Texture::Type tt)
 {
 	switch (tt)
 	{
-		case TexType::Diffuse:
+		case Texture::Type::Diffuse:
 			return "Diffuse";
-		case TexType::Specular:
+		case Texture::Type::Specular:
 			return "Specular";
-		case TexType::Normal:
+		case Texture::Type::Normal:
 			return "Normal";
-		case TexType::Height:
+		case Texture::Type::Height:
 			return "Height";
 	}
 }
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
-	if (entity.HasComponent<TagComponent>())
+	if (entity.HasComponent<Tag>())
 	{
-		auto& tag = entity.GetComponent<TagComponent>().Tag;
+		auto& tag = entity.GetComponent<Tag>().String;
 
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
@@ -255,7 +257,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		if (ImGui::MenuItem("Model"))
 		{
-			m_Scene->m_SelectedEntity.AddComponent<ModelComponent>();
+			m_Scene->m_SelectedEntity.AddComponent<Model>();
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -264,7 +266,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
 	ImGui::PopItemWidth();
 
-	DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
+	DrawComponent<Transform>("Transform", entity, [](auto& component)
 		{
 			DrawVec3Control("Position", component.Position);
 			if (DrawVec3Control("Rotation", component.EulerAngles))
@@ -273,14 +275,14 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			DrawVec3Control("Scale", component.Scale, 1.0f);
 		});
 
-	DrawComponent<ModelComponent>("Model", entity, [](auto& component)
+	DrawComponent<Model>("Model", entity, [](auto& component)
 		{
-			for (auto& mi : component.mis)
+			for (auto& mesh : component.Meshes)
 			{
-				ImGui::Checkbox("HasTextures", &mi.HasTextures);
-				ImGui::Checkbox("NormalsOut", &mi.NormalsOut);
-				ImGui::ColorEdit4("Color", glm::value_ptr(mi.Color));
-				for (auto& [texType, texVector] : mi.mesh->Textures())
+				/*ImGui::Checkbox("HasTextures", &mesh.HasTextures);
+				ImGui::Checkbox("NormalsOut", &mesh.NormalsOut);
+				ImGui::ColorEdit4("Color", glm::value_ptr(mesh.Color));*/
+				for (auto& [texType, texVector] : mesh->Textures())
 				{
 					if (texVector.empty())
 						continue;

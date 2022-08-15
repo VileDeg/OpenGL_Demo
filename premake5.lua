@@ -84,7 +84,7 @@ project "OpenGL_Demo"
 		"GLFW",
 		"GLAD",
 		"ImGui",
-		"OpenGL_Demo/vendor/assimp/lib/assimp-vc143-mt.lib",
+		"OpenGL_Demo/vendor/assimp/lib/assimp-vc143-mtd.lib",
 		"opengl32.lib"
 	}
 	

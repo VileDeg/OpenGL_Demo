@@ -15,10 +15,12 @@ private:
     Ref<Camera> m_Camera;
     Ref<Mesh> m_CubeMesh;
     Ref<Mesh> m_BrickwallMesh;
+    Entity m_Model;
+    AssimpImport::Model m_ImportedModel;
     Entity m_Cubes[8];
     Entity m_LightCube;
     Entity m_Brickwalls[6];
     Entity m_WorldCenter;
     float m_CamSpeed;
-    Light m_PointLightParams;
+    LightData m_PointLightParams;
 };

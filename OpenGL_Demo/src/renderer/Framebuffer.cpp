@@ -107,7 +107,7 @@ void Framebuffer::Bind()
     glViewport(0, 0, m_Width, m_Height);
 }
 
-void Framebuffer::Unbind(const unsigned width, const unsigned height)
+void Framebuffer::Unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

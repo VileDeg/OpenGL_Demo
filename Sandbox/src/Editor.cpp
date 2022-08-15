@@ -9,19 +9,22 @@ namespace Editor
 {
     namespace
     {
-        constexpr const unsigned WINDOW_WIDTH = 1600;
-        constexpr const unsigned WINDOW_HEIGHT = 900;
+        constexpr const unsigned WINDOW_WIDTH = 1920;
+        constexpr const unsigned WINDOW_HEIGHT = 1080;
         constexpr const float    DOCKSPACE_MIN_PANEL_WIDTH = 340.f;
 
-        Ref<Camera>    m_Camera{};
-        Ref<TestScene> m_ActiveScene{};
+        Ref<Framebuffer> m_ViewportFramebuffer{};
+        Ref<Camera>      m_Camera{};
+        Ref<TestScene>   m_ActiveScene{};
     }
 
     void Editor::Init()
     {
         Window::Open(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL_Demo");
 
-        Renderer::Init(WINDOW_WIDTH, WINDOW_HEIGHT);
+        m_ViewportFramebuffer = CreateRef<Framebuffer>();
+
+        Renderer::Init(m_ViewportFramebuffer, WINDOW_WIDTH, WINDOW_HEIGHT);
         ImguiLayer::Init(Window::Handle(), "Sandbox");
         GeoData::Init();
 
@@ -30,7 +33,7 @@ namespace Editor
 
         m_ActiveScene = CreateRef<TestScene>(m_Camera);
 
-        EditorUI::Init(m_Camera, m_ActiveScene);
+        EditorUI::Init(m_ViewportFramebuffer, m_Camera, m_ActiveScene);
     }
 
     void Editor::Run()
@@ -43,10 +46,10 @@ namespace Editor
 
             Window::OnUpdate();
 
-            Renderer::GetMainFB()->Bind();
+            m_ViewportFramebuffer->Bind();
             Renderer::Clear(GLBuffer::Color | GLBuffer::Depth | GLBuffer::Stencil);
-            Renderer::GetMainFB()->ClearIntAttachment(-1);
-           
+            m_ViewportFramebuffer->ClearIntAttachment(-1);
+
 
             m_ActiveScene->OnUpdate(Window::DeltaTime());
 
@@ -75,14 +78,4 @@ namespace Editor
             ss.LoadScene(*filepath);
         }
     }
-
-  /*  const Camera& GetCamera()
-    {
-        return m_Camera;
-    }
-
-    const Scene& GetActiveScene()
-    {
-        return m_ActiveScene;
-    }*/
 }

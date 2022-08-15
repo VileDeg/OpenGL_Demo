@@ -5,6 +5,11 @@
 
 class Texture
 {
+public:
+	enum class Type
+	{
+		None = -1, Diffuse, Specular, Normal, Height
+	};
 private:
 	static constexpr const char* BASE_TEXTURE_PATH = "res/textures/";
 	static constexpr const char* BASE_CUBEMAP_PATH = "res/textures/cubemaps/";
@@ -24,7 +29,7 @@ public:
 
 	unsigned Id()   const { return m_Id;		}
 	unsigned Slot() const { return m_BoundSlot; }
-	int		 Type() const { return m_Type;		}
+	int		 GetType() const { return m_Type;		}
 
 private:
 	int m_Type;
