@@ -1,6 +1,6 @@
-workspace "OpenGL_Demo"
+workspace "Crave"
 	architecture "x64"
-	startproject "Sandbox"
+	startproject "CavernEditor"
 
 	configurations
 	{
@@ -12,26 +12,26 @@ outputdir = "%{cfg.buildcfg}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
-IncludeDir["GLFW"] = "OpenGL_Demo/vendor/GLFW/include"
-IncludeDir["GLAD"] = "OpenGL_Demo/vendor/GLAD/include"
-IncludeDir["ImGui"] = "OpenGL_Demo/vendor/imgui"
-IncludeDir["GLM"] = "OpenGL_Demo/vendor/GLM"
-IncludeDir["entt"] = "OpenGL_Demo/vendor/entt"
-IncludeDir["assimp"] = "OpenGL_Demo/vendor/assimp/include"
-IncludeDir["ImGuizmo"] = "OpenGL_Demo/vendor/ImGuizmo"
-IncludeDir["stb_image"] = "OpenGL_Demo/vendor/stb_image"
-IncludeDir["cereal"] = "OpenGL_Demo/vendor/cereal"
-IncludeDir["magic_enum"] = "OpenGL_Demo/vendor/magic_enum"
+IncludeDir["GLFW"] = "Crave/vendor/GLFW/include"
+IncludeDir["GLAD"] = "Crave/vendor/GLAD/include"
+IncludeDir["ImGui"] = "Crave/vendor/imgui"
+IncludeDir["GLM"] = "Crave/vendor/GLM"
+IncludeDir["entt"] = "Crave/vendor/entt"
+IncludeDir["assimp"] = "Crave/vendor/assimp/include"
+IncludeDir["ImGuizmo"] = "Crave/vendor/ImGuizmo"
+IncludeDir["stb_image"] = "Crave/vendor/stb_image"
+IncludeDir["cereal"] = "Crave/vendor/cereal"
+IncludeDir["magic_enum"] = "Crave/vendor/magic_enum"
 
 group "Dependencies"
-	include "OpenGL_Demo/vendor/GLFW"
-	include "OpenGL_Demo/vendor/GLAD"
-	include "OpenGL_Demo/vendor/ImGui"
+	include "Crave/vendor/GLFW"
+	include "Crave/vendor/GLAD"
+	include "Crave/vendor/ImGui"
 
 group ""
 
-project "OpenGL_Demo"
-	location "OpenGL_Demo"
+project "Crave"
+	location "Crave"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
@@ -41,7 +41,7 @@ project "OpenGL_Demo"
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "pch.h"
-	pchsource "OpenGL_Demo/src/pch.cpp"
+	pchsource "Crave/src/pch.cpp"
 	
 	files
 	{
@@ -84,11 +84,11 @@ project "OpenGL_Demo"
 		"GLFW",
 		"GLAD",
 		"ImGui",
-		"OpenGL_Demo/vendor/assimp/lib/assimp-vc143-mtd.lib",
+		"Crave/vendor/assimp/lib/assimp-vc143-mtd.lib",
 		"opengl32.lib"
 	}
 	
-	filter "files:OpenGL_Demo/vendor/ImGuizmo/**.cpp"
+	filter "files:Crave/vendor/ImGuizmo/**.cpp"
 	flags { "NoPCH" }
 
 	filter "system:windows"
@@ -110,8 +110,8 @@ project "OpenGL_Demo"
 		optimize "on"
 
 
-project "Sandbox"
-	location "Sandbox"
+project "CavernEditor"
+	location "CavernEditor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -121,7 +121,7 @@ project "Sandbox"
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "pch.h"
-	pchsource "Sandbox/src/pch.cpp"
+	pchsource "CavernEditor/src/pch.cpp"
 
 	files
 	{
@@ -131,10 +131,10 @@ project "Sandbox"
 
 	includedirs
 	{
-		"Sandbox/src",
+		"CavernEditor/src",
 
-		"OpenGL_Demo/src",
-		"OpenGL_Demo/vendor",
+		"Crave/src",
+		"Crave/vendor",
 
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.entt}",
@@ -145,7 +145,7 @@ project "Sandbox"
 
 	links
 	{
-		"OpenGL_Demo"
+		"Crave"
 	}
 
 	filter "system:windows"
