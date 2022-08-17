@@ -78,6 +78,8 @@ namespace Window
 
         SetKeybinds();
 
+        glfwPollEvents();
+
         //glfwSetFramebufferSizeCallback(handle, s_fbSizeCallback);
         glfwSetKeyCallback(handle, s_keyCallback);
         glfwSetWindowIconifyCallback(handle, s_iconifyCallback);

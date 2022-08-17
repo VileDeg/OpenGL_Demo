@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Crave", "Crave\Crave.vcxproj", "{5699FB0C-C2AD-23BE-8B2F-C71DF70220EF}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CavernEditor", "CavernEditor\CavernEditor.vcxproj", "{0B5A8473-F7BC-1318-A042-4CCE8C84DF9A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Crave", "Crave\Crave.vcxproj", "{5699FB0C-C2AD-23BE-8B2F-C71DF70220EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{53E47842-3FC8-3998-A828-34EB942B241A}"
 EndProject

@@ -30,6 +30,8 @@ group "Dependencies"
 
 group ""
 
+assimplib = "assimp-vc143-mtd"
+
 project "Crave"
 	location "Crave"
 	kind "StaticLib"
@@ -78,13 +80,15 @@ project "Crave"
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.magic_enum}"
 	}
+	
+	
 
 	links 
 	{ 
 		"GLFW",
 		"GLAD",
 		"ImGui",
-		"Crave/vendor/assimp/lib/assimp-vc143-mtd.lib",
+		"Crave/vendor/assimp/lib/%{assimplib}.lib",
 		"opengl32.lib"
 	}
 	
@@ -123,14 +127,12 @@ project "CavernEditor"
 	pchheader "pch.h"
 	pchsource "CavernEditor/src/pch.cpp"
 
-	files
-	{
+	files {
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
-	includedirs
-	{
+	includedirs {
 		"CavernEditor/src",
 
 		"Crave/src",
@@ -143,13 +145,15 @@ project "CavernEditor"
 		"%{IncludeDir.cereal}"
 	}
 
-	links
-	{
+	links {
 		"Crave"
 	}
-
+	
 	filter "system:windows"
 		systemversion "latest"
+		postbuildcommands {
+			"CopyAssimpDLLToExeFolder.bat %{assimplib}.dll %{cfg.targetdir}"
+		}
 		
 	filter "configurations:Debug"
 		defines "DEBUG"

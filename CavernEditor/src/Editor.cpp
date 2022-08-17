@@ -9,10 +9,10 @@ namespace Editor
 {
     namespace
     {
-        constexpr const char*    PROJECT_NAME  = "CavernEditor";
+        constexpr const char*    PROJECT_NAME  = "O^O~CAVERN~>_<";
         constexpr const unsigned WINDOW_WIDTH  = 1920;
         constexpr const unsigned WINDOW_HEIGHT = 1080;
-
+         
         constexpr const float    DOCKSPACE_MIN_PANEL_WIDTH = 340.f;
 
         Ref<Framebuffer> m_ViewportFramebuffer{};
@@ -27,7 +27,7 @@ namespace Editor
         m_ViewportFramebuffer = CreateRef<Framebuffer>();
 
         Renderer::Init(m_ViewportFramebuffer, WINDOW_WIDTH, WINDOW_HEIGHT);
-        ImguiLayer::Init(Window::Handle(), PROJECT_NAME);
+        ImguiLayer::Init(Window::Handle(), "CavernEditor");
         GeoData::Init();
 
         m_Camera = CreateRef<Camera>(glm::vec3(0.f, 15.f, 30.f));
