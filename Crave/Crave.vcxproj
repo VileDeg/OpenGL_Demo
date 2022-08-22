@@ -545,6 +545,7 @@
     <ClCompile Include="src\imgui\ImguiLayer.cpp" />
     <ClCompile Include="src\import\Model.cpp" />
     <ClCompile Include="src\input\Input.cpp" />
+    <ClCompile Include="src\input\Keybind.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

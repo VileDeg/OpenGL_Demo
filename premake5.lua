@@ -80,8 +80,6 @@ project "Crave"
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.magic_enum}"
 	}
-	
-	
 
 	links 
 	{ 
@@ -140,7 +138,7 @@ project "CavernEditor"
 
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.assimp}",
+		--"%{IncludeDir.assimp}",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.cereal}"
 	}

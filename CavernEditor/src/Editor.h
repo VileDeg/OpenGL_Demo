@@ -4,12 +4,15 @@
 #include "imgui/imgui.h"
 #include "ui/SceneHierarchyPanel.h"
 
-namespace Editor
+namespace Crave
 {
-	void Init();
-	void Run();
-	void SaveSceneAs();
-	void LoadScene();
-	/*const Camera& GetCamera();
-	const Scene&  GetActiveScene();*/
-};
+	namespace Editor
+	{
+		void Init();
+		void Run();
+		void SaveSceneAs();
+		void LoadScene();
+		/*const Camera& GetCamera();
+		const Scene&  GetActiveScene();*/
+	};
+}

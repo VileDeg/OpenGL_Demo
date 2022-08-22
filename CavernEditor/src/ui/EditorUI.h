@@ -1,8 +1,11 @@
 #pragma once
 #include "SceneHierarchyPanel.h"
 
-namespace EditorUI
+namespace Crave
 {
-	void Init(Ref<Framebuffer> viewportFB, Ref<Camera> camera, Ref<Scene> activeScene);
-	void Render();
-};
+	namespace EditorUI
+	{
+		void Init(Ref<Framebuffer> viewportFB, Ref<Camera> camera, Ref<Scene> activeScene);
+		void Render();
+	}
+}

@@ -1397,6 +1397,9 @@
     <ClCompile Include="src\input\Input.cpp">
       <Filter>src\input</Filter>
     </ClCompile>
+    <ClCompile Include="src\input\Keybind.cpp">
+      <Filter>src\input</Filter>
+    </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>

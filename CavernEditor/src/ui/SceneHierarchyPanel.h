@@ -1,25 +1,28 @@
 #pragma once
 #include "Cavern.h"
 
-class SceneHierarchyPanel
+namespace Crave
 {
-public:
-	SceneHierarchyPanel() = default;
-	SceneHierarchyPanel(Ref<Scene> scene);
+	class SceneHierarchyPanel
+	{
+	public:
+		SceneHierarchyPanel() = default;
+		SceneHierarchyPanel(Ref<Scene> scene);
 
-	void SetContext(Ref<Scene> scene);
+		void SetContext(Ref<Scene> scene);
 
-	//Entity GetSelectedEntity() const { return m_SelectedEntity; }
-	
-	void OnImGuiRender(ImGuiWindowFlags panelFlags);
-private:
-	void ReparentTransform(Entity dragged, Entity newParent);
+		//Entity GetSelectedEntity() const { return m_SelectedEntity; }
 
-	void DrawEntityNode(Entity entity);
-	void DrawComponents(Entity entity);
+		void OnImGuiRender(ImGuiWindowFlags panelFlags);
+	private:
+		void ReparentTransform(Entity dragged, Entity newParent);
 
-private:
-	Ref<Scene> m_Scene{};
+		void DrawEntityNode(Entity entity);
+		void DrawComponents(Entity entity);
 
-	//Entity m_SelectedEntity;
-};
+	private:
+		Ref<Scene> m_Scene{};
+
+		//Entity m_SelectedEntity;
+	};
+}

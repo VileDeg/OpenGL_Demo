@@ -118,6 +118,7 @@ float ShadowCalculation(vec3 fragPos, vec3 lightPos);
 
 void main()
 {
+    Light light = lights[0];
     // obtain normal from normal map in range [0,1]
     vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
     // transform normal vector to range [-1,1]
@@ -138,6 +139,11 @@ void main()
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
 
     vec3 specular = vec3(0.2) * spec;
+    float distance = length(light.position - fs_in.FragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
 
     vec3 lighting;
     if (u_CastShadows != 0)

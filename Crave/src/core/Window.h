@@ -5,45 +5,37 @@
 
 struct GLFWwindow;
 
-namespace Window
+namespace Crave
 {
-    struct WindowParams
+    namespace Window
     {
-        bool paused = false;
-        int width;
-        int height;
-        float cursorX;
-        float cursorY;
-        bool cursorVisible;
-        bool scrollingLocked;
+        GLFWwindow* Open(const unsigned width, const unsigned height, const std::string& name);
+        
+        GLFWwindow* Handle();
+
+        void SetCamera(Ref<Camera> cam);
+        void OnUpdate();
+
+        void SetScrollingLocked(bool locked);
+
+        bool Paused();
+        int Width();
+        int Height();
+
+        float DeltaTime();
+
+        //bool KeyPressed(Key keyCode);
+        bool IsOpen();
+        bool CursorVisible();
+        void HideCursor();
+        void ShowCursor();
+        void Close();
+        void SetKeybinds();
+
+        void GLFWTerminate();
+        void GLFWSwapBuffers();
+        void GLFWPollEvents();
+
+        void CalcDeltaTime();
     };
-
-    GLFWwindow* Open(const unsigned width, const unsigned height, const std::string& name);
-
-    GLFWwindow* Handle();
-
-    void SetCamera(Ref<Camera> cam);
-    void OnUpdate();
-
-    void SetScrollingLocked(bool locked);
-
-    bool Paused();
-    int Width();
-    int Height();
-
-    float DeltaTime();
-
-    bool KeyPressed(Key keyCode);
-    bool IsOpen();
-    bool CursorVisible();
-    void HideCursor();
-    void ShowCursor();
-    void Close();
-    void SetKeybinds();
-
-    void GLFWTerminate();
-    void GLFWSwapBuffers();
-    void GLFWPollEvents();
-    
-    void CalcDeltaTime();
-};
+}

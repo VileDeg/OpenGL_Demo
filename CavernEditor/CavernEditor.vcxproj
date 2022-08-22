@@ -60,7 +60,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;..\Crave\src;..\Crave\vendor;..\Crave\vendor\GLM;..\Crave\vendor\entt;..\Crave\vendor\assimp\include;..\Crave\vendor\ImGuizmo;..\Crave\vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Crave\src;..\Crave\vendor;..\Crave\vendor\GLM;..\Crave\vendor\entt;..\Crave\vendor\ImGuizmo;..\Crave\vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;..\Crave\src;..\Crave\vendor;..\Crave\vendor\GLM;..\Crave\vendor\entt;..\Crave\vendor\assimp\include;..\Crave\vendor\ImGuizmo;..\Crave\vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Crave\src;..\Crave\vendor;..\Crave\vendor\GLM;..\Crave\vendor\entt;..\Crave\vendor\ImGuizmo;..\Crave\vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

@@ -2,11 +2,14 @@
 
 struct GLFWwindow;
 
-namespace ImguiLayer
+namespace Crave
 {
-	void Init(GLFWwindow* window, const char* projectName);
+	namespace ImguiLayer
+	{
+		void Init(GLFWwindow* window, const char* projectName);
 
-	void Begin();
-	void End(float width, float height);
-	void Shutdown();
-};
+		void Begin();
+		void End(float width, float height);
+		void Shutdown();
+	}
+}

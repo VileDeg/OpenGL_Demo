@@ -1,21 +1,24 @@
 #pragma once
 
-enum class Primitive
+namespace Crave
 {
-	None=-1, Cube, Plane, Skybox
-};
-
-namespace GeoData
-{
-	struct VBOData
+	enum class Primitive
 	{
-		const void* data;
-		const std::size_t size;
-		const unsigned count;
-
+		None = -1, Cube, Plane, Skybox
 	};
 
-	void Init();
-	VBOData GetData(Primitive primType);
-};
+	namespace GeoData
+	{
+		struct VBOData
+		{
+			const void* data;
+			const std::size_t size;
+			const unsigned count;
 
+		};
+
+		void Init();
+		VBOData GetData(Primitive primType);
+	};
+
+}

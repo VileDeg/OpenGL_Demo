@@ -19,16 +19,15 @@ layout(std140) uniform SceneData
     uniform int  u_LightsCount;
     uniform uint u_CastShadows;
 };
-uniform bool reverse_normals;
 uniform mat4 u_ModelMat;
 
 void main()
 {
     vs_out.FragPos = vec3(u_ModelMat * vec4(aPos, 1.0));
-    if (reverse_normals) // a slight hack to make sure the outer large cube displays lighting from the 'inside' instead of the default 'outside'.
-        vs_out.Normal = transpose(inverse(mat3(u_ModelMat))) * (-1.0 * aNormal);
-    else
-        vs_out.Normal = transpose(inverse(mat3(u_ModelMat))) * aNormal;
+    //if (reverse_normals) // a slight hack to make sure the outer large cube displays lighting from the 'inside' instead of the default 'outside'.
+    //    vs_out.Normal = transpose(inverse(mat3(u_ModelMat))) * (-1.0 * aNormal);
+    //else
+    vs_out.Normal = transpose(inverse(mat3(u_ModelMat))) * aNormal;
     vs_out.TexCoords = aTexCoords;
 
     gl_Position = u_ProjViewMat * u_ModelMat * vec4(aPos, 1.0);

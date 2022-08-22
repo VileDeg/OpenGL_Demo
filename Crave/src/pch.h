@@ -12,5 +12,7 @@
 #include <fstream>
 #include <sstream>
 
+#include <glm/glm.hpp>
+
 #include "core/Base.h"
 #include "core/Log.h"
