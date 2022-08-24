@@ -101,55 +101,14 @@ namespace Crave
 			{
 				for (auto& [name, kb] : m_KbData.Keybinds)
 				{
-					//std::string strname = magic_enum::enum_name(name).data();
-					//strname += ": ";
 					ImGui::Text("%-16s: %s", magic_enum::enum_name(name).data(),
 						magic_enum::enum_name(kb.GlId()).data());
-					/*const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIIIIII", "JJJJ", "KKKKKKK" };
-					static int item_current = 0;
-					ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));*/
-					//magic_enum::enum_name(kb.GlId()).data();
-					//ImGui::Combo
 				}
-
-				/*std::vector<std::string> text{};
-				size_t maxlen = 0;
-				std::string str{};
-
-				for (size_t i = 0; i < m_KbData.Keybinds.size(); ++i)
-				{
-					str = m_KbData.KeybindNames[i] + ": ";
-					text.push_back(str);
-					maxlen = str.length() > maxlen ? str.length() : maxlen;
-				}
-				for (size_t i = 0; i < m_KbData.Keybinds.size(); ++i)
-				{
-					size_t diff = maxlen - text[i].length();
-					for (size_t j = 0; j < diff; ++j)
-						text[i] += ' ';
-					text[i] += s);
-					ImGui::BulletText(text[i].c_str());
-				}
-
 				ImGui::Separator(); ImGui::Separator();
-				text.clear();
-				maxlen = 0;
-				str.clear();
-
-				for (size_t i = 0; i < m_KbData.CamKeybinds.size(); ++i)
-				{
-					str = m_KbData.CamKeybindNames[i] + ": ";
-					text.push_back(str);
-					maxlen = str.length() > maxlen ? str.length() : maxlen;
-				}
-				for (size_t i = 0; i < m_KbData.CamKeybinds.size(); ++i)
-				{
-					size_t diff = maxlen - text[i].length();
-					for (size_t j = 0; j < diff; ++j)
-						text[i] += ' ';
-					text[i] += magic_enum::enum_name(m_KbData.CamKeybinds[i].GlId());
-					ImGui::BulletText(text[i].c_str());
-				}*/
+				ImGui::Text("%-16s: %s", "Zoom In/Out", "Scroll mouse wheel");
+				ImGui::Text("%-16s: %s", "Rotate View", "Hold RMB/LeftAlt + Move cursor");
+				ImGui::Text("%-16s: %s", "Pan View", "Hold MMB + Move cursor");
+				ImGui::Text("%-16s: %s", "Select Objects", "LMB click");
 			}
 			ImGui::End();
 		}

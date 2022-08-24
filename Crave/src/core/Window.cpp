@@ -28,7 +28,7 @@ namespace Crave
                 float cursorX{};
                 float cursorY{};
                 bool cursorVisible = true;
-                bool scrollingLocked = false;
+                bool viewportHovered = false;
                 int vsync = 1;
             };
 
@@ -154,9 +154,9 @@ namespace Crave
             m_Params.cursorVisible = true;
         }
 
-        void SetScrollingLocked(bool locked)
+        void SetViewportHovered(bool hovered)
         {
-            m_Params.scrollingLocked = locked;
+            m_Params.viewportHovered = hovered;
         }
 
         void Close()
@@ -199,7 +199,7 @@ namespace Crave
 
             void s_cursorPosCallback(GLFWwindow* window, double xposIn, double yposIn)
             {
-                if (!m_Camera)
+                if (!m_Camera || !m_Params.viewportHovered)
                     return;
                 static bool firstMouseUse = true;
                 float xpos = static_cast<float>(xposIn);
@@ -234,7 +234,7 @@ namespace Crave
 
             void s_scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
             {
-                if (!m_Camera || m_Params.scrollingLocked)
+                if (!m_Camera || !m_Params.viewportHovered)
                     return;
                 //m_Camera->ProcessMouseScroll((float)yoffset * m_MouseScrollSensivity * DeltaTime());
                 m_Camera->MoveForward(yoffset * m_MouseScrollSensivity * DeltaTime());

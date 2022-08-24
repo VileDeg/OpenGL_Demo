@@ -107,9 +107,8 @@ namespace Crave
 
 		//Draw selected entity after all others to avoid if-checking every iteration
 		//and to make selection outline appear on top of all objects.
-		if ((bool)m_SelectedEntity)
+		if ((bool)m_SelectedEntity && meshView.contains(m_SelectedEntity))
 		{
-			ASSERT(meshView.contains(m_SelectedEntity), "");
 			auto& [transform, mi] = meshView.get(m_SelectedEntity);
 
 			mi.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);

@@ -58,7 +58,6 @@ namespace Crave
 
 	void SceneHierarchyPanel::OnImGuiRender(ImGuiWindowFlags panelFlags)
 	{
-		ImGui::ShowDemoWindow();
 		ImGui::Begin("Scene Hierarchy", (bool*)0, panelFlags);
 
 		for (auto& entity : m_Scene->m_RootEntity.GetComponent<Transform>().Children)
@@ -91,14 +90,14 @@ namespace Crave
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			m_Scene->m_SelectedEntity = {};
 
-		//// Right-click on blank space to deselect entity
-		//if (ImGui::BeginPopupContextWindow(0, 1, false))
-		//{
-		//	if (ImGui::MenuItem("Create Empty Entity"))
-		//		m_Scene->CreateEntity("Empty Entity");
+		// Right-click on blank space to create entity
+		if (ImGui::BeginPopupContextWindow(0, 1, false))
+		{
+			if (ImGui::MenuItem("Create Empty Entity"))
+				m_Scene->CreateEntity("Empty Entity");
 
-		//	ImGui::EndPopup();	
-		//}
+			ImGui::EndPopup();	
+		}
 
 		ImGui::End();
 

@@ -16,7 +16,7 @@ namespace Crave
         void SetCamera(Ref<Camera> cam);
         void OnUpdate();
 
-        void SetScrollingLocked(bool locked);
+        void SetViewportHovered(bool hovered);
 
         bool Paused();
         int Width();

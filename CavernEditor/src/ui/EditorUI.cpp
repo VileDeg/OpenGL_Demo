@@ -122,7 +122,7 @@ namespace Crave
                     if (ImGuizmo::IsUsing())
                     {
                         //Here we multiply by inverse matrix so that values are relative to parent
-                        transform = transform;
+                        transform = glm::inverse(tc.GetParentTransform()) * transform;
                         glm::vec3 scale;
                         glm::quat rotation;
                         glm::vec3 translation;
@@ -218,7 +218,6 @@ namespace Crave
         {
             ImguiLayer::Begin();
 
-            //ImGui::ShowDemoWindow();
             static bool opt_fullscreen = true;
             static bool opt_padding = false;
             static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -274,8 +273,8 @@ namespace Crave
 
             UIDrawMenuBar();
 
-            //Prevent camera Z movement if viewport is not hovered.
-            Window::SetScrollingLocked(!m_ViewportHovered);
+            //Prevent camera movement if viewport is not hovered.
+            Window::SetViewportHovered(m_ViewportHovered);
 
             m_SceneHierarchyPanel.OnImGuiRender(m_PanelFlags);
 
@@ -287,8 +286,6 @@ namespace Crave
 
             if (m_DisplayControls)
                 Input::UIDisplayControlsConfig(&m_DisplayControls, m_PanelFlags);
-
-            //ImGui::ShowDemoWindow();
 
             ImguiLayer::End(Window::Width(), Window::Height());
         }
