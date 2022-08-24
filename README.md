@@ -30,8 +30,7 @@ Unity-like camera controls:
 * Hold MMB to pan view
 * Scroll mouse wheel to move forward and backward
 
-![Navigation-encoded](https://user-images.githubusercontent.com/84181987/186469220-6ddd605f-2ed7-4cb7-bce7-f4cc4bbd187f.gif)
-
+![Navigation-encoded](https://user-images.githubusercontent.com/84181987/186469925-f3976a45-4223-496f-8ccb-93793c9e3aff.gif)
 
 ## Attribution
 Some textures you'll find under _CavernEditor_ resource folder belong to [Joey de Vries](https://twitter.com/JoeyDeVriez), specifically to [learnopengl](https://learnopengl.com/) course.
