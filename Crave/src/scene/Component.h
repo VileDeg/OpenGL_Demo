@@ -23,6 +23,11 @@ namespace Crave
 			Tag(const Tag&) = default;
 			Tag(const std::string& tag)
 				: String(tag) {}
+
+			friend bool operator==(const Tag& lhs, const Tag& rhs)
+			{
+				return lhs.String == rhs.String;
+			}
 		};
 
 		struct Transform

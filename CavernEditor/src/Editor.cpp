@@ -24,11 +24,11 @@ namespace Crave
 
         void Editor::Init()
         {
+            Input::Init();
+
             Window::Open(WINDOW_WIDTH, WINDOW_HEIGHT, PROJECT_NAME);
             m_Camera = CreateRef<Camera>(glm::vec3(0.f, 15.f, 30.f));
             Window::SetCamera(m_Camera);
-
-            Input::Init();
 
             m_ViewportFramebuffer = CreateRef<Framebuffer>(Framebuffer::Config{ 
                 true, std::initializer_list<Texture::Config>{

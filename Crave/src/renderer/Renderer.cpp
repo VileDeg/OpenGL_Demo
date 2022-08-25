@@ -216,12 +216,6 @@ namespace Crave
 			glm::vec3 finScale =
 				glm::vec3(borderWidth) / scale;
 
-			/*float min = 0.15f;
-			float max = 0.16f;
-			finScale.x = (finScale.x < min / scale.x) ? min / scale.x : ((finScale.x > max * scale.x) ? max * scale.x : finScale.x);
-			finScale.y = (finScale.y < min / scale.y) ? min / scale.y : ((finScale.y > max * scale.y) ? max * scale.y : finScale.y);
-			finScale.z = (finScale.z < min / scale.z) ? min / scale.z : ((finScale.z > max * scale.z) ? max * scale.z : finScale.z);*/
-
 			finScale *= distToCam * 0.025;
 
 			glm::mat4 outlineMat = glm::scale(modelMat,
@@ -465,14 +459,7 @@ namespace Crave
 				}
 			}
 
-			/*void BindTexture(Texture* tex, const short slot)
-			{
-				if (s_Data->TexSlotId[slot] != tex->Id())
-				{
-					tex->Bind(slot);
-					s_Data->TexSlotId[slot] = tex->Id();
-				}
-			}*/
+
 
 			void LoadShaders()
 			{

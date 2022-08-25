@@ -166,7 +166,7 @@ namespace Crave
 
         void SetKeybinds()
         {
-            Input::KeybindBindAction(Input::KeybindName::CloseWindow, [&]() { Close(); });
+            Input::KeybindBindAction(Input::KeybindName::CloseWindow, Close);
         }
 
         void GLFWTerminate()

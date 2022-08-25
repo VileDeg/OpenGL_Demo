@@ -92,12 +92,29 @@ namespace Crave
 
 	void Scene::RenderScene()
 	{
-		auto& meshView = m_Registry.view<Transform, MeshInstance>();
+		auto& meshView = m_Registry.view<Transform, MeshInstance, Tag>();
 
 		for (auto& entity : meshView)
 		{
-			auto& [transform, mi] = meshView.get(entity);
-			if (m_SelectedEntity != entity)
+			auto& [transform, mi, tag] = meshView.get(entity);
+			//Find out if parent is a selected entity
+			bool parentSelected = false;
+			auto tmp = Entity(entity, this);
+			if ((bool)m_SelectedEntity)
+			{
+				parentSelected = true;
+				while (m_SelectedEntity != tmp)
+				{
+					auto tmpTr = tmp.GetComponent<Transform>();
+					if (tmpTr.Parent.GetComponent<Tag>() == m_RootEntity.GetComponent<Tag>())
+					{
+						parentSelected = false;
+						break;
+					}
+					tmp = tmpTr.Parent;
+				}
+			}
+			if (!parentSelected)
 			{
 				mi.Draw((int)entity, transform);
 			}
@@ -105,26 +122,40 @@ namespace Crave
 
 		Renderer::DrawSkybox();
 
-		//Draw selected entity after all others to avoid if-checking every iteration
+		//Draw selected entity and all children after all others to avoid if-checking every iteration
 		//and to make selection outline appear on top of all objects.
-		if ((bool)m_SelectedEntity && meshView.contains(m_SelectedEntity))
+		if ((bool)m_SelectedEntity)
 		{
-			auto& [transform, mi] = meshView.get(m_SelectedEntity);
+			std::queue<Entity> que{};
+			
+			auto& [transform, mi, tag] = meshView.get(m_SelectedEntity);
+			
+			for (auto& child : transform.Children)
+				que.push(child);
 
-			mi.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
 			glm::vec4 blueColor = { 0.08f, 0.6f, 1.f, 1.f };
 			glm::vec4 prevColor = Renderer::SetOutlineColor(blueColor);
-			for (auto& child : m_SelectedEntity.GetComponent<Transform>().Children)
+		
+			while (que.size() != 0)
 			{
-				if (!child.HasComponent<MeshInstance>())
-					continue;
+				auto& curr = que.front();
+				auto& currTr = curr.GetComponent<Transform>();
 
-				ASSERT(meshView.contains(child), "");
-				auto& [transform, mi] = meshView.get(child);
+				if (curr.HasComponent<MeshInstance>())
+				{
+					auto& currMi = curr.GetComponent<MeshInstance>();
+					currMi.DrawOutlined((int)(entt::entity)curr, currTr);
+				}
+				for (auto& child : currTr.Children)
+					que.push(child);
 
-				mi.DrawOutlined((int)(entt::entity)child, transform);
+				que.pop();
 			}
+			
 			Renderer::SetOutlineColor(prevColor);
+
+			if (m_SelectedEntity.HasComponent<MeshInstance>())
+				mi.DrawOutlined((int)(entt::entity)m_SelectedEntity, transform);
 		}
 	}
 

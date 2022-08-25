@@ -46,7 +46,7 @@ namespace Crave
 		private:
 			Key m_GlId;
 			KeyEvent m_GlEventType;
-			std::function<void(void)> m_Action;
+			actionType m_Action;
 		//private:
 		//	friend class cereal::access;
 		//	template<typename Archive>

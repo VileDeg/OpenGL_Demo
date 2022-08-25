@@ -48,11 +48,11 @@ namespace Crave
 
 		void Init()
 		{
-			m_KbData.Keybinds[KeybindName::CloseWindow]	   = { Key::Esc, KeyEvent::Press };
-			m_KbData.Keybinds[KeybindName::GizmoNone]	   = { Key::Q,   KeyEvent::Press };
-			m_KbData.Keybinds[KeybindName::GizmoTranslate] = { Key::W,   KeyEvent::Press };
-			m_KbData.Keybinds[KeybindName::GizmoRotate]	   = { Key::E,   KeyEvent::Press };
-			m_KbData.Keybinds[KeybindName::GizmoScale]	   = { Key::R,   KeyEvent::Press };
+			m_KbData.Keybinds[KeybindName::CloseWindow	 ] = { Key::Esc, KeyEvent::Press };
+			m_KbData.Keybinds[KeybindName::GizmoNone	 ] = { Key::Q  , KeyEvent::Press };
+			m_KbData.Keybinds[KeybindName::GizmoTranslate] = { Key::W  , KeyEvent::Press };
+			m_KbData.Keybinds[KeybindName::GizmoRotate	 ] = { Key::E  , KeyEvent::Press };
+			m_KbData.Keybinds[KeybindName::GizmoScale	 ] = { Key::R  , KeyEvent::Press };
 		}
 
 		/*void SaveControls()
