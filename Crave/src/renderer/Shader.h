@@ -16,8 +16,7 @@ namespace Crave
 		void Bind() const;
 		void setBool(const std::string& name, bool value);
 		void setInt(const std::string& name, int value);
-
-
+		void setUint(const std::string& name, unsigned value);
 		void setFloat(const std::string& name, float value);
 
 		void setFloat2(const std::string& name, float v0, float v1);

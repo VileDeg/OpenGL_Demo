@@ -16,7 +16,6 @@ namespace Crave
 		};
 	}
 
-
 	struct LightData
 	{
 		glm::vec3 position;
@@ -38,7 +37,7 @@ namespace Crave
 	};
 	enum class ShaderType
 	{
-		None = -1, DepthShader, Skybox, UniformColor,
+		None = -1, General, DepthShader, Skybox, UniformColor,
 		AttribColor, Diffuse, DiffNSpec, NormalMap
 	};
 

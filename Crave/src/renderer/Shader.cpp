@@ -142,18 +142,21 @@ namespace Crave
 	{
 		glUseProgram(m_ProgramId);
 	}
-	// utility uniform functions
-	// ------------------------------------------------------------------------
+	
 	void Shader::setBool(const std::string& name, bool value)
 	{
 		glUniform1i(GetUniformLocation(name), (int)value);
 	}
-	// ------------------------------------------------------------------------
+	
 	void Shader::setInt(const std::string& name, int value)
 	{
 		glUniform1i(GetUniformLocation(name), value);
 	}
-	// ------------------------------------------------------------------------
+	void Shader::setUint(const std::string& name, unsigned value)
+	{
+		glUniform1ui(GetUniformLocation(name), value);
+	}
+	
 	void Shader::setFloat(const std::string& name, float value)
 	{
 		glUniform1f(GetUniformLocation(name), value);

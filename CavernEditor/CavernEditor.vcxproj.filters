@@ -35,4 +35,7 @@
       <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\general.shader" />
+  </ItemGroup>
 </Project>

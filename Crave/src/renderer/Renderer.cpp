@@ -26,6 +26,8 @@ namespace Crave
 				unsigned lightCount;
 				unsigned castShadows;
 			};
+			
+
 			struct RenderData
 			{
 				std::unordered_map<ShaderType, Ref<Shader>> Shader;
@@ -85,7 +87,6 @@ namespace Crave
 			void BindShader(const Ref<Shader> shader);
 			void BindVAO(const Ref<VAO> vao);
 			void BindTexture(const Ref<Texture> tex, const short slot);
-			//void BindTexture(Texture* tex, const short slot);
 		}
 
 		void Init(Ref<Framebuffer> viewportfb, unsigned width, unsigned height)
@@ -147,43 +148,48 @@ namespace Crave
 
 			if (withTextures)
 			{
+				sh = s_Data->Shader[ShaderType::General];
+				BindShader(sh);
+				BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
 				if (!diff.empty() && !norm.empty())
 				{
-					sh = s_Data->Shader[ShaderType::NormalMap];
-					BindShader(sh);
+					/*sh = s_Data->Shader[ShaderType::NormalMap];
+					BindShader(sh);*/
 					BindTexture(diff[0], DIFF_TEX_SLOT);
 					BindTexture(norm[0], NORM_TEX_SLOT);
-					BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+					sh->setUint("u_ObjType", 2);
 				}
 				else if (!diff.empty() && !spec.empty())
 				{
-					sh = s_Data->Shader[ShaderType::DiffNSpec];
-					BindShader(sh);
+					/*sh = s_Data->Shader[ShaderType::DiffNSpec];
+					BindShader(sh);*/
 					BindTexture(diff[0], DIFF_TEX_SLOT);
 					BindTexture(spec[0], SPEC_TEX_SLOT);
-					BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+					//BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+					sh->setUint("u_ObjType", 1);
 				}
 				else if (!diff.empty())
 				{
-					sh = s_Data->Shader[ShaderType::Diffuse];
-					BindShader(sh);
+					/*sh = s_Data->Shader[ShaderType::Diffuse];
+					BindShader(sh);*/
 					BindTexture(diff[0], DIFF_TEX_SLOT);
-					BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+					//BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
+					sh->setUint("u_ObjType", 0);
 				}
 				else
 				{
 					//Mesh has no textues. Most likely error.
-					sh = s_Data->Shader[ShaderType::UniformColor];
-					BindShader(sh);
-					sh->setFloat4("u_Color", { 1.f, 0.f, 1.f, 1.f }); //magenta
+					//sh = s_Data->Shader[ShaderType::UniformColor];
+					//BindShader(sh);
+					//sh->setFloat4("u_Color", { 1.f, 0.f, 1.f, 1.f }); //magenta
+					ASSERT(false, "");
 				}
 			}
 			else
 			{
-				//Mesh has no textues. Most likely error.
 				sh = s_Data->Shader[ShaderType::UniformColor];
 				BindShader(sh);
-				sh->setFloat4("u_Color", color); //magenta
+				sh->setFloat4("u_Color", color);
 			}
 
 			sh->setMat4f("u_ModelMat", modelMat);
@@ -255,9 +261,7 @@ namespace Crave
 			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			//float near_plane = 1.0f;
 			//float far_plane = 25.0f;
-			unsigned SHADOW_WIDTH = 1024;
-			unsigned SHADOW_HEIGHT = 1024;
-			glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, s_Data->lightNearPlane, s_Data->lightFarPlane);
+			glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_MAP_WIDTH / (float)SHADOW_MAP_HEIGHT, s_Data->lightNearPlane, s_Data->lightFarPlane);
 			std::vector<glm::mat4> shadowTransforms;
 			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -463,6 +467,19 @@ namespace Crave
 
 			void LoadShaders()
 			{
+				auto& sh = s_Data->Shader[ShaderType::General] = CreateRef<Shader>("general.shader");
+				sh->Bind();
+
+				sh->setInt("material.diffuseTex", DIFF_TEX_SLOT);
+				sh->setInt("material.specularTex", SPEC_TEX_SLOT);
+				sh->setInt("material.normalTex", NORM_TEX_SLOT);
+				sh->setFloat("material.specularFloat", 0.5f);
+				sh->setFloat("material.shininess", 32.0f);
+				sh->setFloat4("material.color", {1.f, 0.f, 1.f, 1.f}); //magenta
+
+				sh->setInt("depthMap", DEPTH_TEX_SLOT);
+				sh->setFloat("far_plane", s_Data->lightFarPlane);
+
 				s_Data->Shader[ShaderType::UniformColor] = CreateRef<Shader>("color.shader");
 
 				s_Data->Shader[ShaderType::AttribColor] = CreateRef<Shader>("colorAttrib.shader");
