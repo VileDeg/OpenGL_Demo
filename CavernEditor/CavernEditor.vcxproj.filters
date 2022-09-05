@@ -36,6 +36,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\old\general.vert" />
+    <None Include="res\shaders\dirDepth.shader" />
+    <None Include="res\shaders\old\general.frag" />
     <None Include="res\shaders\general.shader" />
   </ItemGroup>
 </Project>

@@ -85,6 +85,13 @@ namespace Crave
 			case Type::RGBA:
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, dimensions.x, dimensions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 				break;
+			case Type::Depth:
+			{
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, dimensions.x, dimensions.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+				float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+				glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+				break;
+			}
 			case Type::DepthNStencil:
 				glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, dimensions.x, dimensions.y);
 				break;

@@ -107,7 +107,7 @@ namespace Crave
 
 		struct Light
 		{
-			LightData Data;
+			LightData Data{};
 			bool	  IsDynamic{ false };
 			unsigned  SSBOindex;
 
@@ -116,7 +116,7 @@ namespace Crave
 				Renderer::UpdateLightPosition(glm::value_ptr(pos), SSBOindex);
 			}
 
-			void UploadToSSBO(const LightData* lightData)
+			void UploadToSSBO(const LightData& lightData)
 			{
 				Renderer::UploadLightData(lightData);
 			}
@@ -125,7 +125,7 @@ namespace Crave
 			Light(const LightData& lightData, bool isDynamic = false)
 				: Data(lightData), IsDynamic(isDynamic)
 			{
-				SSBOindex = Renderer::UploadLightData(&Data);
+				SSBOindex = Renderer::AddNewLight(Data);
 			}
 		};
 	}

@@ -13,15 +13,15 @@ void main()
 #version 330 core
 in vec4 FragPos;
 
-uniform vec3  lightPos;
-uniform float far_plane;
+uniform vec3  u_LightPos;
+uniform float u_FarPlane;
 
 void main()
 {
-    float lightDistance = length(FragPos.xyz - lightPos);
+    float lightDistance = length(FragPos.xyz - u_LightPos);
 
     // map to [0;1] range by dividing by far_plane
-    lightDistance = lightDistance / far_plane;
+    lightDistance = lightDistance / u_FarPlane;
 
     // write this as modified depth
     gl_FragDepth = lightDistance;
@@ -32,7 +32,7 @@ void main()
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 18) out;
 
-uniform mat4 shadowMatrices[6];
+uniform mat4 u_ShadowMatrices[6];
 
 out vec4 FragPos; // FragPos from GS (output per emitvertex)
 
@@ -44,7 +44,7 @@ void main()
         for (int i = 0; i < 3; ++i) // for each triangle's vertices
         {
             FragPos = gl_in[i].gl_Position;
-            gl_Position = shadowMatrices[face] * FragPos;
+            gl_Position = u_ShadowMatrices[face] * FragPos;
             EmitVertex();
         }
         EndPrimitive();

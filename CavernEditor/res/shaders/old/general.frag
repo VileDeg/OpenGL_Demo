@@ -1,90 +1,3 @@
-//#shader vertex
-#version 460 core
-
-layout(location = 0) in vec3 aPos;
-layout(location = 1) in vec3 aNormal;
-layout(location = 2) in vec2 aTexCoords;
-layout(location = 3) in vec3 aTangent;
-layout(location = 4) in vec3 aBitangent;
-
-out VS_OUT{
-    vec3 FragPos;
-    vec3 Normal;
-    vec2 TexCoords;
-
-    //for objects with normal map
-    vec3 TangentLightPos;
-    vec3 TangentViewPos;
-    vec3 TangentFragPos;
-
-    //for dir.light shadow mapping
-    vec4 FragPosLightSpace;
-} vs_out;
-
-struct Light {
-    vec3 position;
-    float constant;
-    vec3 direction;
-    float linear;
-    vec3 ambient;
-    float quadratic;
-    vec3 diffuse;
-    float cutOff;
-    vec3 specular;
-    float outerCutOff;
-    int type;
-};
-
-layout(std430, binding = 0) buffer LightData
-{
-    Light lights[];
-} lightData;
-
-layout(std140, binding = 0) uniform SceneData
-{
-    uniform mat4 projViewMat;
-    uniform vec3 viewPos;
-    uniform int  lightsCount;
-    uniform bool castShadows;
-} sceneData;
-
-const uint DIFF_ONLY = 0u;
-const uint DIFF_N_SPEC = 1u;
-const uint DIFF_N_NORMAL = 2u;
-
-uniform uint u_ObjType;
-//uniform uint u_HasTextures;
-
-uniform mat4 u_ModelMat;
-
-void main()
-{
-    vs_out.FragPos = vec3(u_ModelMat * vec4(aPos, 1.0));
-    vs_out.TexCoords = aTexCoords;
-
-    switch (u_ObjType)
-    {
-    case DIFF_ONLY:
-    case DIFF_N_SPEC:
-        vs_out.Normal = transpose(inverse(mat3(u_ModelMat))) * aNormal;
-        break;
-    case DIFF_N_NORMAL:
-        mat3 normalMatrix = transpose(inverse(mat3(u_ModelMat)));
-        vec3 T = normalize(normalMatrix * aTangent);
-        vec3 N = normalize(normalMatrix * aNormal);
-        T = normalize(T - dot(T, N) * N);
-        vec3 B = cross(N, T);
-
-        mat3 TBN = transpose(mat3(T, B, N));
-        vs_out.TangentLightPos = TBN * lightData.lights[0].position;
-        vs_out.TangentViewPos = TBN * sceneData.viewPos;
-        vs_out.TangentFragPos = TBN * vs_out.FragPos;
-        break;
-    }
-
-    gl_Position = sceneData.projViewMat * u_ModelMat * vec4(aPos, 1.0);
-}
-
 //#shader fragment
 #version 460 core
 
@@ -106,7 +19,7 @@ in VS_OUT
     vec4 FragPosLightSpace;
 } fs_in;
 
-struct Light
+struct Light 
 {
     vec3 position;
     float constant;
@@ -134,7 +47,7 @@ layout(std140, binding = 0) uniform SceneData
     uniform bool castShadows;
 } sceneData;
 
-struct Material
+struct Material 
 {
     sampler2D diffuseTex;
     vec4 color;
@@ -147,8 +60,8 @@ struct Material
     float shininess;
 };
 
-const uint DIFF_ONLY = 0u;
-const uint DIFF_N_SPEC = 1u;
+const uint DIFF_ONLY     = 0u;
+const uint DIFF_N_SPEC   = 1u;
 const uint DIFF_N_NORMAL = 2u;
 
 const int DIRECTIONAL_LIGHT = 0;
@@ -231,7 +144,7 @@ void main()
         diffuse *= attenuation;
         specular *= attenuation;
 
-
+        
         if (sceneData.castShadows)
         {
             float shadow;
@@ -260,7 +173,7 @@ void main()
         }
     }
 
-    FragColor = vec4(Lighting, 1.0);
+    //FragColor = vec4(Lighting, 1.0);
 
     DrawID = u_DrawId;
 }
@@ -317,8 +230,8 @@ float PointShadowCalc(vec3 fragPos, vec3 lightPos, int lightIndex)
     vec2 offsetInside = vec2(face % 3, face / 3) * u_SFrameSize;
     vec2 uv = offset + offsetInside;
     uv += result.xy * u_SFrameSize;
-    uv /= u_SAtlasSize;
- 
+    uv.x = uv.x / u_SAtlasSize.x;
+    uv.y = uv.y / u_SAtlasSize.y;
 
     float closestDepth = texture(u_SAtlas, uv).r;
     // it is currently in linear range between [0,1], let's re-transform it back to original depth value
@@ -329,7 +242,7 @@ float PointShadowCalc(vec3 fragPos, vec3 lightPos, int lightIndex)
     float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
     // display closestDepth as debug (to visualize depth cubemap)
-    //FragColor = vec4(vec3(closestDepth / u_LightFrustumFarPlane), 1.0);
+    FragColor = vec4(vec3(closestDepth / u_LightFrustumFarPlane), 1.0);    
 
     return shadow;
 }
@@ -405,7 +318,7 @@ vec3 convert_xyz_to_cube_uv(float x, float y, float z)
 
     // Convert range from -1 to 1 to 0 to 1
     float u = 0.5f * (uc / maxAxis + 1.0f);
-    float v = 0.5f * (-vc / maxAxis + 1.0f);
+    float v = 0.5f * (vc / maxAxis + 1.0f);
 
     return vec3(u, v, float(index));
 }

@@ -20,15 +20,25 @@ namespace Crave
         //float cutOff = 20.f;
 
         {
-            m_PointLightParams.type = 1; //Point
-            m_PointLightParams.position = s_LightPos;
-            m_PointLightParams.ambient = ambient;
-            m_PointLightParams.diffuse = diffuse;
-            m_PointLightParams.specular = specular;
+            m_LightData[LightType::Point].type = LightType::Point;
 
-            m_PointLightParams.constant = constant;
-            m_PointLightParams.linear = linear;
-            m_PointLightParams.quadratic = quadratic;
+            m_LightData[LightType::Point].position = s_LightPos;
+            m_LightData[LightType::Point].ambient = ambient;
+            m_LightData[LightType::Point].diffuse = diffuse;
+            m_LightData[LightType::Point].specular = specular;
+
+            m_LightData[LightType::Point].constant = constant;
+            m_LightData[LightType::Point].linear = linear;
+            m_LightData[LightType::Point].quadratic = quadratic;
+        }
+        {
+            m_LightData[LightType::Directional].type = LightType::Directional;
+
+            m_LightData[LightType::Directional].ambient = ambient;
+            m_LightData[LightType::Directional].diffuse = diffuse;
+            m_LightData[LightType::Directional].specular = specular;
+
+            m_LightData[LightType::Directional].direction = {0.1f, -1.f, 0.f}; //down + right
         }
     }
 
@@ -107,16 +117,30 @@ namespace Crave
             m_Brickwalls[5].GetComponent<Transform>().RotateTo(90.f, right);
         }
 #endif
-        m_LightCube = CreateEntity("LightCube");
-        m_LightCube.AddComponent<MeshInstance>(m_CubeMesh, false);
+        {
+            m_PointLight = CreateEntity("PointLight");
+            m_PointLight.AddComponent<MeshInstance>(m_CubeMesh, false);
 
-        m_LightCube.GetComponent<MeshInstance>().Color = { 1.f, 1.f, 1.f, 1.f };
+            m_PointLight.GetComponent<MeshInstance>().Color = { 1.f, 1.f, 1.f, 1.f };
 
-        m_LightCube.GetComponent<Transform>().Position = s_LightPos;
-        m_LightCube.GetComponent<Transform>().ScaleF(0.2f);
+            m_PointLight.GetComponent<Transform>().Position = s_LightPos;
+            m_PointLight.GetComponent<Transform>().ScaleF(0.2f);
 
-        m_LightCube.AddComponent<Light>(m_PointLightParams, true);
+            m_PointLight.AddComponent<Light>(m_LightData[LightType::Point], true);
+        }
+#if 0
+        {
+            m_DirLight = CreateEntity("DirLight");
+            m_DirLight.AddComponent<MeshInstance>(m_CubeMesh, false);
 
+            m_DirLight.GetComponent<MeshInstance>().Color = { 1.f, 1.f, 1.f, 1.f };
+
+            m_DirLight.GetComponent<Transform>().Position = s_LightPos;
+            m_DirLight.GetComponent<Transform>().ScaleF(0.2f);
+
+            m_DirLight.AddComponent<Light>(m_LightData[LightType::Directional], true);
+        }
+#endif
         Entity model = ImportModel("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");
         model.GetComponent<Transform>().Position = { 5.f, 5.f, 0.f };
     }
@@ -135,7 +159,7 @@ namespace Crave
     void TestScene::OnUpdate(float deltaTime)
     {
         DeltaTime = deltaTime;
-        Renderer::BeginScene(m_Camera, LightOn ? 1 : 0, CastShadows);
+        Renderer::BeginScene(m_Camera, CastShadows);
 
         SetLightParams(s_LightBrightness);
 
@@ -145,7 +169,7 @@ namespace Crave
             auto& [tag, tr, light] = view.get(entity);
             if (tag.String == "LightCube")
             {
-                light.UploadToSSBO(&m_PointLightParams);
+                light.UploadToSSBO(m_LightData[LightType::Point]);
                 if (RotateLight)
                     tr.RotateAroundPoint(RotPoint, LightRotSpeed * deltaTime, RotAxis);
             }

@@ -122,6 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\general.shader" />
+    <None Include="res\shaders\old\general.vert" />
+    <None Include="res\shaders\dirDepth.shader" />
+    <None Include="res\shaders\old\general.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

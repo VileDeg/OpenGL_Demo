@@ -5,14 +5,42 @@
 
 namespace Crave
 {
-	Shader::Shader(const char* shaderPath)
+	Shader::Shader(const std::string& shaderPath)
 	{
 		Parse(shaderPath);
 		Compile();
 		Link();
 	}
 
-	void Shader::Parse(const char* shaderPath)
+	Shader::Shader(const std::unordered_map<Type, std::string>& config)
+	{
+		Parse(config);
+		Compile();
+		Link();
+	}
+
+	void Shader::Parse(const std::unordered_map<Type, std::string>& config)
+	{
+		std::ifstream shFile;
+
+		for (auto& [type, path] : config)
+		{
+			try {
+				shFile.open(BASE_SHADER_PATH + path);
+				std::stringstream buffer;
+				buffer << shFile.rdbuf();
+				m_Data[type].code = buffer.str();
+				shFile.close();
+			}
+			catch (std::ifstream::failure& e)
+			{
+				std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
+				__debugbreak();
+			}
+		}
+	}
+
+	void Shader::Parse(const std::string& shaderPath)
 	{
 		std::ifstream shaderFile;
 
@@ -23,7 +51,7 @@ namespace Crave
 
 			shaderFile.open(m_FullPath);
 
-			ShaderType type = ShaderType::NONE;
+			Type type = Type::NONE;
 			std::string line;
 			std::stringstream ss[3];
 
@@ -33,15 +61,15 @@ namespace Crave
 				{
 					if (line.find("vertex") != std::string::npos)
 					{
-						type = ShaderType::VERTEX;
+						type = Type::VERTEX;
 					}
 					else if (line.find("fragment") != std::string::npos)
 					{
-						type = ShaderType::FRAGMENT;
+						type = Type::FRAGMENT;
 					}
 					else if (line.find("geometry") != std::string::npos)
 					{
-						type = ShaderType::GEOMETRY;
+						type = Type::GEOMETRY;
 					}
 					else
 					{
@@ -54,7 +82,7 @@ namespace Crave
 				}
 				else
 				{
-					if (type == ShaderType::NONE)
+					if (type == Type::NONE)
 					{
 						std::cout << "ERROR::SHADER::INVALID_SHADER_TYPE: " << line << std::endl;
 						shaderFile.close();
@@ -67,9 +95,9 @@ namespace Crave
 
 			shaderFile.close();
 
-			m_Data[ShaderType::VERTEX].code = ss[(int)ShaderType::VERTEX].str();
-			m_Data[ShaderType::FRAGMENT].code = ss[(int)ShaderType::FRAGMENT].str();
-			m_Data[ShaderType::GEOMETRY].code = ss[(int)ShaderType::GEOMETRY].str();
+			m_Data[Type::VERTEX].code = ss[(int)Type::VERTEX].str();
+			m_Data[Type::FRAGMENT].code = ss[(int)Type::FRAGMENT].str();
+			m_Data[Type::GEOMETRY].code = ss[(int)Type::GEOMETRY].str();
 		}
 		catch (std::ifstream::failure& e)
 		{
@@ -80,7 +108,7 @@ namespace Crave
 
 	void Shader::Compile()
 	{
-		auto& v = m_Data[ShaderType::VERTEX];
+		auto& v = m_Data[Type::VERTEX];
 		const char* shaderCode = v.code.c_str();
 		// vertex shader
 		v.id = glCreateShader(GL_VERTEX_SHADER);
@@ -88,7 +116,7 @@ namespace Crave
 		glCompileShader(v.id);
 		checkCompileErrors(v.id, "VERTEX");
 		// fragment Shader
-		auto& f = m_Data[ShaderType::FRAGMENT];
+		auto& f = m_Data[Type::FRAGMENT];
 		shaderCode = f.code.c_str();
 		f.id = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(f.id, 1, &shaderCode, NULL);
@@ -96,7 +124,7 @@ namespace Crave
 		checkCompileErrors(f.id, "FRAGMENT");
 		// geometry Shader
 
-		auto& g = m_Data[ShaderType::GEOMETRY];
+		auto& g = m_Data[Type::GEOMETRY];
 		if (!g.found)
 			return;
 		shaderCode = g.code.c_str();
@@ -151,6 +179,14 @@ namespace Crave
 	void Shader::setInt(const std::string& name, int value)
 	{
 		glUniform1i(GetUniformLocation(name), value);
+	}
+	void Shader::setInt2(const std::string& name, int v0, int v1)
+	{
+		glUniform2i(GetUniformLocation(name), v0, v1);
+	}
+	void Shader::setInt2(const std::string& name, const glm::vec2& vec)
+	{
+		glUniform2i(GetUniformLocation(name), vec.x, vec.y);
 	}
 	void Shader::setUint(const std::string& name, unsigned value)
 	{

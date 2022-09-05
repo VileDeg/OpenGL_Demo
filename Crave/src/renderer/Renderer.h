@@ -16,6 +16,11 @@ namespace Crave
 		};
 	}
 
+	enum class LightType 
+	{
+		None = -1, Directional, Point, Spot
+	};
+
 	struct LightData
 	{
 		glm::vec3 position;
@@ -28,16 +33,12 @@ namespace Crave
 		float cutOff;
 		glm::vec3 specular;
 		float outerCutOff;
-		int type;
+		LightType type;
 	};
-
-	enum class LightType
-	{
-		None = -1, Directional, Point, Spot
-	};
+	
 	enum class ShaderType
 	{
-		None = -1, General, DepthShader, Skybox, UniformColor,
+		None = -1, General, PointDepth, DirDepth, Skybox, UniformColor,
 		AttribColor, Diffuse, DiffNSpec, NormalMap
 	};
 
@@ -54,16 +55,19 @@ namespace Crave
 		void DrawColored(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh, glm::vec4 color);*/
 		void DrawOutlined(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh,
 			bool withTextures, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f });
-		void DrawDepth(const glm::mat4& modelMat, Ref<Mesh> mesh);
+		void DrawDepth(const glm::mat4& modelMat, Ref<Mesh> mesh, ShaderType shType);
+
 
 		//int GetHoveredObjectId(int x, int y);
 
-		void ShadowRenderSetup(glm::vec3 lightPos);
+		void DirShadowSetup(glm::vec3 lightPos);
+		void PointShadowSetup(glm::vec3 lightPos, int frameNum, int face);
 		void ShadowRenderEnd();
 
 		void DrawSkybox();
 
-		unsigned UploadLightData(const void* data);
+		unsigned AddNewLight(const LightData& data);
+		unsigned UploadLightData(const LightData& data);
 		void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
 
 		void Init(Ref<Framebuffer> viewportfb, unsigned width, unsigned height);
@@ -72,7 +76,7 @@ namespace Crave
 		//const Ref<Framebuffer>& GetMainFB();
 		//unsigned GetFBMainColorAttachmentID();
 		//void SetRenderImageSize(const unsigned width, const unsigned height);
-		void BeginScene(Ref<Camera> cam, unsigned lightCount, bool castShadows);
+		void BeginScene(Ref<Camera> cam, bool castShadows);
 		void EndScene();
 		void Shutdown();
 

@@ -159,18 +159,19 @@ namespace Crave
 		}
 	}
 
-	void Scene::RenderSceneDepth()
+	void Scene::RenderSceneDepth(ShaderType shType)
 	{
 		auto& meshView = m_Registry.view<Transform, MeshInstance>();
 		for (auto& entity : meshView)
 		{
 			auto& [transform, mi] = meshView.get(entity);
-			Renderer::DrawDepth(transform, mi.PMesh);
+			Renderer::DrawDepth(transform, mi.PMesh, shType);
 		}
 	}
 
 	void Scene::RenderShadow()
 	{
+		int frameNum = 0;
 		auto& view = m_Registry.view<Transform, Light>();
 		for (auto& entity : view)
 		{
@@ -180,10 +181,25 @@ namespace Crave
 			if (light.IsDynamic)
 				light.UpdatePosition(transform.Position);
 
-			Renderer::ShadowRenderSetup(transform.Position);
-
-			// render scene from light's point of view
-			RenderSceneDepth();
+			ShaderType shType;
+			switch (light.Data.type)
+			{
+			case LightType::Point:
+				
+				shType = ShaderType::PointDepth;
+				Renderer::PointShadowSetup(transform.Position, light.SSBOindex, 0);
+				//frameNum += 6;
+				break;
+			case LightType::Directional:
+				/*Renderer::DirShadowSetup(transform.Position);
+				shType = ShaderType::DirDepth;
+				break;*/
+			case LightType::Spot:
+			default:
+				ASSERT(false, "");
+			}
+			RenderSceneDepth(shType);
+			
 
 			Renderer::ShadowRenderEnd();
 		}

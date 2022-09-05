@@ -36,7 +36,7 @@ namespace Crave
 		Entity Scene::PocessNodeData(const Import::ModelNodeData& nd, Entity parent);
 
 		void RenderScene();
-		void RenderSceneDepth();
+		void RenderSceneDepth(ShaderType shType);
 		void RenderShadow();
 	protected:
 		entt::registry m_Registry{};

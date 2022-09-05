@@ -20,10 +20,12 @@ namespace Crave
         Entity m_Model;
         //Import::Model m_ImportedModel;
         Entity m_Cubes[8];
-        Entity m_LightCube;
+        Entity m_PointLight;
+        Entity m_DirLight;
         Entity m_Brickwalls[6];
         Entity m_WorldCenter;
         float m_CamSpeed;
-        LightData m_PointLightParams;
+        //LightData m_PointLightParams;
+        std::unordered_map<LightType, LightData> m_LightData;
     };
 }

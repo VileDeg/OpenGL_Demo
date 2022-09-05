@@ -41,10 +41,15 @@ namespace Crave
 					m_IntColorAttachmentId = thisAtt->Id();
 				break;
 			}
-			case Texture::Type::Depth: //Only for cubemaps
-				ASSERT(config.target == Texture::Target::TextureCubeMap, "");
+			case Texture::Type::Depth:
 				m_DepthAttachment = CreateRef<Texture>(newDimensions, config);
-				glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_DepthAttachment->Id(), 0);
+
+				if (config.target == Texture::Target::Texture2D)
+					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment->Id(), 0);
+				else if (config.target == Texture::Target::TextureCubeMap)
+					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_DepthAttachment->Id(), 0);
+				else
+					ASSERT(false, "");
 				break;
 			case Texture::Type::DepthNStencil:
 				m_DepthAttachment = CreateRef<Texture>(newDimensions, config);
