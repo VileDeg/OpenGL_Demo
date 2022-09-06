@@ -1,14 +1,32 @@
 #pragma once
-#include <iostream>
-#include <cstring>
+#include <spdlog/spdlog.h>
 
 namespace Crave
 {
+	namespace Log
+	{
+		void Init();
 
-#define __FILENAME__ (strrchr("\\" __FILE__, '\\') + 1)
+//		static std::shared_ptr<spdlog::logger> GetLogger();
+	//	static std::shared_ptr<spdlog::logger> m_Logger;
+	};
 
-#define LOG_ERROR(msg) do{\
-	std::cerr << "ERROR: FILE: " << __FILENAME__ << ", LINE: "\
-	<< __LINE__ << ", FUNC: " << __func__ << ": " << msg << ".\n"; \
+#define FILENAME (strrchr("\\" __FILE__, '\\') + 1)
+
+#define STR_INDIR(x) #x
+#define STR(x) STR_INDIR(x)
+
+#define LOG_INFO(...) do{\
+	SPDLOG_INFO(__VA_ARGS__);\
+} while(0)
+#define LOG_WARN(...) do{\
+	SPDLOG_WARN(__VA_ARGS__);\
+} while(0)
+#define LOG_ERROR(...) do{\
+	SPDLOG_ERROR(__VA_ARGS__);\
+} while(0)
+#define LOG_FATAL(...) do{\
+	SPDLOG_CRITICAL(__VA_ARGS__);\
 } while(0)
 }
+

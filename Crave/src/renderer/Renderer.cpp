@@ -560,11 +560,11 @@ namespace Crave
 
 			void LoadShaders()
 			{
-				/*auto sh = s_Data->Shader[ShaderType::General] = CreateRef<Shader>(
+				auto sh = s_Data->Shader[ShaderType::General] = CreateRef<Shader>(
 					std::unordered_map<Shader::Type, std::string>{
 						{ Shader::Type::VERTEX, "general.vert" },
-						{ Shader::Type::FRAGMENT, "general.frag" }});*/
-				auto sh = s_Data->Shader[ShaderType::General] = CreateRef<Shader>("general.shader");
+						{ Shader::Type::FRAGMENT, "general.frag" }});
+				//auto sh = s_Data->Shader[ShaderType::General] = CreateRef<Shader>("general.shader");
 				sh->Bind();
 
 				sh->setInt("material.diffuseTex", DIFF_TEX_SLOT);

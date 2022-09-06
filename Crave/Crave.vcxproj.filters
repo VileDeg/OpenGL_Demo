@@ -1382,6 +1382,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\Log.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
     <ClCompile Include="src\core\Window.cpp">
       <Filter>src\core</Filter>
     </ClCompile>

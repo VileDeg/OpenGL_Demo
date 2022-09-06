@@ -60,7 +60,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;..\Crave\src;..\Crave\vendor;..\Crave\vendor\GLM;..\Crave\vendor\entt;..\Crave\vendor\ImGuizmo;..\Crave\vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Crave\src;..\Crave\vendor;..\Crave\vendor\GLM;..\Crave\vendor\entt;..\Crave\vendor\ImGuizmo;..\Crave\vendor\cereal;..\Crave\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;..\Crave\src;..\Crave\vendor;..\Crave\vendor\GLM;..\Crave\vendor\entt;..\Crave\vendor\ImGuizmo;..\Crave\vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\Crave\src;..\Crave\vendor;..\Crave\vendor\GLM;..\Crave\vendor\entt;..\Crave\vendor\ImGuizmo;..\Crave\vendor\cereal;..\Crave\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -119,12 +119,6 @@
     <ProjectReference Include="..\Crave\Crave.vcxproj">
       <Project>{5699FB0C-C2AD-23BE-8B2F-C71DF70220EF}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\shaders\general.shader" />
-    <None Include="res\shaders\old\general.vert" />
-    <None Include="res\shaders\dirDepth.shader" />
-    <None Include="res\shaders\old\general.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

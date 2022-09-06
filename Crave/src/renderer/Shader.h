@@ -12,7 +12,7 @@ namespace Crave
 		};
 	public:
 		Shader(const std::string& shaderPath);
-		Shader(const std::unordered_map<Type, std::string>& config);
+		Shader(const std::unordered_map<Type, std::string> config);
 		
 		void Bind() const;
 
@@ -50,7 +50,7 @@ namespace Crave
 		{
 			std::string code;
 			unsigned id;
-			bool found = false;
+			//bool found = false;
 		};
 
 		std::unordered_map<Type, ShaderTypeData> m_Data;

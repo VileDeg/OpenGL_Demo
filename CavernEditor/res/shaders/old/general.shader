@@ -318,7 +318,6 @@ float PointShadowCalc(vec3 fragPos, vec3 lightPos, int lightIndex)
     vec2 uv = offset + offsetInside;
     uv += result.xy * u_SFrameSize;
     uv /= u_SAtlasSize;
- 
 
     float closestDepth = texture(u_SAtlas, uv).r;
     // it is currently in linear range between [0,1], let's re-transform it back to original depth value

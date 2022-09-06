@@ -7,13 +7,17 @@ namespace Crave
 #define ENABLE_ASSERTS
 #ifdef ENABLE_ASSERTS
 
-#define ASSERT(x,msg) do{ if(!(x)) { LOG_ERROR("Assertion Failed");\
-	std::cerr << '\t' << msg << ".\n";\
-__debugbreak(); } }while(0)
+#ifdef _DEBUG
+#define DEBUG_BREAK(msg) do{ LOG_ERROR("DEBUG_BREAK: {}", msg); __debugbreak(); }while(0)
+#define ASSERT(x, msg) do{ if(!(x)) { DEBUG_BREAK("ASSERT: " msg); } }while(0)
+#else
+#define ASSERT(x,msg) do{ if(!(x)) { LOG_ERROR("Assertion Failed: {}", msg);\
+exit(1); } }while(0)
+#endif //_DEBUG
 #else
 
-#define ASSERT(msg)
-#endif
+#define ASSERT(x,msg)
+#endif //ENABLE_ASSERTS
 
 	template<typename T>
 	using Ref = std::shared_ptr<T>;

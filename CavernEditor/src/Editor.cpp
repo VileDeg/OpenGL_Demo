@@ -24,6 +24,7 @@ namespace Crave
 
         void Editor::Init()
         {
+            Log::Init();
             Input::Init();
 
             Window::Open(WINDOW_WIDTH, WINDOW_HEIGHT, PROJECT_NAME);

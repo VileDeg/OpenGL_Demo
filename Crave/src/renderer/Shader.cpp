@@ -12,7 +12,7 @@ namespace Crave
 		Link();
 	}
 
-	Shader::Shader(const std::unordered_map<Type, std::string>& config)
+	Shader::Shader(const std::unordered_map<Type, std::string> config)
 	{
 		Parse(config);
 		Compile();
@@ -23,9 +23,11 @@ namespace Crave
 	{
 		std::ifstream shFile;
 
+		m_FullPath = BASE_SHADER_PATH;
 		for (auto& [type, path] : config)
 		{
 			try {
+				m_FullPath += "\t..." + path;
 				shFile.open(BASE_SHADER_PATH + path);
 				std::stringstream buffer;
 				buffer << shFile.rdbuf();
@@ -34,8 +36,7 @@ namespace Crave
 			}
 			catch (std::ifstream::failure& e)
 			{
-				std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
-				__debugbreak();
+				DEBUG_BREAK("SHADER::FILE_NOT_SUCCESFULLY_READ: {}", e.what());
 			}
 		}
 	}
@@ -73,20 +74,18 @@ namespace Crave
 					}
 					else
 					{
-						std::cout << "ERROR::SHADER::TYPE_NOT_SPECIFIED: " << line << std::endl;
 						shaderFile.close();
-						__debugbreak();
+						DEBUG_BREAK("ERROR::SHADER::TYPE_NOT_SPECIFIED: {}", line);
 						return;
 					}
-					m_Data[type].found = true;
+					//m_Data[type].found = true;
 				}
 				else
 				{
 					if (type == Type::NONE)
 					{
-						std::cout << "ERROR::SHADER::INVALID_SHADER_TYPE: " << line << std::endl;
 						shaderFile.close();
-						__debugbreak();
+						DEBUG_BREAK("ERROR::SHADER::INVALID_SHADER_TYPE: {}", line);
 						return;
 					}
 					ss[(int)type] << line << '\n';
@@ -101,8 +100,7 @@ namespace Crave
 		}
 		catch (std::ifstream::failure& e)
 		{
-			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
-			__debugbreak();
+			DEBUG_BREAK("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: {}", e.what());
 		}
 	}
 
@@ -125,7 +123,7 @@ namespace Crave
 		// geometry Shader
 
 		auto& g = m_Data[Type::GEOMETRY];
-		if (!g.found)
+		if (g.code.empty())
 			return;
 		shaderCode = g.code.c_str();
 		g.id = glCreateShader(GL_GEOMETRY_SHADER);
@@ -137,21 +135,21 @@ namespace Crave
 	void Shader::Link()
 	{
 		m_ProgramId = glCreateProgram();
-		for (auto& pair : m_Data)
+		for (auto& [type, data] : m_Data)
 		{
-			if (!pair.second.found)
+			if (data.code.empty())
 				continue;
-			glAttachShader(m_ProgramId, pair.second.id);
+			glAttachShader(m_ProgramId, data.id);
 		}
 
 		glLinkProgram(m_ProgramId);
 		checkCompileErrors(m_ProgramId, "PROGRAM");
 		// delete the shaders as they're linked into our program now and no longer necessary
-		for (auto& pair : m_Data)
+		for (auto& [type, data] : m_Data)
 		{
-			if (!pair.second.found)
+			if (data.code.empty())
 				continue;
-			glDeleteShader(pair.second.id);
+			glDeleteShader(data.id);
 		}
 	}
 
@@ -161,7 +159,7 @@ namespace Crave
 			return uniformLocationCache[name];
 		int location = glGetUniformLocation(m_ProgramId, name.c_str());
 		if (location == -1)
-			std::cout << "Warning: uniform " << name << " doesn't exist!\n";
+			LOG_WARN("Warning: uniform {} doesn't exist!", name);
 		return uniformLocationCache[name] = location;
 		return location;
 	}
@@ -232,10 +230,10 @@ namespace Crave
 			if (!success)
 			{
 				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-				std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type
-					<< ".\nPATH: " << m_FullPath
-					<< "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
-				__debugbreak();
+
+				DEBUG_BREAK("SHADER_COMPILATION_ERROR of type: {}.\nPATH: {}\n{}\
+					\n -- --------------------------------------------------- -- ",
+					type, m_FullPath, infoLog);
 			}
 		}
 		else
@@ -244,10 +242,9 @@ namespace Crave
 			if (!success)
 			{
 				glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-				std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type
-					<< ".\nPATH: " << m_FullPath
-					<< "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
-				__debugbreak();
+				DEBUG_BREAK("PROGRAM_LINKING_ERROR of type: {}.\nPATH: {}\n{}\
+					\n -- --------------------------------------------------- -- ",
+					type, m_FullPath, infoLog);
 			}
 		}
 	}

@@ -22,6 +22,7 @@ IncludeDir["ImGuizmo"] = "Crave/vendor/ImGuizmo"
 IncludeDir["stb_image"] = "Crave/vendor/stb_image"
 IncludeDir["cereal"] = "Crave/vendor/cereal"
 IncludeDir["magic_enum"] = "Crave/vendor/magic_enum"
+IncludeDir["spdlog"] = "Crave/vendor/spdlog/include"
 
 group "Dependencies"
 	include "Crave/vendor/GLFW"
@@ -78,7 +79,8 @@ project "Crave"
 		"%{IncludeDir.assimp}",
 		"%{IncludeDir.cereal}",
 		"%{IncludeDir.ImGuizmo}",
-		"%{IncludeDir.magic_enum}"
+		"%{IncludeDir.magic_enum}",
+		"%{IncludeDir.spdlog}"
 	}
 
 	links 
@@ -140,7 +142,8 @@ project "CavernEditor"
 		"%{IncludeDir.entt}",
 		--"%{IncludeDir.assimp}",
 		"%{IncludeDir.ImGuizmo}",
-		"%{IncludeDir.cereal}"
+		"%{IncludeDir.cereal}",
+		"%{IncludeDir.spdlog}"
 	}
 
 	links {
