@@ -16,7 +16,7 @@ out VS_OUT{
     vec3 TangentViewPos;
     vec3 TangentFragPos;
 
-    //for dir.light shadow mapping
+    //for dir. light shadow mapping
     vec4 FragPosLightSpace;
 } vs_out;
 

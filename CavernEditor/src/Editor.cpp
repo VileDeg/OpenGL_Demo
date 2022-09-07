@@ -11,7 +11,7 @@ namespace Crave
     {
         namespace
         {
-            constexpr const char* PROJECT_NAME = "O^O~CAVERN~>_<";
+            constexpr const char* PROJECT_NAME = "CAVERN";
             constexpr const unsigned WINDOW_WIDTH = 1920;
             constexpr const unsigned WINDOW_HEIGHT = 1080;
 

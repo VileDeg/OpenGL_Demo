@@ -69,8 +69,7 @@ namespace Crave
 
 			constexpr const int SFRAME_SIZE = 1024;
 			//Atlas 3x2
-			constexpr const glm::ivec2 SATLAS_DIM = {
-				MAX_LIGHTS_COUNT / 2, MAX_LIGHTS_COUNT / 3 };
+			constexpr const glm::ivec2 SATLAS_DIM = { 6, 4 };
 			constexpr const glm::ivec2 SATLAS_SIZE = SATLAS_DIM * SFRAME_SIZE;
 			//constexpr const unsigned SHADOW_ATLAS_HEIGHT = ;
 
@@ -105,25 +104,6 @@ namespace Crave
 			s_Data->viewportHeight = height;
 			s_Data->ViewportFB = viewportfb;
 
-			////Find closest bigger perfect square
-			//float tmp = sqrt(static_cast<float>(m_AtlasFramesCount));
-
-			//std::cout << "tmp: " << tmp << '\n';
-			//int int_tmp = static_cast<int>(tmp + .5f);
-			//std::cout << "int tmp: " << int_tmp << '\n';
-
-			//if (tmp < int_tmp)
-			//	m_AtlasFramesCount = int_tmp;
-			//else
-			//	m_AtlasFramesCount = int_tmp + 1;
-
-			//m_AtlasFramesPerRow = m_AtlasFramesCount;
-
-			//m_AtlasFramesCount *= m_AtlasFramesCount;
-
-			//std::cout << m_AtlasFramesCount << '\n';
-	
-
 			s_Data->DepthMapFBO = CreateRef<Framebuffer>(Framebuffer::Config{ false, Framebuffer::DrawBuffers::None, Framebuffer::ReadBuffers::None,
 				std::initializer_list<Texture::Config>{
 					{Texture::Type::Depth, Texture::Target::Texture2D, Texture::MMFilter::Nearest, Texture::WrapMode::ClampToEdge} } });
@@ -139,18 +119,14 @@ namespace Crave
 				256,
 				GL_UNIFORM_BUFFER);
 			s_Data->SceneUBO->Bind(0);
-			/*SetUniformBuffer(s_Data->SceneUBO, 0,
-				{ ShaderType::UniformColor, ShaderType::AttribColor,
-				ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::NormalMap });*/
+
 
 			s_Data->LightSSBO = CreateRef<ShaderBlock>(
 				"LightData", (const void*)NULL,
 				MAX_LIGHTS_COUNT * SSBO_LIGHT_SIZE,
 				GL_SHADER_STORAGE_BUFFER);
 			s_Data->LightSSBO->Bind(0);
-			/*SetShaderStorageBuffer(s_Data->LightSSBO, 0,
-				{ ShaderType::Diffuse, ShaderType::DiffNSpec, ShaderType::NormalMap });*/
-			//Set gl config
+
 			{
 				glEnable(GL_CULL_FACE);
 
@@ -277,28 +253,37 @@ namespace Crave
 			GLDraw(mesh->Vao());
 		}
 
-
-
-		void DirShadowSetup(glm::vec3 lightPos)
+		void GlobalShadowSetup()
 		{
-			//glm::mat4 lightProjection, lightView;
-			//glm::mat4 lightSpaceMatrix;
-			////float near_plane = 1.0f, far_plane = 7.5f;
-			////lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
-			//lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, s_Data->lightNearPlane, s_Data->lightFarPlane);
-			//lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-			//lightSpaceMatrix = lightProjection * lightView;
-			//// render scene from light's point of view
-			//glViewport(0, 0, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
-			//s_Data->DepthMapFBO->Bind(dkwakd);
-			//glClear(GL_DEPTH_BUFFER_BIT);
-
-			//auto sh = s_Data->Shader[ShaderType::DirDepth];
-			//BindShader(sh);
-			//sh->setMat4f("u_LightSpaceMat", lightSpaceMatrix);
+			s_Data->DepthMapFBO->Bind();
+			glClear(GL_DEPTH_BUFFER_BIT);
 		}
 
-		void PointShadowSetup(glm::vec3 lightPos, int frameNum, int face)
+		void DirShadowSetup(glm::vec3 lightPos, int frameNum)
+		{
+			glm::mat4 lightProjection, lightView;
+			glm::mat4 lightSpaceMatrix;
+			//float near_plane = 1.0f, far_plane = 7.5f;
+			//lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
+			lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, s_Data->lightNearPlane, s_Data->lightFarPlane);
+			lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+			lightSpaceMatrix = lightProjection * lightView;
+			// render scene from light's point of view
+			glm::ivec2 offset = { frameNum % SATLAS_DIM.x, frameNum / SATLAS_DIM.x };
+			offset *= glm::ivec2(3, 2) * SFRAME_SIZE;
+			//s_Data->DepthMapFBO->Bind();
+			//glEnable(GL_SCISSOR_TEST);
+			glViewport(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
+			//glScissor(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
+			//glClear(GL_DEPTH_BUFFER_BIT);
+			//glDisable(GL_SCISSOR_TEST);
+
+			auto sh = s_Data->Shader[ShaderType::DirDepth];
+			BindShader(sh);
+			sh->setMat4f("u_LightSpaceMat", lightSpaceMatrix);
+		}
+
+		void PointShadowSetup(glm::vec3 lightPos, int frameNum)
 		{
 			//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -313,48 +298,28 @@ namespace Crave
 			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
 			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 			shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-			/*glm::mat4 shadowTransform;
-			switch (face)
-			{
-			case 0:
-				shadowTransform = shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-				break;
-			case 1:
-				shadowTransform = shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-				break;
-			case 2:
-				shadowTransform = shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-				break;
-			case 3:
-				shadowTransform = shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-				break;
-			case 4:
-				shadowTransform = shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-				break;
-			case 5:
-				shadowTransform = shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-			}*/
+
 			
-			
-			s_Data->DepthMapFBO->Bind();
+			//s_Data->DepthMapFBO->Bind();
 
 			/*int mod = (frameNum + i) % m_AtlasFramesPerRow;
 			int remain = (frameNum + i) / m_AtlasFramesPerRow;
 			glm::vec2 offset = { mod * SHADOW_FRAME_DIM, remain * SHADOW_FRAME_DIM };*/
-			glEnable(GL_SCISSOR_TEST);
-			glm::vec2 offsetExternal = { frameNum % SATLAS_SIZE.x, frameNum / SATLAS_SIZE.x };
+			//glEnable(GL_SCISSOR_TEST);
+			glm::ivec2 offsetExternal = { frameNum % SATLAS_DIM.x, frameNum / SATLAS_DIM.x };
+			offsetExternal *= glm::ivec2(3, 2) * SFRAME_SIZE;
 			for (int h = 0; h < 2; ++h)
 			{
 				for (int w = 0; w < 3; ++w)
 				{
-					glm::vec2 offset = { SFRAME_SIZE * w, SFRAME_SIZE * h };
+					glm::ivec2 offset = { SFRAME_SIZE * w, SFRAME_SIZE * h };
 					offset += offsetExternal;
 					glViewportIndexedf(w+h*3, offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
-					glScissor(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
-					glClear(GL_DEPTH_BUFFER_BIT);
+					//glScissor(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
+					//glClear(GL_DEPTH_BUFFER_BIT);
 				}
 			}
-			glDisable(GL_SCISSOR_TEST);
+			//glDisable(GL_SCISSOR_TEST);
 			//glViewport(offset.x, offset.y, SHADOW_FRAME_DIM, SHADOW_FRAME_DIM);
 
 			auto sh = s_Data->Shader[ShaderType::PointDepth];
@@ -401,8 +366,15 @@ namespace Crave
 			s_Data->LightSSBO->Upload(pos, posSize, lightIndex * SSBO_LIGHT_SIZE);
 		}
 
-		unsigned UploadLightData(const LightData& data)
+		void UploadLightData(const LightData& data, unsigned ssboIndex)
 		{
+			unsigned offset = SSBO_LIGHT_SIZE * ssboIndex;
+			s_Data->LightSSBO->Upload(&data, SSBO_LIGHT_SIZE, offset);
+		}
+
+		unsigned AddNewLight(const LightData& data)
+		{
+			s_Data->LightsCount++;
 			static unsigned offset = 0;
 			static unsigned lightIndex = 0;
 
@@ -411,12 +383,6 @@ namespace Crave
 			offset += SSBO_LIGHT_SIZE;
 			++lightIndex;
 			return lightIndex - 1;
-		}
-
-		unsigned AddNewLight(const LightData& data)
-		{
-			s_Data->LightsCount++;
-			return UploadLightData(data);
 		}
 
 		glm::vec4 SetOutlineColor(const glm::vec4& color)

@@ -171,6 +171,8 @@ namespace Crave
 
 	void Scene::RenderShadow()
 	{
+		Renderer::GlobalShadowSetup();
+
 		int frameNum = 0;
 		auto& view = m_Registry.view<Transform, Light>();
 		for (auto& entity : view)
@@ -181,28 +183,28 @@ namespace Crave
 			if (light.IsDynamic)
 				light.UpdatePosition(transform.Position);
 
+			
+
 			ShaderType shType;
 			switch (light.Data.type)
 			{
 			case LightType::Point:
-				
+				Renderer::PointShadowSetup(transform.Position, light.SSBOindex);
 				shType = ShaderType::PointDepth;
-				Renderer::PointShadowSetup(transform.Position, light.SSBOindex, 0);
-				//frameNum += 6;
 				break;
 			case LightType::Directional:
-				/*Renderer::DirShadowSetup(transform.Position);
+				Renderer::DirShadowSetup(transform.Position, light.SSBOindex);
 				shType = ShaderType::DirDepth;
-				break;*/
+				break;
 			case LightType::Spot:
 			default:
 				ASSERT(false, "");
 			}
 			RenderSceneDepth(shType);
 			
-
-			Renderer::ShadowRenderEnd();
+			
 		}
+		Renderer::ShadowRenderEnd();
 	}
 
 	void Scene::OnUpdate(float deltaTime)

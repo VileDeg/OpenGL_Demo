@@ -118,7 +118,7 @@ namespace Crave
 
 			void UploadToSSBO(const LightData& lightData)
 			{
-				Renderer::UploadLightData(lightData);
+				Renderer::UploadLightData(lightData, SSBOindex);
 			}
 
 			Light() = default;

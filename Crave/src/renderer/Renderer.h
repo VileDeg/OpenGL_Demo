@@ -60,14 +60,15 @@ namespace Crave
 
 		//int GetHoveredObjectId(int x, int y);
 
-		void DirShadowSetup(glm::vec3 lightPos);
-		void PointShadowSetup(glm::vec3 lightPos, int frameNum, int face);
+		void GlobalShadowSetup();
+		void DirShadowSetup(glm::vec3 lightPos, int frameNum);
+		void PointShadowSetup(glm::vec3 lightPos, int frameNum);
 		void ShadowRenderEnd();
 
 		void DrawSkybox();
 
 		unsigned AddNewLight(const LightData& data);
-		unsigned UploadLightData(const LightData& data);
+		void UploadLightData(const LightData& data, unsigned ssboIndex);
 		void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
 
 		void Init(Ref<Framebuffer> viewportfb, unsigned width, unsigned height);
