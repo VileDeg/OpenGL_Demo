@@ -33,36 +33,29 @@ namespace Crave
 		float cutOff;
 		glm::vec3 specular;
 		float outerCutOff;
+		glm::mat4 projViewMat;
 		LightType type;
 	};
 	
 	enum class ShaderType
 	{
-		None = -1, General, PointDepth, DirDepth, Skybox, UniformColor,
+		None = -1, General, PointDepth, DirDepth, SpotDepth, Skybox, UniformColor,
 		AttribColor, Diffuse, DiffNSpec, NormalMap
 	};
 
 	namespace Renderer
 	{
-		//Render primitive mesh
-		//void DrawPrimitive(int drawID, const glm::mat4& modelMat, 
-		//	Ref<Mesh> mesh, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f },
-		//	bool hasTextures = true, bool normalsOut = true);
-		//Render imported mesh with textures
 		void DrawMesh(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh,
 			bool withTextures, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f });
-		/*void DrawTextured(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh);
-		void DrawColored(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh, glm::vec4 color);*/
+
 		void DrawOutlined(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh,
 			bool withTextures, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f });
 		void DrawDepth(const glm::mat4& modelMat, Ref<Mesh> mesh, ShaderType shType);
 
-
-		//int GetHoveredObjectId(int x, int y);
-
 		void GlobalShadowSetup();
-		void DirShadowSetup(glm::vec3 lightPos, int frameNum);
-		void PointShadowSetup(glm::vec3 lightPos, int frameNum);
+		void DirShadowSetup(LightData& data, int frameNum);
+		void SpotShadowSetup(LightData& data, int frameNum);
+		void PointShadowSetup(LightData& data, int frameNum);
 		void ShadowRenderEnd();
 
 		void DrawSkybox();
@@ -74,9 +67,6 @@ namespace Crave
 		void Init(Ref<Framebuffer> viewportfb, unsigned width, unsigned height);
 		void ClearState();
 
-		//const Ref<Framebuffer>& GetMainFB();
-		//unsigned GetFBMainColorAttachmentID();
-		//void SetRenderImageSize(const unsigned width, const unsigned height);
 		void BeginScene(Ref<Camera> cam, bool castShadows);
 		void EndScene();
 		void Shutdown();
@@ -85,6 +75,8 @@ namespace Crave
 
 		void Clear(int mode);
 		void SetClearColor(float r, float g, float b, float a);
-		//void ResetViewport();
+		
+		glm::mat4& GetDirLightProjMat();
+		glm::mat4& GetSpotLightProjMat();
 	};
 }

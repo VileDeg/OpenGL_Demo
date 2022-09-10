@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "Shader.h"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
+#include "stb_include.h"
 
 namespace Crave
 {
@@ -19,6 +20,19 @@ namespace Crave
 		Link();
 	}
 
+	void Shader::ParseIncludes(std::string& code, std::string filename)
+	{
+		char error[256] = {'\0'};
+		//std::string linefile = filename; //BASE_SHADER_PATH + 
+		char* newstr = stb_include_string(
+			code.c_str(), nullptr, BASE_SHADER_PATH,
+			nullptr, error); //const_cast<char*>(linefile.c_str())
+		code = newstr;
+		free(newstr);
+		if (error[0] != '\0')
+			LOG_ERROR(error);
+	}
+
 	void Shader::Parse(const std::unordered_map<Type, std::string>& config)
 	{
 		std::ifstream shFile;
@@ -32,6 +46,9 @@ namespace Crave
 				std::stringstream buffer;
 				buffer << shFile.rdbuf();
 				m_Data[type].code = buffer.str();
+
+				ParseIncludes(m_Data[type].code, path);
+
 				shFile.close();
 			}
 			catch (std::ifstream::failure& e)
@@ -40,6 +57,8 @@ namespace Crave
 			}
 		}
 	}
+
+
 
 	void Shader::Parse(const std::string& shaderPath)
 	{
@@ -94,9 +113,12 @@ namespace Crave
 
 			shaderFile.close();
 
-			m_Data[Type::VERTEX].code = ss[(int)Type::VERTEX].str();
+			m_Data[Type::VERTEX].code   = ss[(int)Type::VERTEX].str();
 			m_Data[Type::FRAGMENT].code = ss[(int)Type::FRAGMENT].str();
 			m_Data[Type::GEOMETRY].code = ss[(int)Type::GEOMETRY].str();
+			ParseIncludes(m_Data[Type::VERTEX].code, shaderPath);
+			ParseIncludes(m_Data[Type::FRAGMENT].code, shaderPath);
+			ParseIncludes(m_Data[Type::GEOMETRY].code, shaderPath);
 		}
 		catch (std::ifstream::failure& e)
 		{

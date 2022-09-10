@@ -6,50 +6,23 @@ layout(location = 2) in vec2 aTexCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
 
+const int MAX_LIGHTS_COUNT = 16;
+const int MAX_DIRNSPOT_LIGHTS = 8;
 out VS_OUT{
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
 
     //for objects with normal map
-    vec3 TangentLightPos;
+    vec3 TangentLightPos[MAX_LIGHTS_COUNT];
     vec3 TangentViewPos;
     vec3 TangentFragPos;
 
     //for dir. light shadow mapping
-    vec4 FragPosLightSpace;
+    vec4 FragPosLightSpace[MAX_DIRNSPOT_LIGHTS];
 } vs_out;
 
-struct Light {
-    vec3 position;
-    float constant;
-    vec3 direction;
-    float linear;
-    vec3 ambient;
-    float quadratic;
-    vec3 diffuse;
-    float cutOff;
-    vec3 specular;
-    float outerCutOff;
-    int type;
-};
-
-layout(std430, binding = 0) buffer LightData
-{
-    Light lights[];
-} lightData;
-
-layout(std140, binding = 0) uniform SceneData
-{
-    uniform mat4 projViewMat;
-    uniform vec3 viewPos;
-    uniform int  lightsCount;
-    uniform bool castShadows;
-} sceneData;
-
-const uint DIFF_ONLY = 0u;
-const uint DIFF_N_SPEC = 1u;
-const uint DIFF_N_NORMAL = 2u;
+#include "defs.incl"
 
 uniform uint u_ObjType;
 //uniform uint u_HasTextures;
@@ -60,6 +33,18 @@ void main()
 {
     vs_out.FragPos = vec3(u_ModelMat * vec4(aPos, 1.0));
     vs_out.TexCoords = aTexCoords;
+
+    int j = 0;
+    for (int i = 0; i < sceneData.lightsCount; ++i)
+    {
+        Light light = lightData.lights[i];
+        if (light.type == POINT_LIGHT)
+            continue;
+
+        vs_out.FragPosLightSpace[j] = light.projViewMat * vec4(vs_out.FragPos, 1.0);
+        ++j;
+        //lightData.lights[i].projViewMat[0] = fragPosLightSpace;
+    }
 
     switch (u_ObjType)
     {
@@ -75,7 +60,8 @@ void main()
         vec3 B = cross(N, T);
 
         mat3 TBN = transpose(mat3(T, B, N));
-        vs_out.TangentLightPos = TBN * lightData.lights[0].position;
+        for (int i = 0; i < sceneData.lightsCount; ++i)
+            vs_out.TangentLightPos[i] = TBN * lightData.lights[i].position;
         vs_out.TangentViewPos = TBN * sceneData.viewPos;
         vs_out.TangentFragPos = TBN * vs_out.FragPos;
         break;

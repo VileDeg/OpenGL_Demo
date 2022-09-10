@@ -40,7 +40,7 @@ namespace Crave
             float                m_LastFrame{};
             //std::vector<Keybind> m_CamKeys{};
             bool                 m_GladInit = false;
-            float                m_MouseScrollSensivity = 6.f;
+            float                m_MouseScrollSensivity = 10.f;
         }
 
         GLFWwindow* Open(const unsigned width, const unsigned height, const std::string& name)
@@ -236,8 +236,8 @@ namespace Crave
             {
                 if (!m_Camera || !m_Params.viewportHovered)
                     return;
-                //m_Camera->ProcessMouseScroll((float)yoffset * m_MouseScrollSensivity * DeltaTime());
-                m_Camera->MoveForward(yoffset * m_MouseScrollSensivity * DeltaTime());
+                m_Camera->ProcessMouseScroll((float)yoffset * m_MouseScrollSensivity * DeltaTime());
+                //m_Camera->MoveForward(yoffset * m_MouseScrollSensivity * DeltaTime());
             }
 
             void s_keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)

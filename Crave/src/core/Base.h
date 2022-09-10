@@ -8,8 +8,8 @@ namespace Crave
 #ifdef ENABLE_ASSERTS
 
 #ifdef _DEBUG
-#define DEBUG_BREAK(msg) do{ LOG_ERROR("DEBUG_BREAK: {}", msg); __debugbreak(); }while(0)
-#define ASSERT(x, msg) do{ if(!(x)) { DEBUG_BREAK("ASSERT: " msg); } }while(0)
+#define DEBUG_BREAK(...) do{ LOG_ERROR(__VA_ARGS__); __debugbreak(); }while(0)
+#define ASSERT(x, ...) do{ if(!(x)) { DEBUG_BREAK(__VA_ARGS__); } }while(0)
 #else
 #define ASSERT(x,msg) do{ if(!(x)) { LOG_ERROR("Assertion Failed: {}", msg);\
 exit(1); } }while(0)

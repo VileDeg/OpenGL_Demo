@@ -39,6 +39,7 @@ namespace Crave
 	private:
 		void Parse(const std::string& shaderPath);
 		void Parse(const std::unordered_map<Type, std::string>& config);
+		void ParseIncludes(std::string& code, std::string filename);
 		void Compile();
 
 		void Link();

@@ -19,7 +19,7 @@ IncludeDir["GLM"] = "Crave/vendor/GLM"
 IncludeDir["entt"] = "Crave/vendor/entt"
 IncludeDir["assimp"] = "Crave/vendor/assimp/include"
 IncludeDir["ImGuizmo"] = "Crave/vendor/ImGuizmo"
-IncludeDir["stb_image"] = "Crave/vendor/stb_image"
+IncludeDir["stb"] = "Crave/vendor/stb"
 IncludeDir["cereal"] = "Crave/vendor/cereal"
 IncludeDir["magic_enum"] = "Crave/vendor/magic_enum"
 IncludeDir["spdlog"] = "Crave/vendor/spdlog/include"
@@ -54,8 +54,8 @@ project "Crave"
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
 		
-		"%{prj.name}/vendor/stb_image/**.cpp",
-		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb/**.cpp",
+		"%{prj.name}/vendor/stb/**.h",
 		
 		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
 		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
@@ -72,7 +72,7 @@ project "Crave"
 
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
-		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.stb}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.entt}",
@@ -92,7 +92,9 @@ project "Crave"
 		"opengl32.lib"
 	}
 	
-	filter "files:Crave/vendor/ImGuizmo/**.cpp"
+	filter {"files:Crave/vendor/ImGuizmo/**.cpp"}
+	flags { "NoPCH" }
+	filter {"files:files:Crave/vendor/stb/**.cpp"}
 	flags { "NoPCH" }
 
 	filter "system:windows"

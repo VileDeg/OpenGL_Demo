@@ -120,6 +120,10 @@
       <Project>{5699FB0C-C2AD-23BE-8B2F-C71DF70220EF}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\defs.incl" />
+    <None Include="res\shaders\shadowMapping.incl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

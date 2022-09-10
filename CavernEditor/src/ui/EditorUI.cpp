@@ -35,7 +35,9 @@ namespace Crave
 
             void SetKeybinds()
             {
-                
+                Input::KeybindBindAction(Input::KeybindName::ToggleCameraProjectionType, [&]() {
+                    m_Camera->SetIsPerspective(!m_Camera->GetIsPerspective()); });
+
                 Input::KeybindBindAction(Input::KeybindName::GizmoNone,      [&]() {
                     m_GizmoType = -1; });
                 Input::KeybindBindAction(Input::KeybindName::GizmoTranslate, [&]() {
@@ -93,19 +95,19 @@ namespace Crave
 
                 if (selectedEntity && m_GizmoType != -1)
                 {
-                    ImGuizmo::SetOrthographic(false);
+                    bool isPersp = m_Camera->GetIsPerspective();
+                    ImGuizmo::SetOrthographic(!isPersp);
                     ImGuizmo::SetDrawlist();
 
                     ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
                     // Camera
-                    const glm::mat4& cameraProjection = m_Camera->GetProjMat();
+                    glm::mat4 cameraProjection = m_Camera->GetProjMat();
                     glm::mat4 cameraView = m_Camera->GetViewMat();
 
                     // Entity transform
                     auto& tc = selectedEntity.GetComponent<Transform>();
                     glm::mat4 transform = tc.GetTransform();
-
                     // Snapping
                     bool snap = Input::IsKeyDown(Input::Key::LeftCtrl);
                     float snapValue = 0.5f; // Snap to 0.5m for translation/scale
@@ -114,10 +116,12 @@ namespace Crave
                         snapValue = 45.0f;
 
                     float snapValues[3] = { snapValue, snapValue, snapValue };
+                   
                     //We pass global transform matrix to gizmo so that it shows correctly at object center
+                    glm::mat4 deltaMat = glm::mat4(1.f);
                     ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
                         (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
-                        nullptr, snap ? snapValues : nullptr);
+                        glm::value_ptr(deltaMat), snap ? snapValues : nullptr);
 
                     if (ImGuizmo::IsUsing())
                     {

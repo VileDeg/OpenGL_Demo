@@ -5,46 +5,46 @@
 
 namespace Crave
 {
-    Camera::Camera(glm::vec3 position,
+    Camera::Camera(glm::vec3 position, bool isPerspective,
         glm::vec3 up, float yaw, float pitch)
         : m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
         m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
         m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch),
-        m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE),
+        //m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE),
         m_ViewMat(glm::lookAt(m_Position, m_Position + m_Front, m_Up)),
-        m_ProjMat(glm::perspective(glm::radians(m_Zoom),
-            (float)(Window::Width()) / Window::Height(),
-            m_NearPlane, m_FarPlane))
+        m_IsPerspective(isPerspective)
     {
+        UpdateProjMat(Window::Width(), Window::Height());
+
         m_Front = glm::normalize(glm::vec3(0.f) - position);
         m_Pitch = glm::degrees(glm::asin(m_Front.y)); //Look down to world origin by default
 
-        UpdateCameraVectors();
+        UpdateViewMat();
     }
 
     void Camera::OnUpdate()
     {
-        UpdateCameraVectors();
-        m_ViewMat = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
-        m_ProjViewMat = m_ProjMat * m_ViewMat;
+        UpdateViewMat();
     }
 
-    //void Camera::SetViewportDimensions(unsigned width, unsigned height)
-    //{
-    //    m_ViewportDim.x = width;
-    //    m_ViewportDim.y = height;
-    //    UpdateProjMat(width, height);
-    //}
 
-    void Camera::UpdateProjMat(unsigned width, unsigned height)
+
+    void Camera::UpdateProjMat(int width, int height)
     {
-        m_ProjMat = glm::perspective(glm::radians(m_Zoom),
-            (float)(width) / height,
-            m_NearPlane, m_FarPlane);
-        m_ProjViewMat = m_ProjMat * m_ViewMat;
+     
+        m_LastViewportDim = { width, height };
+        
+        m_PerspectiveProjMat = glm::perspective(glm::radians(PERSP_FOVY_DEGREES),
+            (float)width / (float)height, PERSP_NEAR_PLANE, PERSP_FAR_PLANE);
+        
+
+        glm::vec2 wh = glm::vec2(width * 0.5f, height * 0.5f) / m_Zoom;
+            
+        m_OrthographicProjMat = glm::ortho(-wh.x, wh.x, -wh.y, wh.y,
+            ORTHO_NEAR_PLANE, ORTHO_FAR_PLANE);
     }
 
-    void Camera::UpdateCameraVectors()
+    void Camera::UpdateViewMat()
     {
         glm::vec3 front;
         front.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
@@ -54,6 +54,8 @@ namespace Crave
 
         m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp));
         m_Up = glm::normalize(glm::cross(m_Right, m_Front));
+
+        m_ViewMat = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
     }
 
     void Camera::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch)
@@ -72,17 +74,25 @@ namespace Crave
                 m_Pitch = -89.0f;
         }
 
-        UpdateCameraVectors();
+        UpdateViewMat();
     }
 
     void Camera::ProcessMouseScroll(float yoffset)
     {
-        MoveBackward(yoffset);
-        /*m_Zoom -= (float)yoffset;
-        if (m_Zoom < 1.0f)
-            m_Zoom = 1.0f;
-        if (m_Zoom > ZOOM_MAX)
-            m_Zoom = ZOOM_MAX;
-        UpdateProjMat(m_ViewportDim.x, m_ViewportDim.y);*/
+        if (m_IsPerspective)
+        {
+            MoveBackward(yoffset);
+        }
+        else
+        {
+            float zoomSens = 10.f;
+            m_Zoom -= (float)yoffset * zoomSens;
+            if (m_Zoom < 1.0f)
+                m_Zoom = 1.0f;
+            if (m_Zoom > ZOOM_MAX)
+                m_Zoom = ZOOM_MAX;
+            UpdateProjMat(m_LastViewportDim.x, m_LastViewportDim.y);
+        }
+        
     }
 }

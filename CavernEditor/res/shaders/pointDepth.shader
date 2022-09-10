@@ -2,13 +2,7 @@
 #version 460 core
 layout(location = 0) in vec3 aPos;
 
-
 uniform mat4 u_ModelMat;
-
-//uniform mat4 u_ShadowMat;
-//uniform vec3 u_LightPos;
-//uniform mat4 u_ShadowMatrices[6];
-
 
 void main()
 {
@@ -38,7 +32,6 @@ void main()
         EndPrimitive();
     }
 }
-
 
 #shader fragment
 #version 460 core

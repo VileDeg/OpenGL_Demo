@@ -181,28 +181,27 @@ namespace Crave
 
 			//Update dynamic light position
 			if (light.IsDynamic)
-				light.UpdatePosition(transform.Position);
-
-			
+				light.UpdateParameters(transform);
 
 			ShaderType shType;
 			switch (light.Data.type)
 			{
 			case LightType::Point:
-				Renderer::PointShadowSetup(transform.Position, light.SSBOindex);
+				Renderer::PointShadowSetup(light.Data, light.SSBOindex);
 				shType = ShaderType::PointDepth;
 				break;
+			case LightType::Spot:
+				/*Renderer::SpotShadowSetup(light.Data, light.SSBOindex);
+				shType = ShaderType::SpotDepth;
+				break;*/
 			case LightType::Directional:
-				Renderer::DirShadowSetup(transform.Position, light.SSBOindex);
+ 				Renderer::DirShadowSetup(light.Data, light.SSBOindex);
 				shType = ShaderType::DirDepth;
 				break;
-			case LightType::Spot:
 			default:
 				ASSERT(false, "");
 			}
 			RenderSceneDepth(shType);
-			
-			
 		}
 		Renderer::ShadowRenderEnd();
 	}

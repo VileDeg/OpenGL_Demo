@@ -22,6 +22,7 @@ namespace Crave
         Entity m_Cubes[8];
         Entity m_PointLight;
         Entity m_DirLight;
+        Entity m_SpotLight;
         Entity m_Brickwalls[6];
         Entity m_WorldCenter;
         float m_CamSpeed;

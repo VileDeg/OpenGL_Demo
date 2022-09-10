@@ -12,6 +12,7 @@ namespace Crave
 		{
 			None=-1, 
 			CloseWindow,
+			ToggleCameraProjectionType,
 			GizmoNone, GizmoTranslate, GizmoRotate, GizmoScale,
 		};
 		

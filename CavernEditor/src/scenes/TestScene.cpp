@@ -8,9 +8,10 @@ namespace Crave
 
     static glm::vec3 s_PointLightPos = { 0.0f, 0.0f, 7.5f };
     static glm::vec3 s_DirLightPos = { -20.f, 20.f, 0.f };
+    static glm::vec3 s_SpotLightPos = { 7.5f, 0.f, 0.f };
     void TestScene::SetLightParams(float brightness)
     {
-        glm::vec3 ambient = glm::vec3(0.5f);
+        glm::vec3 ambient = glm::vec3(0.1f);
         glm::vec3 diffuse = glm::vec3(0.8f);
         glm::vec3 specular = glm::vec3(1.f);
 
@@ -18,13 +19,13 @@ namespace Crave
         float linear = 0.09f / brightness;
         float quadratic = 0.032f / brightness;
 
-        //float cutOff = 20.f;
+        float cutOff = 12.5f;
 
         {
             m_LightData[LightType::Point].type = LightType::Point;
 
             m_LightData[LightType::Point].position = s_PointLightPos;
-//            m_LightData[LightType::Point].ambient = ambient;
+            //m_LightData[LightType::Point].ambient = ambient;
             m_LightData[LightType::Point].ambient = glm::vec3(0.f);
             m_LightData[LightType::Point].diffuse = diffuse;
             m_LightData[LightType::Point].specular = specular;
@@ -37,11 +38,43 @@ namespace Crave
             m_LightData[LightType::Directional].type = LightType::Directional;
 
             m_LightData[LightType::Directional].position = s_DirLightPos;
+
+            glm::mat4 lightView = glm::lookAt(m_LightData[LightType::Directional].position,
+                glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+
+            m_LightData[LightType::Directional].projViewMat = Renderer::GetDirLightProjMat() * lightView;
+            
             m_LightData[LightType::Directional].ambient = ambient;
             m_LightData[LightType::Directional].diffuse = diffuse;
             m_LightData[LightType::Directional].specular = specular;
 
-            m_LightData[LightType::Directional].direction = {1.f, -1.f, 0.f}; //down + right
+            //Direction is not used by shader! position - FragPos is used to get direction
+            //m_LightData[LightType::Directional].direction = {1.f, -1.f, 0.f}; //down + right
+        }
+        {
+            m_LightData[LightType::Spot].type = LightType::Spot;
+
+            m_LightData[LightType::Spot].position = s_SpotLightPos;
+            m_LightData[LightType::Spot].direction = { -1.f, 0.f, 0.f };
+
+            glm::vec3 pos = m_LightData[LightType::Spot].position;
+            glm::vec3 dir = m_LightData[LightType::Spot].direction;
+            glm::vec3 front = pos + glm::normalize(dir);
+            glm::mat4 lightView = glm::lookAt(pos, front, glm::vec3(0.f, 1.f, 0.f));
+
+            m_LightData[LightType::Spot].projViewMat = Renderer::GetSpotLightProjMat() * lightView;
+
+            m_LightData[LightType::Spot].ambient = ambient;
+            //m_LightData[LightType::Spot].ambient = glm::vec3(0.f);
+            m_LightData[LightType::Spot].diffuse = diffuse;
+            m_LightData[LightType::Spot].specular = specular;
+
+            m_LightData[LightType::Spot].constant = constant;
+            m_LightData[LightType::Spot].linear = linear;
+            m_LightData[LightType::Spot].quadratic = quadratic;
+
+            m_LightData[LightType::Spot].cutOff = glm::cos(glm::radians(cutOff));
+            m_LightData[LightType::Spot].outerCutOff = glm::cos(glm::radians(cutOff+5.f));
         }
     }
 
@@ -121,6 +154,40 @@ namespace Crave
         }
 #endif
 #if 0
+        float scale = 10.f;
+        float halfScale = scale * 0.5f + 10.f;
+        for (int i = 0; i < 5; ++i)
+        {
+            m_Brickwalls[i] = CreateEntity("Brickwall" + std::to_string(i));
+            m_Brickwalls[i].AddComponent<MeshInstance>(m_CubeMesh);
+
+            m_Brickwalls[i].GetComponent<Transform>().ScaleF(scale);
+        }
+
+        const glm::vec3 up{ 0.f, 1.f, 0.f };
+        const glm::vec3 right{ 1.f, 0.f, 0.f };
+
+        {
+            m_Brickwalls[0].GetComponent<Transform>().Position = { 0.f, halfScale, 0.f };
+            m_Brickwalls[0].GetComponent<Transform>().RotateTo(90.f, right);
+
+            m_Brickwalls[1].GetComponent<Transform>().Position = { 0.f, 0.f, -halfScale };
+            m_Brickwalls[1].GetComponent<Transform>().RotateTo(180.f, up);
+
+            m_Brickwalls[2].GetComponent<Transform>().Position = { -halfScale, 0.f, 0.f };
+            m_Brickwalls[2].GetComponent<Transform>().RotateTo(90.f, up);
+
+            m_Brickwalls[3].GetComponent<Transform>().Position = { halfScale, 0.f, 0.f };
+            m_Brickwalls[3].GetComponent<Transform>().RotateTo(-90.f, up);
+
+            m_Brickwalls[4].GetComponent<Transform>().Position = { 0.f, -halfScale, 0.f };
+            m_Brickwalls[4].GetComponent<Transform>().RotateTo(-90.f, right);
+
+            /*m_Brickwalls[5].GetComponent<Transform>().Position = { 0.f, halfScale, 0.f };
+            m_Brickwalls[5].GetComponent<Transform>().RotateTo(90.f, right);*/
+        }
+#endif
+#if 1
         {
             m_PointLight = CreateEntity("PointLight");
             m_PointLight.AddComponent<MeshInstance>(m_CubeMesh, false);
@@ -146,8 +213,21 @@ namespace Crave
             m_DirLight.AddComponent<Light>(m_LightData[LightType::Directional], true);
         }
 #endif
-        Entity model = ImportModel("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");
-        model.GetComponent<Transform>().Position = { 5.f, 5.f, 0.f };
+#if 1
+        {
+            m_SpotLight = CreateEntity("SpotLight");
+            m_SpotLight.AddComponent<MeshInstance>(m_CubeMesh, false);
+
+            m_SpotLight.GetComponent<MeshInstance>().Color = { 1.f, 1.f, 1.f, 1.f };
+
+            m_SpotLight.GetComponent<Transform>().Position = s_SpotLightPos;
+            m_SpotLight.GetComponent<Transform>().ScaleF(0.2f);
+
+            m_SpotLight.AddComponent<Light>(m_LightData[LightType::Spot], true);
+        }
+#endif
+       // Entity model = ImportModel("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");
+        //model.GetComponent<Transform>().Position = { 5.f, 5.f, 0.f };
     }
 
     static float DeltaTime = 0.f;
@@ -166,7 +246,7 @@ namespace Crave
         DeltaTime = deltaTime;
         Renderer::BeginScene(m_Camera, CastShadows);
 
-        SetLightParams(s_LightBrightness);
+        //SetLightParams(s_LightBrightness);
 
        /* auto& view = m_Registry.view<Tag, Transform, Light>();
         for (auto& entity : view)
@@ -185,7 +265,6 @@ namespace Crave
 
         Renderer::EndScene();
         m_Camera->SetSpeed(m_CamSpeed);
-
     }
 
     void TestScene::OnImGuiRender(ImGuiWindowFlags panelFlags)

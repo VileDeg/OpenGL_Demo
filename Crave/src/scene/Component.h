@@ -111,9 +111,37 @@ namespace Crave
 			bool	  IsDynamic{ false };
 			unsigned  SSBOindex;
 
-			void UpdatePosition(const glm::vec3& pos)
+			void UpdateParameters(const glm::mat4& transform)
 			{
-				Renderer::UpdateLightPosition(glm::value_ptr(pos), SSBOindex);
+				glm::mat4 inv = transform;
+				glm::vec3 pos = inv[3];
+				glm::vec3 front = glm::normalize(inv[2]);
+				glm::vec3 up = glm::normalize(inv[1]);
+				Data.position = pos;
+				switch (Data.type)
+				{
+				case LightType::Directional:
+				{
+					glm::mat4 lightView = glm::lookAt(Data.position, glm::vec3(0.0f), glm::vec3(0.f, 1.f, 0.f));
+					Data.projViewMat = Renderer::GetDirLightProjMat() * lightView;
+					Renderer::UploadLightData(Data, SSBOindex);
+					break;
+				}
+				case LightType::Spot:
+				{
+					//Data.direction = front;
+					glm::vec3 front = glm::normalize(Data.direction);
+					glm::mat4 lightView = glm::lookAt(Data.position, Data.position + front, up);
+					Data.projViewMat = Renderer::GetSpotLightProjMat() * lightView;
+					Renderer::UploadLightData(Data, SSBOindex);
+					break;
+				}
+				case LightType::Point:
+					Renderer::UpdateLightPosition(glm::value_ptr(pos), SSBOindex);
+					break;
+				default:
+					DEBUG_BREAK("");
+				}
 			}
 
 			void UploadToSSBO(const LightData& lightData)

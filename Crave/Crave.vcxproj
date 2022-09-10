@@ -58,7 +58,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\GLAD\include;vendor\stb_image;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;vendor\cereal;vendor\ImGuizmo;vendor\magic_enum;vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\GLAD\include;vendor\stb;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;vendor\cereal;vendor\ImGuizmo;vendor\magic_enum;vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\GLAD\include;vendor\stb_image;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;vendor\cereal;vendor\ImGuizmo;vendor\magic_enum;vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\GLAD\include;vendor\stb;vendor\imgui;vendor\GLM;vendor\entt;vendor\assimp\include;vendor\cereal;vendor\ImGuizmo;vendor\magic_enum;vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -537,7 +537,8 @@
     <ClInclude Include="vendor\glm\glm\vec3.hpp" />
     <ClInclude Include="vendor\glm\glm\vec4.hpp" />
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp" />
-    <ClInclude Include="vendor\stb_image\stb_image.h" />
+    <ClInclude Include="vendor\stb\stb_image.h" />
+    <ClInclude Include="vendor\stb\stb_include.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\Log.cpp" />
@@ -566,7 +567,12 @@
     <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vendor\stb_image\stb_image.cpp" />
+    <ClCompile Include="vendor\stb\stb_image.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\stb\stb_include.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
