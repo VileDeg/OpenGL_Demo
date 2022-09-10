@@ -12,7 +12,7 @@ namespace Crave
         void OnUpdate(float deltaTime) override;
         void OnImGuiRender(ImGuiWindowFlags panelFlags) override;
     private:
-        void SetLightParams(float brightness);
+        //void SetLightParams(float brightness);
     private:
         Ref<Camera> m_Camera;
         Ref<Mesh> m_CubeMesh;
@@ -27,6 +27,6 @@ namespace Crave
         Entity m_WorldCenter;
         float m_CamSpeed;
         //LightData m_PointLightParams;
-        std::unordered_map<LightType, LightData> m_LightData;
+        //std::unordered_map<LightType, LightData> m_LightData;
     };
 }

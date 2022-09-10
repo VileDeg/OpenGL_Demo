@@ -178,16 +178,21 @@ namespace Crave
 		for (auto& entity : view)
 		{
 			auto& [transform, light] = view.get(entity);
-
+			/*if (!light.Enabled)
+				continue;*/
 			//Update dynamic light position
 			if (light.IsDynamic)
-				light.UpdateParameters(transform);
+			{
+				if (transform.UpdatedLastFrame())
+					light.UpdateViewMat(transform);
+				light.UploadToShader();
+			}
 
 			ShaderType shType;
 			switch (light.Data.type)
 			{
 			case LightType::Point:
-				Renderer::PointShadowSetup(light.Data, light.SSBOindex);
+				Renderer::PointShadowSetup(light.Data, light.ShaderIndex);
 				shType = ShaderType::PointDepth;
 				break;
 			case LightType::Spot:
@@ -195,7 +200,7 @@ namespace Crave
 				shType = ShaderType::SpotDepth;
 				break;*/
 			case LightType::Directional:
- 				Renderer::DirShadowSetup(light.Data, light.SSBOindex);
+ 				Renderer::DirShadowSetup(light.Data, light.ShaderIndex);
 				shType = ShaderType::DirDepth;
 				break;
 			default:

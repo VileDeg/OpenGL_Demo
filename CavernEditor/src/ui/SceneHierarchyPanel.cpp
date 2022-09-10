@@ -344,6 +344,19 @@ namespace Crave
 				ImGui::Text("Number of children: %ld", tr.Children.size());
 			});
 
+		DrawComponent<Light>("Light", entity, [](auto& li)
+			{
+				ImGui::Checkbox("Enabled", &li.Data.enabled);
+				ImGui::DragFloat("Brightness", &li.Data.brightness, 0.1f, 0.f, Renderer::LIGHT_MAX_BRIGHTNESS);
+				ImGui::Text("Attenuation: ");
+				
+				float min{ 0.f }, max{ 0.1f };
+				ImGui::DragFloat("Constant", &li.Data.constant, 0.1f, min, 1.f);
+				ImGui::DragFloat("Linear", &li.Data.linear, 0.01f, min, max);
+				ImGui::DragFloat("Quadratic", &li.Data.quadratic, 0.001f, min, max);
+
+			});
+
 		DrawComponent<MeshInstance>("MeshInstance", entity, [](auto& mi)
 			{
 				ImGui::Checkbox("HasTextures", &mi.HasTextures);

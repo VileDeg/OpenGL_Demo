@@ -5,7 +5,6 @@
 
 #include "renderer/Renderer.h"
 #include "renderer/Mesh.h"
-//#include "import/Model.h"
 
 #include "scene/Scene.h"
 
@@ -32,11 +31,8 @@ namespace Crave
 
 		struct Transform
 		{
-			static constexpr auto in_place_delete = true;
-
 			Entity Owner{};
-
-			Entity Parent;
+			Entity Parent{};
 
 			std::vector<Entity> Children{};
 
@@ -44,6 +40,12 @@ namespace Crave
 			glm::quat Quaternion{};
 			glm::vec3 EulerAngles{};
 			glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
+
+			glm::mat4 PrevTransform{};
+
+
+
+			bool UpdatedLastFrame() const { return GetTransform() != PrevTransform; }
 
 			void ScaleF(const float units);
 
@@ -108,53 +110,57 @@ namespace Crave
 		struct Light
 		{
 			LightData Data{};
+			//bool	  Enabled{ true };
 			bool	  IsDynamic{ false };
-			unsigned  SSBOindex;
+			unsigned  ShaderIndex{};
+			//float	  Brightness{ 1.f };
+			float	  Radius{};
 
-			void UpdateParameters(const glm::mat4& transform)
-			{
-				glm::mat4 inv = transform;
-				glm::vec3 pos = inv[3];
-				glm::vec3 front = glm::normalize(inv[2]);
-				glm::vec3 up = glm::normalize(inv[1]);
-				Data.position = pos;
-				switch (Data.type)
-				{
-				case LightType::Directional:
-				{
-					glm::mat4 lightView = glm::lookAt(Data.position, glm::vec3(0.0f), glm::vec3(0.f, 1.f, 0.f));
-					Data.projViewMat = Renderer::GetDirLightProjMat() * lightView;
-					Renderer::UploadLightData(Data, SSBOindex);
-					break;
-				}
-				case LightType::Spot:
-				{
-					//Data.direction = front;
-					glm::vec3 front = glm::normalize(Data.direction);
-					glm::mat4 lightView = glm::lookAt(Data.position, Data.position + front, up);
-					Data.projViewMat = Renderer::GetSpotLightProjMat() * lightView;
-					Renderer::UploadLightData(Data, SSBOindex);
-					break;
-				}
-				case LightType::Point:
-					Renderer::UpdateLightPosition(glm::value_ptr(pos), SSBOindex);
-					break;
-				default:
-					DEBUG_BREAK("");
-				}
-			}
+			bool	  _UpdatedLastFrame{ false };
 
-			void UploadToSSBO(const LightData& lightData)
+			//void SetEnabled(bool enabled) { _UpdatedLastFrame = true;  Enabled = enabled; }
+
+			//bool UpdatedLastFrame() const { return _UpdatedLastFrame; }
+
+			//void ApplyBrightness();
+
+			//void SetAttenuation(glm::vec3 atten)
+			//{
+			//	//_UpdatedLastFrame = true;
+			//	Data.constant = atten.x;
+			//	Data.linear = atten.y;
+			//	Data.quadratic = atten.z;
+			//}
+			//void UpdateRadius();
+
+			//void UpdateAttenuation();
+
+			//void SetRadius(float rad);
+			
+			void UpdateViewMat(const glm::mat4& transform);
+
+			void UploadToShader()
 			{
-				Renderer::UploadLightData(lightData, SSBOindex);
+				Renderer::UploadLightData(Data, ShaderIndex);
 			}
 
 			Light() = default;
-			Light(const LightData& lightData, bool isDynamic = false)
+			//More suitable for dynamic lights
+			//Position, direction etc. will be updated according to transform component.
+			Light(LightType type, bool isDynamic)
+				: Data(Renderer::GetDefaultLightData(type)), IsDynamic(isDynamic)
+			{
+				ShaderIndex = Renderer::AddNewLight(Data);
+			}
+			//More suitable for non-dynamic light since it won't be update with transform
+			//Allows to directly set light's position, direction etc.
+			Light(const LightData& lightData, bool isDynamic)
 				: Data(lightData), IsDynamic(isDynamic)
 			{
-				SSBOindex = Renderer::AddNewLight(Data);
+				ShaderIndex = Renderer::AddNewLight(Data);
+				
 			}
+			
 		};
 	}
 }

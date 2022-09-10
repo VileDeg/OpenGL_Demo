@@ -1,3 +1,6 @@
+//? #version 460 core
+//? const int MAX_LIGHTS_COUNT = 16;
+
 struct Light
 {
     vec3 position;
@@ -11,7 +14,9 @@ struct Light
     vec3 specular;
     float outerCutOff;
     mat4 projViewMat;
+    float brightness;
     int type;
+    bool enabled;
 };
 
 

@@ -81,6 +81,7 @@ namespace Crave
                 m_GladInit = true;
 #ifdef _DEBUG
                 glEnable(GL_DEBUG_OUTPUT);
+                glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
                 glDebugMessageCallback(s_DebugMessageCallback, nullptr);
 #endif
             }

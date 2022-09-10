@@ -373,6 +373,66 @@ namespace Crave
 			s_Data->LightUBO->Upload(&data, SSBO_LIGHT_SIZE, offset);
 		}
 
+		LightData GetDefaultLightData(LightType type)
+		{
+			static glm::vec3 ambient  = glm::vec3(0.1f);
+			static glm::vec3 diffuse  = glm::vec3(0.5f);
+			static glm::vec3 specular = glm::vec3(1.f);
+
+			static float brightness = 1.f;
+
+			static float constant = 1.f;
+			static float linear = 0.09f;
+			static float quadratic = 0.032f;
+
+			static float cutOff = 25.f;
+			static float outerCutOff = cutOff + 5.f;
+
+			LightData data{};
+			data.enabled    = true;
+			data.type	    = type;
+			data.brightness = brightness;
+
+			data.position   = glm::vec3{0.f};
+
+			data.diffuse    = diffuse;
+			data.specular   = specular;
+
+			if (type == LightType::Point || type == LightType::Spot)
+			{
+				data.ambient   = glm::vec3(0.f);
+
+				data.constant  = constant;
+				data.linear    = linear;
+				data.quadratic = quadratic;
+
+				if (type == LightType::Spot)
+				{
+					data.cutOff		 = glm::cos(glm::radians(cutOff));
+					data.outerCutOff = glm::cos(glm::radians(outerCutOff));
+
+					data.direction   = { 0.f, 0.f, 1.f };
+
+					glm::vec3 front = data.position + glm::normalize(data.direction);
+					glm::mat4 lightView = glm::lookAt(data.position, front, glm::vec3(0.f, 1.f, 0.f));
+
+					data.projViewMat = Renderer::GetSpotLightProjMat() * lightView;
+				}
+			}
+			else if (type == LightType::Directional)
+			{
+				data.ambient = ambient;
+
+				glm::mat4 lightView = glm::lookAt(data.position,
+					glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+				data.projViewMat = Renderer::GetDirLightProjMat() * lightView;
+			}
+			else
+				DEBUG_BREAK("");
+
+			return data;
+		}
+
 		unsigned AddNewLight(const LightData& data)
 		{
 			s_Data->LightsCount++;

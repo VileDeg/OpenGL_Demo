@@ -118,10 +118,10 @@ namespace Crave
                     float snapValues[3] = { snapValue, snapValue, snapValue };
                    
                     //We pass global transform matrix to gizmo so that it shows correctly at object center
-                    glm::mat4 deltaMat = glm::mat4(1.f);
+                    //glm::mat4 deltaMat = glm::mat4(1.f);
                     ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
                         (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
-                        glm::value_ptr(deltaMat), snap ? snapValues : nullptr);
+                        nullptr, snap ? snapValues : nullptr);
 
                     if (ImGuizmo::IsUsing())
                     {

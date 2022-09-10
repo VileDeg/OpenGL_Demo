@@ -20,7 +20,7 @@ in VS_OUT
     vec4 FragPosLightSpace[MAX_DIRNSPOT_LIGHTS];
 } fs_in;
 
-#include "defs.incl"
+#include "defs.glsl"
 
 uniform uint u_ObjType;
 uniform int u_DrawId;
@@ -28,29 +28,25 @@ uniform int u_DrawId;
 uniform Material material;
 
 //uniform samplerCube u_PointLDepthCubemap;
-uniform int u_SAtlasFramesPerRow; //3
-uniform int u_SFrameSize; //1024
-uniform ivec2 u_SAtlasSize; 
-uniform sampler2D u_SAtlas; //3x2
-uniform float u_PointLightFarPlane;
+
 
 //uniform sampler2D u_DirLDepthMap;
 
-#include "shadowMapping.incl"
+#include "shadowMapping.glsl"
 
 void main()
 {
     vec3 Lighting = vec3(0.0, 0.0, 0.0);
-    //vec3 Ambient = vec3(0.0, 0.0, 0.0);
-    //vec3 Diffuse = vec3(0.0, 0.0, 0.0);
-    //vec3 Specular = vec3(0.0, 0.0, 0.0);
+
     vec3 lighting = vec3(0.0, 0.0, 0.0);
-    float Shadow = 0.0;
+
 
     int j = 0;
     for (int i = 0; i < sceneData.lightsCount; ++i)
     {
         Light light = lightData.lights[i];
+        if (!light.enabled)
+            continue;
         
         vec3 normal;
         vec3 viewDir;
@@ -89,11 +85,16 @@ void main()
         vec3 diffuse = light.diffuse * diff * color;
         vec3 specular = light.specular * spec * matSpec;
 
+        ambient  *= light.brightness;
+        diffuse  *= light.brightness;
+        specular *= light.brightness;
         
         // spotlight (soft edges)
         if (light.type == SPOT_LIGHT)
         {
+            //In case of normal maps can't use lightDir because it's in tangent space
             vec3 wlightDir = normalize(light.position - fs_in.FragPos);
+    
             float theta = dot(wlightDir, normalize(-light.direction)); 
             float epsilon = (light.cutOff - light.outerCutOff);
             float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
@@ -111,30 +112,21 @@ void main()
             diffuse *= attenuation;
             specular *= attenuation;
         }
-        
-        //Total values
-        //Ambient += ambient;
-        //Diffuse += diffuse;
-        //Specular += specular;
-        
 
         float shadow = 0.0;
         if (sceneData.castShadows)
         {
             switch (light.type)
             {
-            
             case SPOT_LIGHT:
             case DIRECTIONAL_LIGHT:
-                shadow = DirShadowCalc(fs_in.FragPosLightSpace[j], light.position, i);
+                shadow = DirShadowCalc(fs_in.Normal, fs_in.FragPos, fs_in.FragPosLightSpace[j], light.position, i);
                 ++j;
                 break;
             case POINT_LIGHT:
                 shadow = PointShadowCalc(fs_in.FragPos, light.position, i);
                 break;
             }
-            //Total shadow
-            //Shadow += shadow;
         }
         lighting = (ambient + (1.0 - shadow) * (diffuse + specular));
         Lighting += lighting;

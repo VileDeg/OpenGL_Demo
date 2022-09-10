@@ -34,7 +34,9 @@ namespace Crave
 		glm::vec3 specular;
 		float outerCutOff;
 		glm::mat4 projViewMat;
+		float brightness;
 		LightType type;
+		bool enabled;
 	};
 	
 	enum class ShaderType
@@ -54,12 +56,13 @@ namespace Crave
 
 		void GlobalShadowSetup();
 		void DirShadowSetup(LightData& data, int frameNum);
-		void SpotShadowSetup(LightData& data, int frameNum);
+		//void SpotShadowSetup(LightData& data, int frameNum);
 		void PointShadowSetup(LightData& data, int frameNum);
 		void ShadowRenderEnd();
 
 		void DrawSkybox();
 
+		LightData GetDefaultLightData(LightType type);
 		unsigned AddNewLight(const LightData& data);
 		void UploadLightData(const LightData& data, unsigned ssboIndex);
 		void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
@@ -78,5 +81,10 @@ namespace Crave
 		
 		glm::mat4& GetDirLightProjMat();
 		glm::mat4& GetSpotLightProjMat();
+
+		constexpr const int LIGHT_MIN_RADIUS = 1.f;
+		constexpr const int LIGHT_MAX_RADIUS = 15.f;
+
+		constexpr const int LIGHT_MAX_BRIGHTNESS = 10.f;
 	};
 }

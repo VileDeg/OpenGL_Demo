@@ -1,54 +1,22 @@
+//? #version 460 core
+
 vec3 convert_xyz_to_cube_uv(float x, float y, float z);
+
+uniform int u_SAtlasFramesPerRow; //3
+uniform int u_SFrameSize; //1024
+uniform ivec2 u_SAtlasSize; 
+uniform sampler2D u_SAtlas; //3x2
+uniform float u_PointLightFarPlane;
 
 ivec2 GetLightOffsetInAtlas(int lightIndex, int framesPerRow, int frameSize)
 {
-    return ivec2(lightIndex*3 % u_SAtlasFramesPerRow, lightIndex*3 / u_SAtlasFramesPerRow * 2 ) *  u_SFrameSize;
+    return ivec2(lightIndex*3 % framesPerRow, lightIndex*3 / framesPerRow * 2 ) *  frameSize;
 }
 
 
-float SpotShadowCalc(vec4 fragPosLightSpace, vec3 lightPos, int lightIndex)
-{
-    // perform perspective divide
-    //vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // transform to [0,1] range
-    //projCoords = projCoords * 0.5 + 0.5;
-    vec3 projCoords = fragPosLightSpace.xyz;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    ivec2 offset = GetLightOffsetInAtlas(lightIndex, u_SAtlasFramesPerRow, u_SFrameSize);
-    vec2 uv = offset + projCoords.xy * u_SFrameSize;
-    uv /= u_SAtlasSize;
-    float closestDepth = texture(u_SAtlas, uv).r;
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-    // calculate bias (based on depth map resolution and slope)
-    vec3 normal = normalize(fs_in.Normal);
-    vec3 lightDir = normalize(lightPos - fs_in.FragPos);
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
-    // check whether current frag pos is in shadow
-    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
-    // PCF
-    //float shadow = 0.0;
-    //vec2 texelSize = 1.0 / vec2(u_SFrameSize, u_SFrameSize);
-    //for (int x = -1; x <= 1; ++x)
-    //{
-    //    for (int y = -1; y <= 1; ++y)
-    //    {
-    //        float pcfDepth = texture(u_SAtlas, uv + vec2(x, y) * texelSize).r;
-    //        shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-    //    }
-    //}
-    //shadow /= 9.0;
 
-    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-    if (projCoords.z > 1.0)
-        shadow = 0.0;
-    // display closestDepth as debug (to visualize depth cubemap)
-    //FragColor = vec4(vec3(closestDepth / u_PointLightFarPlane), 1.0);
 
-    return shadow;
-}
-
-float DirShadowCalc(vec4 fragPosLightSpace, vec3 lightPos, int lightIndex)
+float DirShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace, vec3 lightPos, int lightIndex)
 {
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -62,9 +30,9 @@ float DirShadowCalc(vec4 fragPosLightSpace, vec3 lightPos, int lightIndex)
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // calculate bias (based on depth map resolution and slope)
-    vec3 normal = normalize(fs_in.Normal);
-    vec3 lightDir = normalize(lightPos - fs_in.FragPos);
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    vec3 norm = normalize(normal);
+    vec3 lightDir = normalize(lightPos - fragPos);
+    float bias = max(0.05 * (1.0 - dot(norm, lightDir)), 0.005);
     // check whether current frag pos is in shadow
     float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
     // PCF

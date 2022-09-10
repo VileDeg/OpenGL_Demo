@@ -36,7 +36,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\defs.incl" />
-    <None Include="res\shaders\shadowMapping.incl" />
+    <None Include="res\shaders\defs.glsl" />
+    <None Include="res\shaders\shadowMapping.glsl" />
   </ItemGroup>
 </Project>

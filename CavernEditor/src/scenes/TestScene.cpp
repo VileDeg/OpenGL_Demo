@@ -9,83 +9,88 @@ namespace Crave
     static glm::vec3 s_PointLightPos = { 0.0f, 0.0f, 7.5f };
     static glm::vec3 s_DirLightPos = { -20.f, 20.f, 0.f };
     static glm::vec3 s_SpotLightPos = { 7.5f, 0.f, 0.f };
-    void TestScene::SetLightParams(float brightness)
-    {
-        glm::vec3 ambient = glm::vec3(0.1f);
-        glm::vec3 diffuse = glm::vec3(0.8f);
-        glm::vec3 specular = glm::vec3(1.f);
+    //void TestScene::SetLightParams(float brightness)
+    //{
+    //    glm::vec3 ambient = glm::vec3(0.1f);
+    //    glm::vec3 diffuse = glm::vec3(0.5f);
+    //    glm::vec3 specular = glm::vec3(1.f);
 
-        float constant = 1.f / brightness;
-        float linear = 0.09f / brightness;
-        float quadratic = 0.032f / brightness;
+    //    float constant = 1.f / brightness;
+    //    float linear = 0.09f / brightness;
+    //    float quadratic = 0.032f / brightness;
 
-        float cutOff = 12.5f;
+    //    float cutOff = 25.f;
 
-        {
-            m_LightData[LightType::Point].type = LightType::Point;
+    //    {
 
-            m_LightData[LightType::Point].position = s_PointLightPos;
-            //m_LightData[LightType::Point].ambient = ambient;
-            m_LightData[LightType::Point].ambient = glm::vec3(0.f);
-            m_LightData[LightType::Point].diffuse = diffuse;
-            m_LightData[LightType::Point].specular = specular;
+    //        m_LightData[LightType::Point].enabled = true;
+    //        m_LightData[LightType::Point].type = LightType::Point;
+    //         
+    //        m_LightData[LightType::Point].position = s_PointLightPos;
+    //        //m_LightData[LightType::Point].ambient = ambient;
+    //        m_LightData[LightType::Point].ambient = glm::vec3(0.f);
+    //        m_LightData[LightType::Point].diffuse = diffuse;
+    //        m_LightData[LightType::Point].specular = specular;
 
-            m_LightData[LightType::Point].constant = constant;
-            m_LightData[LightType::Point].linear = linear;
-            m_LightData[LightType::Point].quadratic = quadratic;
-        }
-        {
-            m_LightData[LightType::Directional].type = LightType::Directional;
+    //        m_LightData[LightType::Point].constant = constant;
+    //        m_LightData[LightType::Point].linear = linear;
+    //        m_LightData[LightType::Point].quadratic = quadratic;
+    //    }
+    //    {
+    //        m_LightData[LightType::Directional].enabled = true;
+    //        m_LightData[LightType::Directional].type = LightType::Directional;
 
-            m_LightData[LightType::Directional].position = s_DirLightPos;
+    //        m_LightData[LightType::Directional].position = s_DirLightPos;
 
-            glm::mat4 lightView = glm::lookAt(m_LightData[LightType::Directional].position,
-                glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+    //        glm::mat4 lightView = glm::lookAt(m_LightData[LightType::Directional].position,
+    //            glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 
-            m_LightData[LightType::Directional].projViewMat = Renderer::GetDirLightProjMat() * lightView;
-            
-            m_LightData[LightType::Directional].ambient = ambient;
-            m_LightData[LightType::Directional].diffuse = diffuse;
-            m_LightData[LightType::Directional].specular = specular;
+    //        m_LightData[LightType::Directional].projViewMat = Renderer::GetDirLightProjMat() * lightView;
+    //        
+    //        m_LightData[LightType::Directional].ambient = ambient;
+    //        //m_LightData[LightType::Directional].ambient = glm::vec3(0.f);
+    //        m_LightData[LightType::Directional].diffuse = diffuse;
+    //        m_LightData[LightType::Directional].specular = specular;
 
-            //Direction is not used by shader! position - FragPos is used to get direction
-            //m_LightData[LightType::Directional].direction = {1.f, -1.f, 0.f}; //down + right
-        }
-        {
-            m_LightData[LightType::Spot].type = LightType::Spot;
+    //        //Direction is not used by shader! position - FragPos is used to get direction
+    //        //m_LightData[LightType::Directional].direction = {1.f, -1.f, 0.f}; //down + right
+    //    }
+    //    {
+    //        m_LightData[LightType::Spot].enabled = true;
+    //        m_LightData[LightType::Spot].type = LightType::Spot;
 
-            m_LightData[LightType::Spot].position = s_SpotLightPos;
-            m_LightData[LightType::Spot].direction = { -1.f, 0.f, 0.f };
+    //        m_LightData[LightType::Spot].position = s_SpotLightPos;
+    //        m_LightData[LightType::Spot].direction = { -1.f, 0.f, 0.f };
 
-            glm::vec3 pos = m_LightData[LightType::Spot].position;
-            glm::vec3 dir = m_LightData[LightType::Spot].direction;
-            glm::vec3 front = pos + glm::normalize(dir);
-            glm::mat4 lightView = glm::lookAt(pos, front, glm::vec3(0.f, 1.f, 0.f));
+    //        glm::vec3 pos = m_LightData[LightType::Spot].position;
+    //        glm::vec3 dir = m_LightData[LightType::Spot].direction;
+    //        glm::vec3 front = pos + glm::normalize(dir);
+    //        glm::mat4 lightView = glm::lookAt(pos, front, glm::vec3(0.f, 1.f, 0.f));
 
-            m_LightData[LightType::Spot].projViewMat = Renderer::GetSpotLightProjMat() * lightView;
+    //        m_LightData[LightType::Spot].projViewMat = Renderer::GetSpotLightProjMat() * lightView;
 
-            m_LightData[LightType::Spot].ambient = ambient;
-            //m_LightData[LightType::Spot].ambient = glm::vec3(0.f);
-            m_LightData[LightType::Spot].diffuse = diffuse;
-            m_LightData[LightType::Spot].specular = specular;
+    //        //m_LightData[LightType::Spot].ambient = ambient;
+    //        //m_LightData[LightType::Spot].ambient = glm::vec3(0.f);
+    //        m_LightData[LightType::Spot].diffuse = diffuse;
+    //        m_LightData[LightType::Spot].specular = specular;
 
-            m_LightData[LightType::Spot].constant = constant;
-            m_LightData[LightType::Spot].linear = linear;
-            m_LightData[LightType::Spot].quadratic = quadratic;
+    //        m_LightData[LightType::Spot].constant = constant;
+    //        m_LightData[LightType::Spot].linear = linear;
+    //        m_LightData[LightType::Spot].quadratic = quadratic;
 
-            m_LightData[LightType::Spot].cutOff = glm::cos(glm::radians(cutOff));
-            m_LightData[LightType::Spot].outerCutOff = glm::cos(glm::radians(cutOff+5.f));
-        }
-    }
+    //        m_LightData[LightType::Spot].cutOff = glm::cos(glm::radians(cutOff));
+    //        m_LightData[LightType::Spot].outerCutOff = glm::cos(glm::radians(cutOff+5.f));
+    //    }
+    //}
 
-    static float s_LightBrightness = 5.f;
+    //static float s_LightBrightness = 5.f;
     static int num = 2;
     TestScene::TestScene(Ref<Camera> camera)
         : m_Camera(camera),
 
         m_CamSpeed(6.f)
     {
-        SetLightParams(s_LightBrightness);
+        //SetLightParams(s_LightBrightness);
 
         m_CubeMesh = MeshManager::GetPrimitiveMesh({ Primitive::Cube,
             {
@@ -197,7 +202,7 @@ namespace Crave
             m_PointLight.GetComponent<Transform>().Position = s_PointLightPos;
             m_PointLight.GetComponent<Transform>().ScaleF(0.2f);
 
-            m_PointLight.AddComponent<Light>(m_LightData[LightType::Point], true);
+            m_PointLight.AddComponent<Light>(LightType::Point, true);
         }
 #endif
 #if 1
@@ -210,7 +215,8 @@ namespace Crave
             m_DirLight.GetComponent<Transform>().Position = s_DirLightPos;
             m_DirLight.GetComponent<Transform>().ScaleF(0.2f);
 
-            m_DirLight.AddComponent<Light>(m_LightData[LightType::Directional], true);
+            auto& light = m_DirLight.AddComponent<Light>(LightType::Directional, true);
+            //light.Data.brightness
         }
 #endif
 #if 1
@@ -222,8 +228,9 @@ namespace Crave
 
             m_SpotLight.GetComponent<Transform>().Position = s_SpotLightPos;
             m_SpotLight.GetComponent<Transform>().ScaleF(0.2f);
+            m_SpotLight.GetComponent<Transform>().RotateTo({0.f, -90.f, 0.f});
 
-            m_SpotLight.AddComponent<Light>(m_LightData[LightType::Spot], true);
+            m_SpotLight.AddComponent<Light>(LightType::Spot, true);
         }
 #endif
        // Entity model = ImportModel("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");
@@ -276,7 +283,7 @@ namespace Crave
         ImGui::SliderFloat("Camera Speed", &m_CamSpeed, min, 10.0f);
         //ImGui::Checkbox("Light On", &LightOn);
         ImGui::Checkbox("Cast Shadows", &CastShadows);
-        ImGui::SliderFloat("Light Brightness", &s_LightBrightness, min, 10.f);
+        //ImGui::SliderFloat("Light Brightness", &s_LightBrightness, min, 10.f);
         ImGui::Checkbox("Rotate Light", &RotateLight);
         ImGui::SliderFloat("Light Rot Speed", &LightRotSpeed, min, 300.f);
         ImGui::SliderFloat3("Light Rot Point", glm::value_ptr(RotPoint), -15.f, 15.f);
