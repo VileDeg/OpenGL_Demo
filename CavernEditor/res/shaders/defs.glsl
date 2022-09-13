@@ -14,9 +14,11 @@ struct Light
     vec3 specular;
     float outerCutOff;
     mat4 projViewMat;
+    vec3 color;
     float brightness;
     int type;
-    bool enabled;
+    int padding; //padding
+    ivec2 atlasoffset;
 };
 
 

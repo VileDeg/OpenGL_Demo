@@ -43,9 +43,13 @@ namespace Crave
 
 			glm::mat4 PrevTransform{};
 
-
-
-			bool UpdatedLastFrame() const { return GetTransform() != PrevTransform; }
+			bool UpdatedLastFrame() 
+			{ 
+				glm::mat4 tr = GetTransform();
+				bool wasUpdated = tr != PrevTransform;
+				PrevTransform = tr;
+				return wasUpdated;
+			}
 
 			void ScaleF(const float units);
 
@@ -110,38 +114,28 @@ namespace Crave
 		struct Light
 		{
 			LightData Data{};
-			//bool	  Enabled{ true };
+			bool	  Enabled{ true };
 			bool	  IsDynamic{ false };
 			unsigned  ShaderIndex{};
 			//float	  Brightness{ 1.f };
-			float	  Radius{};
+			//float	  Radius{};
 
-			bool	  _UpdatedLastFrame{ false };
+			//bool	  _UpdatedLastFrame{ false };
 
-			//void SetEnabled(bool enabled) { _UpdatedLastFrame = true;  Enabled = enabled; }
-
-			//bool UpdatedLastFrame() const { return _UpdatedLastFrame; }
-
-			//void ApplyBrightness();
-
-			//void SetAttenuation(glm::vec3 atten)
-			//{
-			//	//_UpdatedLastFrame = true;
-			//	Data.constant = atten.x;
-			//	Data.linear = atten.y;
-			//	Data.quadratic = atten.z;
-			//}
-			//void UpdateRadius();
-
-			//void UpdateAttenuation();
-
-			//void SetRadius(float rad);
+			
+			void SetEnabled(bool enabled)
+			{
+				Enabled = enabled;
+				if (!enabled)
+					Renderer::EraseLightDataAt(ShaderIndex);
+			}
 			
 			void UpdateViewMat(const glm::mat4& transform);
 
-			void UploadToShader()
+			void SubmitDataToRenderer()
 			{
-				Renderer::UploadLightData(Data, ShaderIndex);
+				if (Enabled)
+					Renderer::SubmitLightData(Data, ShaderIndex);
 			}
 
 			Light() = default;

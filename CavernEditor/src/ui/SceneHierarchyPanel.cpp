@@ -346,7 +346,9 @@ namespace Crave
 
 		DrawComponent<Light>("Light", entity, [](auto& li)
 			{
-				ImGui::Checkbox("Enabled", &li.Data.enabled);
+				bool enabled = li.Enabled;
+				ImGui::Checkbox("Enabled", &enabled);
+				li.SetEnabled(enabled);
 				ImGui::DragFloat("Brightness", &li.Data.brightness, 0.1f, 0.f, Renderer::LIGHT_MAX_BRIGHTNESS);
 				ImGui::Text("Attenuation: ");
 				

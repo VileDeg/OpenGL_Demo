@@ -27,11 +27,6 @@ uniform int u_DrawId;
 
 uniform Material material;
 
-//uniform samplerCube u_PointLDepthCubemap;
-
-
-//uniform sampler2D u_DirLDepthMap;
-
 #include "shadowMapping.glsl"
 
 void main()
@@ -45,8 +40,8 @@ void main()
     for (int i = 0; i < sceneData.lightsCount; ++i)
     {
         Light light = lightData.lights[i];
-        if (!light.enabled)
-            continue;
+        //if (!light.enabled)
+        //    continue;
         
         vec3 normal;
         vec3 viewDir;
@@ -81,13 +76,13 @@ void main()
         // combine results
         vec3 color = texture(material.diffuseTex, fs_in.TexCoords).rgb;
 
-        vec3 ambient = light.ambient * color;
-        vec3 diffuse = light.diffuse * diff * color;
+        vec3 ambient  = light.ambient * color;
+        vec3 diffuse  = light.diffuse * diff * color;
         vec3 specular = light.specular * spec * matSpec;
 
-        ambient  *= light.brightness;
-        diffuse  *= light.brightness;
-        specular *= light.brightness;
+        ambient  *= light.color * light.brightness;
+        diffuse  *= light.color * light.brightness;
+        specular *= light.color * light.brightness;
         
         // spotlight (soft edges)
         if (light.type == SPOT_LIGHT)
@@ -119,12 +114,17 @@ void main()
             switch (light.type)
             {
             case SPOT_LIGHT:
+                shadow = SpotShadowCalc(fs_in.Normal, fs_in.FragPos, 
+                    fs_in.FragPosLightSpace[j], light.position, light.atlasoffset);
+                ++j;
+                break;
             case DIRECTIONAL_LIGHT:
-                shadow = DirShadowCalc(fs_in.Normal, fs_in.FragPos, fs_in.FragPosLightSpace[j], light.position, i);
+                shadow = DirShadowCalc(fs_in.Normal, fs_in.FragPos, 
+                    fs_in.FragPosLightSpace[j], light.position, light.atlasoffset);
                 ++j;
                 break;
             case POINT_LIGHT:
-                shadow = PointShadowCalc(fs_in.FragPos, light.position, i);
+                shadow = PointShadowCalc(fs_in.FragPos, light.position, light.atlasoffset);
                 break;
             }
         }

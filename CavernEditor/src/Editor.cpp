@@ -62,7 +62,6 @@ namespace Crave
                 Renderer::Clear(GLBuffer::Color | GLBuffer::Depth | GLBuffer::Stencil);
                 m_ViewportFramebuffer->ClearIntAttachment(-1);
 
-
                 m_ActiveScene->OnUpdate(Window::DeltaTime());
 
                 EditorUI::Render();

@@ -7,27 +7,29 @@ uniform int u_SFrameSize; //1024
 uniform ivec2 u_SAtlasSize; 
 uniform sampler2D u_SAtlas; //3x2
 uniform float u_PointLightFarPlane;
+uniform float u_SpotLightFarPlane;
 
-ivec2 GetLightOffsetInAtlas(int lightIndex, int framesPerRow, int frameSize)
-{
-    return ivec2(lightIndex*3 % framesPerRow, lightIndex*3 / framesPerRow * 2 ) *  frameSize;
-}
+//ivec2 GetLightOffsetInAtlas(int lightIndex, int framesPerRow, int frameSize)
+//{
+//    return ivec2(lightIndex*3 % framesPerRow, lightIndex*3 / framesPerRow * 2 ) *  frameSize;
+//}
 
-
-
-
-float DirShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace, vec3 lightPos, int lightIndex)
+float SpotShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace, 
+    vec3 lightPos, ivec2 atlasoffset)
 {
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    ivec2 offset = GetLightOffsetInAtlas(lightIndex, u_SAtlasFramesPerRow, u_SFrameSize);
-    vec2 uv = offset + projCoords.xy * u_SFrameSize;
+    //vec2 offset = GetLightOffsetInAtlas(lightIndex, u_SAtlasFramesPerRow, u_SFrameSize);
+    vec2 uv = atlasoffset + projCoords.xy * u_SFrameSize;
     uv /= u_SAtlasSize;
     float closestDepth = texture(u_SAtlas, uv).r;
+    closestDepth *= u_SpotLightFarPlane;
     // get depth of current fragment from light's perspective
+    //vec3 fragToLight = fragPos - lightPos;
+    //float currentDepth = length(fragToLight);
     float currentDepth = projCoords.z;
     // calculate bias (based on depth map resolution and slope)
     vec3 norm = normalize(normal);
@@ -35,18 +37,37 @@ float DirShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace, vec3 ligh
     float bias = max(0.05 * (1.0 - dot(norm, lightDir)), 0.005);
     // check whether current frag pos is in shadow
     float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
-    // PCF
-    //float shadow = 0.0;
-    //vec2 texelSize = 1.0 / vec2(u_SFrameSize, u_SFrameSize);
-    //for (int x = -1; x <= 1; ++x)
-    //{
-    //    for (int y = -1; y <= 1; ++y)
-    //    {
-    //        float pcfDepth = texture(u_SAtlas, uv + vec2(x, y) * texelSize).r;
-    //        shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-    //    }
-    //}
-    //shadow /= 9.0;
+
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if (projCoords.z > 1.0)
+        shadow = 0.0;
+
+    return shadow;
+}
+
+float DirShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace, 
+    vec3 lightPos, ivec2 atlasoffset)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    //ivec2 offset = GetLightOffsetInAtlas(lightIndex, u_SAtlasFramesPerRow, u_SFrameSize);
+    vec2 uv = atlasoffset + projCoords.xy * u_SFrameSize;
+    uv /= u_SAtlasSize;
+    float closestDepth = texture(u_SAtlas, uv).r;
+    // get depth of current fragment from light's perspective
+    
+    float currentDepth = projCoords.z;
+    // calculate bias (based on depth map resolution and slope)
+    vec3 norm = normalize(normal);
+    vec3 lightDir = normalize(lightPos - fragPos);
+    float bias = max(0.05 * (1.0 - dot(norm, lightDir)), 0.005);
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+
 
     // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
     if (projCoords.z > 1.0)
@@ -56,7 +77,7 @@ float DirShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace, vec3 ligh
 }
 
 
-float PointShadowCalc(vec3 fragPos, vec3 lightPos, int lightIndex)
+float PointShadowCalc(vec3 fragPos, vec3 lightPos, ivec2 atlasoffset)
 {
     // get vector between fragment position and light position
     vec3 fragToLight = fragPos - lightPos;
@@ -65,10 +86,10 @@ float PointShadowCalc(vec3 fragPos, vec3 lightPos, int lightIndex)
     vec3 result = convert_xyz_to_cube_uv(fragToLight.x, fragToLight.y, fragToLight.z);
     int face = int(result.z);
 
-    ivec2 offset = GetLightOffsetInAtlas(lightIndex, u_SAtlasFramesPerRow, u_SFrameSize);
+    //ivec2 offset = GetLightOffsetInAtlas(lightIndex, u_SAtlasFramesPerRow, u_SFrameSize);
 
     ivec2 offsetInside = ivec2(face % 3, face / 3) * u_SFrameSize;
-    vec2 uv = offset + offsetInside;
+    vec2 uv = atlasoffset + offsetInside;
     uv += result.xy * u_SFrameSize; //
     uv /= u_SAtlasSize;
 
@@ -157,6 +178,7 @@ vec3 convert_xyz_to_cube_uv(float x, float y, float z)
 
     // Convert range from -1 to 1 to 0 to 1
     float u = 0.5f * (uc / maxAxis + 1.0f);
+    //***Changed vc to -vc
     float v = 0.5f * (-vc / maxAxis + 1.0f);
 
     return vec3(u, v, float(index));

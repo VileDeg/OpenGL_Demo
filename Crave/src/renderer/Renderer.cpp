@@ -7,6 +7,8 @@
 #include "glad/glad.h"
 #include "geometry/GeoData.h"
 
+#include <imgui.h>
+
 namespace Crave
 {
 	namespace Renderer
@@ -26,13 +28,26 @@ namespace Crave
 				unsigned lightCount;
 				unsigned castShadows;
 			};
-			
+
+			constexpr const int MAX_LIGHTS_COUNT = 16; //6
 
 			struct RenderData
 			{
 				std::unordered_map<ShaderType, Ref<Shader>> Shader;
 				Ref<ShaderBlock> SceneUBO;
 				Ref<ShaderBlock> LightUBO;
+				//std::vector<std::pair<unsigned, LightData>> LightDataSubmitted{ MAX_LIGHTS_COUNT };
+				/*struct
+				{
+					std::vector<unsigned> id;
+					std::vector<LightData> data;
+				} LightDataSubmitted;*/
+				struct
+				{
+					//LightData data[MAX_LIGHTS_COUNT];
+					bool enabled;
+					LightData data;
+				} LightDataSubmitted[MAX_LIGHTS_COUNT];
 				//Ref<ShaderBlock> MiscSSBO;
 				Ref<Framebuffer> ViewportFB;
 				Ref<Framebuffer> DepthMapFBO;
@@ -60,13 +75,16 @@ namespace Crave
 			constexpr const float POINT_NEAR_PLANE = 0.1f;
 			constexpr const float POINT_FAR_PLANE = 250.f;
 
+			constexpr const float SPOT_NEAR_PLANE = 0.1f;
+			constexpr const float SPOT_FAR_PLANE = 250.f;
+
 			constexpr const float DIR_NEAR_PLANE = -500.f;
 			constexpr const float DIR_FAR_PLANE = 500.f;
 
-			constexpr const int SSBO_LIGHT_SIZE = 160;
+			constexpr const int SHADER_LIGHT_SIZE = 176;
 
 			//constexpr const int MAX_POINT_LIGHTS = 3;
-			constexpr const int MAX_LIGHTS_COUNT = 16; //6
+			
 
 			constexpr const int SFRAME_SIZE = 1024;
 			//Atlas 3x2
@@ -88,10 +106,12 @@ namespace Crave
 			void CreateSkybox();
 			void GLDraw(const Ref<VAO> vao);
 
-			void SetUniformBuffer(const Ref<ShaderBlock> ssbo, const short slot,
+			
+
+			/*void SetUniformBuffer(const Ref<ShaderBlock> ssbo, const short slot,
 				std::vector<ShaderType> shTypes);
 			void SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short slot,
-				std::vector<ShaderType> shTypes);
+				std::vector<ShaderType> shTypes);*/
 
 			void BindShader(const Ref<Shader> shader);
 			void BindVAO(const Ref<VAO> vao);
@@ -118,7 +138,7 @@ namespace Crave
 
 			s_Data->LightUBO = CreateRef<ShaderBlock>(
 				"LightData", (const void*)NULL,
-				MAX_LIGHTS_COUNT * SSBO_LIGHT_SIZE,
+				MAX_LIGHTS_COUNT * SHADER_LIGHT_SIZE,
 				GL_UNIFORM_BUFFER);
 			s_Data->LightUBO->Bind(0);
 
@@ -145,6 +165,8 @@ namespace Crave
 			glClearColor(0.049f, 0.0f, 0.1f, 1.f); //Dark purple
 		}
 
+		
+		
 
 		void DrawMesh(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh, bool withTextures, glm::vec4 color)
 		{
@@ -266,34 +288,30 @@ namespace Crave
 			glClear(GL_DEPTH_BUFFER_BIT);
 		}
 
-		void DirShadowSetup(LightData& data, int frameNum)
+		void DirSpotShadowSetup(LightData& data, int frameNum, LightType type)
 		{
 			// render scene from light's point of view
-			//frameNum += 1;
 			glm::ivec2 offset = { (frameNum *3) % SATLAS_DIM.x, (frameNum *3) / SATLAS_DIM.x * 2 };
-			offset *= SFRAME_SIZE; //glm::ivec2(3,2) * 
+			offset *= SFRAME_SIZE;
+			data.atlasoffset = offset;
 			
 			glViewport(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
 
-			auto sh = s_Data->Shader[ShaderType::DirDepth];
-			BindShader(sh);
+			Ref<Shader> sh{};
+			if (type == LightType::Directional)
+			{
+				sh = s_Data->Shader[ShaderType::DirDepth];
+				BindShader(sh);
+			}
+			else if (type == LightType::Spot)
+			{
+				sh = s_Data->Shader[ShaderType::SpotDepth];
+				BindShader(sh);
+				//sh->setFloat3("u_LightPos", data.position);
+			}
+			else DEBUG_BREAK("");
 			sh->setMat4f("u_LightSpaceMat", data.projViewMat);
-			
 		}
-
-		//void SpotShadowSetup(LightData& data, int frameNum)
-		//{
-		//	// render scene from light's point of view
-		//	glm::ivec2 offset = { frameNum % SATLAS_DIM.x, frameNum / SATLAS_DIM.x };
-		//	offset *= glm::ivec2(3, 2) * SFRAME_SIZE;
-
-		//	glViewport(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
-
-		//	auto sh = s_Data->Shader[ShaderType::SpotDepth];
-		//	BindShader(sh);
-		//	sh->setMat4f("u_LightSpaceMat", data.projViewMat);
-		//	sh->setFloat3("u_LightPos", data.position);
-		//}
 
 		void PointShadowSetup(LightData& data, int frameNum)
 		{
@@ -310,6 +328,7 @@ namespace Crave
 
 			glm::ivec2 offsetExternal = { frameNum % SATLAS_DIM.x, frameNum / SATLAS_DIM.x };
 			offsetExternal *= glm::ivec2(3, 2) * SFRAME_SIZE;
+			data.atlasoffset = offsetExternal;
 			for (int h = 0; h < 2; ++h)
 			{
 				for (int w = 0; w < 3; ++w)
@@ -364,13 +383,34 @@ namespace Crave
 		{
 			static unsigned posSize = 3 * sizeof(float);
 			int test = sizeof(LightData);
-			s_Data->LightUBO->Upload(pos, posSize, lightIndex * SSBO_LIGHT_SIZE);
+			s_Data->LightUBO->Upload(pos, posSize, lightIndex * SHADER_LIGHT_SIZE);
 		}
 
-		void UploadLightData(const LightData& data, unsigned ssboIndex)
+		void EraseLightDataAt(unsigned index)
 		{
-			unsigned offset = SSBO_LIGHT_SIZE * ssboIndex;
-			s_Data->LightUBO->Upload(&data, SSBO_LIGHT_SIZE, offset);
+			ASSERT(index < MAX_LIGHTS_COUNT, "");
+			s_Data->LightDataSubmitted[index].enabled = false;
+			/*for (unsigned i = 0; i < s_Data->LightDataSubmitted.data.size(); ++i)
+			{
+				if (s_Data->LightDataSubmitted.id[i] == index)
+					s_Data->LightDataSubmitted.data.erase(s_Data->LightDataSubmitted.data.begin() + i);
+			}*/
+			
+			/*for (unsigned i = index; i < MAX_LIGHTS_COUNT-1; ++i)
+			{
+				s_Data->LightDataSubmitted[i] = s_Data->LightDataSubmitted[i+1];
+			}
+
+			s_Data->LightsCount--;*/
+		}
+
+		void SubmitLightData(const LightData& data, unsigned index)
+		{
+			ASSERT(index < MAX_LIGHTS_COUNT, "");
+			s_Data->LightDataSubmitted[index].data = data;
+			s_Data->LightDataSubmitted[index].enabled = true;
+			/*s_Data->LightDataSubmitted.data.push_back(data);
+			s_Data->LightDataSubmitted.id.push_back(index);*/
 		}
 
 		LightData GetDefaultLightData(LightType type)
@@ -379,7 +419,7 @@ namespace Crave
 			static glm::vec3 diffuse  = glm::vec3(0.5f);
 			static glm::vec3 specular = glm::vec3(1.f);
 
-			static float brightness = 1.f;
+			static float brightness = 2.f;
 
 			static float constant = 1.f;
 			static float linear = 0.09f;
@@ -389,9 +429,11 @@ namespace Crave
 			static float outerCutOff = cutOff + 5.f;
 
 			LightData data{};
-			data.enabled    = true;
-			data.type	    = type;
-			data.brightness = brightness;
+			//data.enabled     = true;
+			data.type	     = type;
+			data.brightness  = brightness;
+			data.color	     = { 1.f, 1.f, 1.f };
+			data.atlasoffset = { 0, 0 };
 
 			data.position   = glm::vec3{0.f};
 
@@ -436,12 +478,13 @@ namespace Crave
 		unsigned AddNewLight(const LightData& data)
 		{
 			s_Data->LightsCount++;
-			static unsigned offset = 0;
+			//static unsigned offset = 0;
 			static unsigned lightIndex = 0;
 
-			s_Data->LightUBO->Upload(&data, SSBO_LIGHT_SIZE, offset);
+			SubmitLightData(data, lightIndex);
+			//s_Data->LightUBO->Upload(&data, SHADER_LIGHT_SIZE, offset);
 
-			offset += SSBO_LIGHT_SIZE;
+			//offset += SHADER_LIGHT_SIZE;
 			++lightIndex;
 			return lightIndex - 1;
 		}
@@ -462,10 +505,12 @@ namespace Crave
 
 		void BeginScene(Ref<Camera> cam, bool castShadows) //unsigned lightCount, 
 		{
+			
 			SceneData data = { cam->GetProjViewMat(), cam->Position(), s_Data->LightsCount, castShadows };
 			s_Data->Camera = cam;
 			s_Data->SceneUBO->Upload((const void*)&data, sizeof(data), 0);
-
+			
+			
 			/*s_Data->ViewMat = cam->GetViewMat();
 			s_Data->ProjMat = cam->GetProjMat();*/
 
@@ -477,7 +522,7 @@ namespace Crave
 
 		void EndScene()
 		{
-
+			
 			s_Data->ViewportFB->Unbind();
 		}
 
@@ -493,7 +538,7 @@ namespace Crave
 
 		glm::mat4& GetDirLightProjMat()
 		{
-			static float size = 50.f;
+			static float size = 100.f;
 			static glm::mat4 mat = 
 				glm::ortho(-size, size, -size, size, DIR_NEAR_PLANE, DIR_FAR_PLANE);
 			return mat;
@@ -504,8 +549,19 @@ namespace Crave
 			static float fovy = 90.f;
 			static glm::mat4 mat = glm::perspective(
 				glm::radians(fovy), 1.f, 
-				POINT_NEAR_PLANE, POINT_FAR_PLANE);
+				SPOT_NEAR_PLANE, SPOT_FAR_PLANE);
 			return mat;
+		}
+
+		void OnImGuiRender()
+		{
+			ImGui::Begin("Renderer debug info");
+			ImVec2 size = { 600, 400 };
+			ImVec4 tint_col = { 0.3f, 1, 1, 1 };
+			
+			ImGui::Image((void*)s_Data->DepthMap->Id(), size,
+				ImVec2{ 0, 1 }, ImVec2{ 1, 0 }, tint_col);
+			ImGui::End();
 		}
 
 		//void ResetViewport()
@@ -518,7 +574,21 @@ namespace Crave
 			delete s_Data;
 		}
 
-
+		void UploadLightDataToShader()
+		{
+			static LightData buffer[MAX_LIGHTS_COUNT];
+			unsigned i = 0;
+			for (auto& [enabled, data] : s_Data->LightDataSubmitted)
+			{
+				if (enabled)
+				{
+					buffer[i] = data;
+					++i;
+				}
+			}
+			s_Data->LightsCount = i;
+			s_Data->LightUBO->UploadFull(buffer);
+		}
 		namespace //private
 		{
 			void GLDraw(const Ref<VAO> vao)
@@ -534,7 +604,9 @@ namespace Crave
 					glDrawArrays(GL_TRIANGLES, 0, vao->Count());
 			}
 
-			void SetUniformBuffer(const Ref<ShaderBlock> ubo, const short slot,
+			
+
+			/*void SetUniformBuffer(const Ref<ShaderBlock> ubo, const short slot,
 				std::vector<ShaderType> shTypes)
 			{
 				ubo->Bind(slot);
@@ -563,7 +635,7 @@ namespace Crave
 
 					glShaderStorageBlockBinding(shader->Id(), index, slot);
 				}
-			}
+			}*/
 
 			void BindShader(const Ref<Shader> shader)
 			{
@@ -613,32 +685,14 @@ namespace Crave
 				sh->setInt("u_SFrameSize", SFRAME_SIZE);
 				sh->setInt2("u_SAtlasSize", SATLAS_SIZE);
 				sh->setFloat("u_PointLightFarPlane", POINT_FAR_PLANE);
+				sh->setFloat("u_SpotLightFarPlane", SPOT_FAR_PLANE);
+				
 
 				s_Data->Shader[ShaderType::UniformColor] = CreateRef<Shader>("color.shader");
 
 				s_Data->Shader[ShaderType::AttribColor] = CreateRef<Shader>("colorAttrib.shader");
 
-				/*s_Data->Shader[ShaderType::Diffuse] = CreateRef<Shader>("diffuse.shader");
-				s_Data->Shader[ShaderType::Diffuse]->Bind();
-				s_Data->Shader[ShaderType::Diffuse]->setInt("material.diffuse", DIFF_TEX_SLOT);
-				s_Data->Shader[ShaderType::Diffuse]->setFloat("material.specular", 0.5f);
-				s_Data->Shader[ShaderType::Diffuse]->setFloat("material.shininess", 32.0f);
-				s_Data->Shader[ShaderType::Diffuse]->setInt("depthMap", DEPTH_TEX_SLOT);
-
-				s_Data->Shader[ShaderType::DiffNSpec] = CreateRef<Shader>("diffNSpec.shader");
-				s_Data->Shader[ShaderType::DiffNSpec]->Bind();
-				s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.diffuse", DIFF_TEX_SLOT);
-				s_Data->Shader[ShaderType::DiffNSpec]->setInt("material.specular", SPEC_TEX_SLOT);
-				s_Data->Shader[ShaderType::DiffNSpec]->setFloat("material.shininess", 32.0f);
-				s_Data->Shader[ShaderType::DiffNSpec]->setInt("depthMap", DEPTH_TEX_SLOT);
-				s_Data->Shader[ShaderType::DiffNSpec]->setFloat("far_plane", s_Data->lightFarPlane);
-
-				s_Data->Shader[ShaderType::NormalMap] = CreateRef<Shader>("normalMap.shader");
-				s_Data->Shader[ShaderType::NormalMap]->Bind();
-				s_Data->Shader[ShaderType::NormalMap]->setInt("diffuseMap", DIFF_TEX_SLOT);
-				s_Data->Shader[ShaderType::NormalMap]->setInt("normalMap", NORM_TEX_SLOT);
-				s_Data->Shader[ShaderType::NormalMap]->setInt("depthMap", DEPTH_TEX_SLOT);
-				s_Data->Shader[ShaderType::NormalMap]->setFloat("far_plane", s_Data->lightFarPlane);*/
+	
 
 				s_Data->Shader[ShaderType::Skybox] = CreateRef<Shader>("skybox.shader");
 				s_Data->Shader[ShaderType::Skybox]->Bind();
@@ -648,10 +702,12 @@ namespace Crave
 				sh->Bind();
 				sh->setFloat("u_FarPlane", POINT_FAR_PLANE);
 
-				s_Data->Shader[ShaderType::DirDepth] = CreateRef<Shader>("dirDepth.shader");
+				sh = s_Data->Shader[ShaderType::DirDepth] = CreateRef<Shader>("dirDepth.shader");
+				/*sh->Bind();
+				sh->setFloat("u_FarPlane", DIR_FAR_PLANE);*/
 				sh = s_Data->Shader[ShaderType::SpotDepth] = CreateRef<Shader>("spotDepth.shader");
 				sh->Bind();
-				sh->setFloat("u_FarPlane", POINT_FAR_PLANE);
+				sh->setFloat("u_FarPlane", SPOT_FAR_PLANE);
 			}
 
 			void CreateSkybox()

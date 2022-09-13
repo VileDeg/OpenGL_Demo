@@ -284,12 +284,14 @@ namespace Crave
 
             UIDrawViewport();
 
-            ImGui::End();
+            Renderer::OnImGuiRender();
 
             m_ActiveScene->OnImGuiRender(m_PanelFlags);
 
             if (m_DisplayControls)
                 Input::UIDisplayControlsConfig(&m_DisplayControls, m_PanelFlags);
+
+            ImGui::End();
 
             ImguiLayer::End(Window::Width(), Window::Height());
         }

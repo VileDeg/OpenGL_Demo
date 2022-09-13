@@ -21,6 +21,7 @@ namespace Crave
 		None = -1, Directional, Point, Spot
 	};
 
+
 	struct LightData
 	{
 		glm::vec3 position;
@@ -34,9 +35,11 @@ namespace Crave
 		glm::vec3 specular;
 		float outerCutOff;
 		glm::mat4 projViewMat;
+		glm::vec3 color;
 		float brightness;
-		LightType type;
-		bool enabled;
+		LightType type; //alignas(8) 
+		int padding; //padding
+		glm::ivec2 atlasoffset;
 	};
 	
 	enum class ShaderType
@@ -55,17 +58,20 @@ namespace Crave
 		void DrawDepth(const glm::mat4& modelMat, Ref<Mesh> mesh, ShaderType shType);
 
 		void GlobalShadowSetup();
-		void DirShadowSetup(LightData& data, int frameNum);
+		void DirSpotShadowSetup(LightData& data, int frameNum, LightType type);
 		//void SpotShadowSetup(LightData& data, int frameNum);
 		void PointShadowSetup(LightData& data, int frameNum);
 		void ShadowRenderEnd();
 
+		void UploadLightDataToShader();
 		void DrawSkybox();
 
 		LightData GetDefaultLightData(LightType type);
 		unsigned AddNewLight(const LightData& data);
-		void UploadLightData(const LightData& data, unsigned ssboIndex);
-		void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
+
+		void EraseLightDataAt(unsigned index);
+		void SubmitLightData(const LightData& data, unsigned index);
+		//void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
 
 		void Init(Ref<Framebuffer> viewportfb, unsigned width, unsigned height);
 		void ClearState();
@@ -81,6 +87,8 @@ namespace Crave
 		
 		glm::mat4& GetDirLightProjMat();
 		glm::mat4& GetSpotLightProjMat();
+
+		void OnImGuiRender();
 
 		constexpr const int LIGHT_MIN_RADIUS = 1.f;
 		constexpr const int LIGHT_MAX_RADIUS = 15.f;

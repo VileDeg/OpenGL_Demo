@@ -125,7 +125,7 @@ namespace Crave
         }
 
 
-#if 1
+#if 0
         float scale = 30.f;
         float halfScale = scale * 0.5f;
         for (int i = 0; i < 6; ++i)
@@ -158,7 +158,7 @@ namespace Crave
             m_Brickwalls[5].GetComponent<Transform>().RotateTo(90.f, right);
         }
 #endif
-#if 0
+#if 1
         float scale = 10.f;
         float halfScale = scale * 0.5f + 10.f;
         for (int i = 0; i < 5; ++i)
@@ -202,7 +202,8 @@ namespace Crave
             m_PointLight.GetComponent<Transform>().Position = s_PointLightPos;
             m_PointLight.GetComponent<Transform>().ScaleF(0.2f);
 
-            m_PointLight.AddComponent<Light>(LightType::Point, true);
+            auto& l = m_PointLight.AddComponent<Light>(LightType::Point, true);
+            l.Data.color = { 1.f, 0.f, 0.f };
         }
 #endif
 #if 1
@@ -215,8 +216,8 @@ namespace Crave
             m_DirLight.GetComponent<Transform>().Position = s_DirLightPos;
             m_DirLight.GetComponent<Transform>().ScaleF(0.2f);
 
-            auto& light = m_DirLight.AddComponent<Light>(LightType::Directional, true);
-            //light.Data.brightness
+            auto& l = m_DirLight.AddComponent<Light>(LightType::Directional, true);
+            l.Data.brightness = 0.3f;
         }
 #endif
 #if 1
@@ -230,7 +231,9 @@ namespace Crave
             m_SpotLight.GetComponent<Transform>().ScaleF(0.2f);
             m_SpotLight.GetComponent<Transform>().RotateTo({0.f, -90.f, 0.f});
 
-            m_SpotLight.AddComponent<Light>(LightType::Spot, true);
+            auto& l = m_SpotLight.AddComponent<Light>(LightType::Spot, true);
+            l.Data.brightness *= 2.f;
+            l.Data.color = {0.f, 0.f, 5.f};
         }
 #endif
        // Entity model = ImportModel("deccer-cubes/SM_Deccer_Cubes_Textured.gltf");

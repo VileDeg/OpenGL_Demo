@@ -178,15 +178,14 @@ namespace Crave
 		for (auto& entity : view)
 		{
 			auto& [transform, light] = view.get(entity);
-			/*if (!light.Enabled)
-				continue;*/
-			//Update dynamic light position
-			if (light.IsDynamic)
-			{
-				if (transform.UpdatedLastFrame())
-					light.UpdateViewMat(transform);
-				light.UploadToShader();
-			}
+			
+			//View matrix & position must be updated before data is passed to shader
+			if (transform.UpdatedLastFrame())
+				light.UpdateViewMat(transform);
+			light.SubmitDataToRenderer();
+			//We don't need to render depth map if light is disabled.
+			if (!light.Enabled)
+				continue;
 
 			ShaderType shType;
 			switch (light.Data.type)
@@ -196,11 +195,11 @@ namespace Crave
 				shType = ShaderType::PointDepth;
 				break;
 			case LightType::Spot:
-				/*Renderer::SpotShadowSetup(light.Data, light.SSBOindex);
+				Renderer::DirSpotShadowSetup(light.Data, light.ShaderIndex, LightType::Spot);
 				shType = ShaderType::SpotDepth;
-				break;*/
+				break;
 			case LightType::Directional:
- 				Renderer::DirShadowSetup(light.Data, light.ShaderIndex);
+ 				Renderer::DirSpotShadowSetup(light.Data, light.ShaderIndex, LightType::Directional);
 				shType = ShaderType::DirDepth;
 				break;
 			default:
@@ -209,6 +208,9 @@ namespace Crave
 			RenderSceneDepth(shType);
 		}
 		Renderer::ShadowRenderEnd();
+		//Upload of all submitted data must happen here before the scene is rendered,
+		//otherwise scene will be rendered with old light data and light will flicker when moved.
+		Renderer::UploadLightDataToShader();
 	}
 
 	void Scene::OnUpdate(float deltaTime)

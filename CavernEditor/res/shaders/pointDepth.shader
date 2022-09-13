@@ -37,6 +37,8 @@ void main()
 #version 460 core
 in vec4 FragPos;
 
+
+
 uniform vec3  u_LightPos;
 uniform float u_FarPlane;
 

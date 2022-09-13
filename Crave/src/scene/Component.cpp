@@ -143,7 +143,7 @@ namespace Crave
 				DEBUG_BREAK("");
 			}
 			//ApplyValues(*this);
-			Renderer::UploadLightData(Data, ShaderIndex);
+			//Renderer::SubmitLightData(Data, ShaderIndex);
 		}
 	}
 }

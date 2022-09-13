@@ -85,7 +85,7 @@ namespace Crave
             const std::size_t size, const unsigned type);
         ~ShaderBlock();
 
-
+        void UploadFull(const void* data);
         void Upload(const void* data, const std::size_t size,
             const unsigned offset);
         const char* Name() const { return m_Name.c_str(); }
@@ -99,5 +99,6 @@ namespace Crave
         std::string m_Name;
         unsigned m_Id;
         unsigned m_TypeUInt;
+        std::size_t m_Size;
     };
 }

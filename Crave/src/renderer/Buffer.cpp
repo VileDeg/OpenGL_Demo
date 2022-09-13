@@ -107,7 +107,7 @@ namespace Crave
 
 	ShaderBlock::ShaderBlock(const char* name, const void* data,
 		const std::size_t size, const unsigned type)
-		: m_Name(name), m_TypeUInt(static_cast<unsigned>(type))
+		: m_Name(name), m_TypeUInt(static_cast<unsigned>(type)), m_Size(size)
 	{
 		glGenBuffers(1, &m_Id);
 		glBindBuffer(m_TypeUInt, m_Id);
@@ -119,6 +119,12 @@ namespace Crave
 		glDeleteBuffers(1, &m_Id);
 	}
 
+	void ShaderBlock::UploadFull(const void* data)
+	{
+		glBindBuffer(m_TypeUInt, m_Id);
+		glBufferSubData(m_TypeUInt, 0, m_Size, data);
+		glBindBuffer(m_TypeUInt, 0);
+	}
 
 	void ShaderBlock::Upload(const void* data, const std::size_t size, const unsigned offset)
 	{

@@ -38,12 +38,11 @@ void main()
     for (int i = 0; i < sceneData.lightsCount; ++i)
     {
         Light light = lightData.lights[i];
-        if (!light.enabled || light.type == POINT_LIGHT)
+        if (light.type == POINT_LIGHT)
             continue;
 
         vs_out.FragPosLightSpace[j] = light.projViewMat * vec4(vs_out.FragPos, 1.0);
         ++j;
-        //lightData.lights[i].projViewMat[0] = fragPosLightSpace;
     }
 
     switch (u_ObjType)
@@ -62,8 +61,8 @@ void main()
         mat3 TBN = transpose(mat3(T, B, N));
         for (int i = 0; i < sceneData.lightsCount; ++i)
         {
-            if (lightData.lights[i].enabled)
-                vs_out.TangentLightPos[i] = TBN * lightData.lights[i].position;
+            //if (lightData.lights[i].enabled)
+            vs_out.TangentLightPos[i] = TBN * lightData.lights[i].position;
         }
         vs_out.TangentViewPos = TBN * sceneData.viewPos;
         vs_out.TangentFragPos = TBN * vs_out.FragPos;
