@@ -17,7 +17,7 @@ struct Light
     vec3 color;
     float brightness;
     int type;
-    int padding; //padding
+    int mipmaplevel;
     ivec2 atlasoffset;
 };
 

@@ -103,7 +103,7 @@ void main()
             float attenuation = 1.0 /
                 (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
-            //ambient *= attenuation;
+            ambient *= attenuation;
             diffuse *= attenuation;
             specular *= attenuation;
         }
@@ -115,7 +115,7 @@ void main()
             {
             case SPOT_LIGHT:
                 shadow = SpotShadowCalc(fs_in.Normal, fs_in.FragPos, 
-                    fs_in.FragPosLightSpace[j], light.position, light.atlasoffset);
+                    fs_in.FragPosLightSpace[j], light.position, light.atlasoffset, light.mipmaplevel);
                 ++j;
                 break;
             case DIRECTIONAL_LIGHT:
@@ -124,7 +124,7 @@ void main()
                 ++j;
                 break;
             case POINT_LIGHT:
-                shadow = PointShadowCalc(fs_in.FragPos, light.position, light.atlasoffset);
+                shadow = PointShadowCalc(fs_in.FragPos, light.position, light.atlasoffset, light.mipmaplevel);
                 break;
             }
         }

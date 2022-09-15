@@ -38,7 +38,7 @@ namespace Crave
 		glm::vec3 color;
 		float brightness;
 		LightType type; //alignas(8) 
-		int padding; //padding
+		int mipmaplevel;
 		glm::ivec2 atlasoffset;
 	};
 	
@@ -57,11 +57,16 @@ namespace Crave
 			bool withTextures, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f });
 		void DrawDepth(const glm::mat4& modelMat, Ref<Mesh> mesh, ShaderType shType);
 
-		void GlobalShadowSetup();
-		void DirSpotShadowSetup(LightData& data, int frameNum, LightType type);
+		void DepthRenderSetup();
+		void SortLightsByDistance();
+		ShaderType ShadowSetupByLightType(LightData& data, int frameNum, int level);
+		void RenderLigthDepthToAtlas(std::function<void(ShaderType)> renderDepthFunc);
+
+		void SpotShadowSetup(LightData& data, int frameNum, int mipmapLevel);
+		void DirShadowSetup(LightData& data, int frameNum, int mipmapLevel);
 		//void SpotShadowSetup(LightData& data, int frameNum);
-		void PointShadowSetup(LightData& data, int frameNum);
-		void ShadowRenderEnd();
+		void PointShadowSetup(LightData& data, int frameNum, int level);
+		void DepthRenderEnd();
 
 		void UploadLightDataToShader();
 		void DrawSkybox();
@@ -69,7 +74,6 @@ namespace Crave
 		LightData GetDefaultLightData(LightType type);
 		unsigned AddNewLight(const LightData& data);
 
-		void EraseLightDataAt(unsigned index);
 		void SubmitLightData(const LightData& data, unsigned index);
 		//void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
 

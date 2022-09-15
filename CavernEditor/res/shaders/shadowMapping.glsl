@@ -3,19 +3,35 @@
 vec3 convert_xyz_to_cube_uv(float x, float y, float z);
 
 uniform int u_SAtlasFramesPerRow; //3
-uniform int u_SFrameSize; //1024
+uniform int u_SFrameSize;
 uniform ivec2 u_SAtlasSize; 
 uniform sampler2D u_SAtlas; //3x2
 uniform float u_PointLightFarPlane;
 uniform float u_SpotLightFarPlane;
 
-//ivec2 GetLightOffsetInAtlas(int lightIndex, int framesPerRow, int frameSize)
-//{
-//    return ivec2(lightIndex*3 % framesPerRow, lightIndex*3 / framesPerRow * 2 ) *  frameSize;
-//}
+ivec2 GetLightOffsetInAtlas(ivec2 offset, int level, int face)
+{
+    for (int i = 0; i < face; ++i)
+    {
+        int upframesize = u_SFrameSize / int(pow(2, level - 1));
+	    int framesize = upframesize / 2;
+	    int numofframes = int(pow(4, level));
+	    int cellsizex = upframesize;
+
+	    int remx = offset.x % u_SFrameSize;
+	    int remy = offset.y % u_SFrameSize;
+	    int basex = offset.x - remx;
+	    int basey = offset.y - remy;
+	    int addx = (remx + framesize) % u_SFrameSize + (remy + framesize) / u_SFrameSize * (remx + framesize) / u_SFrameSize * u_SFrameSize;
+	    int addy = (remy + (remx + framesize) / u_SFrameSize * framesize) % u_SFrameSize;
+	    offset = ivec2( (basex + addx) % u_SAtlasSize.x,
+			basey + addy + (basex + addx) / u_SAtlasSize.x * u_SFrameSize );
+    }
+    return offset;
+}
 
 float SpotShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace, 
-    vec3 lightPos, ivec2 atlasoffset)
+    vec3 lightPos, ivec2 atlasoffset, int mipmapLevel)
 {
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -23,7 +39,9 @@ float SpotShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace,
     projCoords = projCoords * 0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     //vec2 offset = GetLightOffsetInAtlas(lightIndex, u_SAtlasFramesPerRow, u_SFrameSize);
-    vec2 uv = atlasoffset + projCoords.xy * u_SFrameSize;
+    int framesize = u_SFrameSize / int(pow(2, mipmapLevel));
+				
+    vec2 uv = atlasoffset + projCoords.xy * framesize;
     uv /= u_SAtlasSize;
     float closestDepth = texture(u_SAtlas, uv).r;
     closestDepth *= u_SpotLightFarPlane;
@@ -76,8 +94,7 @@ float DirShadowCalc(vec3 normal, vec3 fragPos, vec4 fragPosLightSpace,
     return shadow;
 }
 
-
-float PointShadowCalc(vec3 fragPos, vec3 lightPos, ivec2 atlasoffset)
+float PointShadowCalc(vec3 fragPos, vec3 lightPos, ivec2 atlasoffset, int mipmapLevel)
 {
     // get vector between fragment position and light position
     vec3 fragToLight = fragPos - lightPos;
@@ -85,12 +102,18 @@ float PointShadowCalc(vec3 fragPos, vec3 lightPos, ivec2 atlasoffset)
     //float closestDepth = texture(u_PointLDepthCubemap, fragToLight).r;
     vec3 result = convert_xyz_to_cube_uv(fragToLight.x, fragToLight.y, fragToLight.z);
     int face = int(result.z);
-
+    //ivec2 offset = atlasoffset;
+    int framesize = u_SFrameSize / int(pow(2, mipmapLevel));
+    ivec2 offset = GetLightOffsetInAtlas(atlasoffset, mipmapLevel, face);
     //ivec2 offset = GetLightOffsetInAtlas(lightIndex, u_SAtlasFramesPerRow, u_SFrameSize);
 
-    ivec2 offsetInside = ivec2(face % 3, face / 3) * u_SFrameSize;
-    vec2 uv = atlasoffset + offsetInside;
-    uv += result.xy * u_SFrameSize; //
+    //offset = ivec2((offset.x + u_SFrameSize * face) % u_SAtlasSize.x,
+	    //offset.y + (offset.x + u_SFrameSize * face) / u_SAtlasSize.x * u_SFrameSize);
+
+    //ivec2 offsetInside = ivec2(face % 3, face / 3) * u_SFrameSize;
+    //vec2 uv = atlasoffset + offsetInside;
+    vec2 uv = offset;
+    uv += result.xy * framesize; //
     uv /= u_SAtlasSize;
 
     float closestDepth = texture(u_SAtlas, uv).r;
@@ -99,7 +122,8 @@ float PointShadowCalc(vec3 fragPos, vec3 lightPos, ivec2 atlasoffset)
     // now get current linear depth as the length between the fragment and light position
     float currentDepth = length(fragToLight);
     // test for shadows
-    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+    float biasbase = 0.05f;
+    float bias = biasbase + (biasbase * mipmapLevel * 2.f); // we use a much larger bias since depth is now in [near_plane, far_plane] range
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
     // display closestDepth as debug (to visualize depth cubemap)
     //FragColor = vec4(vec3(closestDepth / u_PointLightFarPlane), 1.0);

@@ -30,6 +30,8 @@ namespace Crave
 			};
 
 			constexpr const int MAX_LIGHTS_COUNT = 16; //6
+			constexpr const int MAX_SFRAME_MIPMAP_LEVEL = 5;
+			constexpr const float SFRAME_MIPMAP_DISTANCE_STEP = 40.f;
 
 			struct RenderData
 			{
@@ -42,12 +44,18 @@ namespace Crave
 					std::vector<unsigned> id;
 					std::vector<LightData> data;
 				} LightDataSubmitted;*/
-				struct
-				{
-					//LightData data[MAX_LIGHTS_COUNT];
-					bool enabled;
-					LightData data;
-				} LightDataSubmitted[MAX_LIGHTS_COUNT];
+
+				int FramesFilledByLevel[MAX_SFRAME_MIPMAP_LEVEL]{};
+				//glm::ivec2 NextSAtlasOffset[MAX_SFRAME_MIPMAP_LEVEL]{};
+				glm::ivec2 NextSAtlasOffset{};
+				std::vector<int> LightIndexByDistance[MAX_SFRAME_MIPMAP_LEVEL];
+				std::vector<LightData> LightDataSubmitted{};
+				//struct
+				//{
+				//	//LightData data[MAX_LIGHTS_COUNT];
+				//	bool enabled;
+				//	LightData data;
+				//} LightDataSubmitted[MAX_LIGHTS_COUNT];
 				//Ref<ShaderBlock> MiscSSBO;
 				Ref<Framebuffer> ViewportFB;
 				Ref<Framebuffer> DepthMapFBO;
@@ -88,7 +96,7 @@ namespace Crave
 
 			constexpr const int SFRAME_SIZE = 1024;
 			//Atlas 3x2
-			constexpr const glm::ivec2 SATLAS_DIM = { 6, 4 };
+			constexpr const glm::ivec2 SATLAS_DIM = { 10, 10 };
 			constexpr const glm::ivec2 SATLAS_SIZE = SATLAS_DIM * SFRAME_SIZE;
 			//constexpr const unsigned SHADOW_ATLAS_HEIGHT = ;
 
@@ -106,12 +114,8 @@ namespace Crave
 			void CreateSkybox();
 			void GLDraw(const Ref<VAO> vao);
 
-			
-
-			/*void SetUniformBuffer(const Ref<ShaderBlock> ssbo, const short slot,
-				std::vector<ShaderType> shTypes);
-			void SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short slot,
-				std::vector<ShaderType> shTypes);*/
+			glm::ivec2 GetNextOffsetInAtlas();
+			glm::ivec2 GetNextOffsetInAtlasMipmap(int level, int& framesize);
 
 			void BindShader(const Ref<Shader> shader);
 			void BindVAO(const Ref<VAO> vao);
@@ -282,40 +286,39 @@ namespace Crave
 			GLDraw(mesh->Vao());
 		}
 
-		void GlobalShadowSetup()
+		void DepthRenderSetup()
 		{
 			s_Data->DepthMapFBO->Bind();
 			glClear(GL_DEPTH_BUFFER_BIT);
 		}
 
-		void DirSpotShadowSetup(LightData& data, int frameNum, LightType type)
+		void SpotShadowSetup(LightData& data, int frameNum, int mipmapLevel)
 		{
-			// render scene from light's point of view
-			glm::ivec2 offset = { (frameNum *3) % SATLAS_DIM.x, (frameNum *3) / SATLAS_DIM.x * 2 };
-			offset *= SFRAME_SIZE;
+			int framesize{};
+			glm::ivec2 offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
 			data.atlasoffset = offset;
-			
-			glViewport(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
+			glViewport(offset.x, offset.y, framesize, framesize);
 
-			Ref<Shader> sh{};
-			if (type == LightType::Directional)
-			{
-				sh = s_Data->Shader[ShaderType::DirDepth];
-				BindShader(sh);
-			}
-			else if (type == LightType::Spot)
-			{
-				sh = s_Data->Shader[ShaderType::SpotDepth];
-				BindShader(sh);
-				//sh->setFloat3("u_LightPos", data.position);
-			}
-			else DEBUG_BREAK("");
+			Ref<Shader> sh = s_Data->Shader[ShaderType::SpotDepth];
+			BindShader(sh);
+			//sh->setFloat3("u_LightPos", data.position);
 			sh->setMat4f("u_LightSpaceMat", data.projViewMat);
 		}
 
-		void PointShadowSetup(LightData& data, int frameNum)
+		void DirShadowSetup(LightData& data, int frameNum, int mipmapLevel)
 		{
-			//frameNum += 1;
+			glm::ivec2 offset = GetNextOffsetInAtlas();
+			data.atlasoffset = offset;
+			glViewport(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
+
+			Ref<Shader> sh = s_Data->Shader[ShaderType::DirDepth];
+			BindShader(sh);
+			sh->setMat4f("u_LightSpaceMat", data.projViewMat);
+		}
+
+		void PointShadowSetup(LightData& data, int frameNum, int mipmapLevel)
+		{
+			
 			glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f),
 				1.f, POINT_NEAR_PLANE, POINT_FAR_PLANE);
 			std::vector<glm::mat4> shadowTransforms;
@@ -326,18 +329,16 @@ namespace Crave
 			shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 			shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 
-			glm::ivec2 offsetExternal = { frameNum % SATLAS_DIM.x, frameNum / SATLAS_DIM.x };
-			offsetExternal *= glm::ivec2(3, 2) * SFRAME_SIZE;
-			data.atlasoffset = offsetExternal;
-			for (int h = 0; h < 2; ++h)
+			int framesize{};
+			glm::ivec2 offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
+			data.atlasoffset = offset;
+			glViewportIndexedf(0, offset.x, offset.y, framesize, framesize);
+			for (int i = 1; i < 6; ++i)
 			{
-				for (int w = 0; w < 3; ++w)
-				{
-					glm::ivec2 offset = { SFRAME_SIZE * w, SFRAME_SIZE * h };
-					offset += offsetExternal;
-					glViewportIndexedf(w+h*3, offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
-				}
+				offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
+				glViewportIndexedf(i, offset.x, offset.y, framesize, framesize);
 			}
+			
 
 			auto sh = s_Data->Shader[ShaderType::PointDepth];
 			BindShader(sh);
@@ -348,13 +349,77 @@ namespace Crave
 			sh->setFloat3("u_LightPos", data.position);
 		}
 
-		void ShadowRenderEnd()
+		ShaderType ShadowSetupByLightType(LightData& data, int frameNum, int mipmapLevel)
 		{
-			//BindViewportFB();
+			data.mipmaplevel = mipmapLevel;
+			ShaderType shType;
+			switch (data.type)
+			{
+			case LightType::Point:
+				PointShadowSetup(data, frameNum, mipmapLevel); //light.ShaderIndex
+				shType = ShaderType::PointDepth;
+				break;
+			case LightType::Spot:
+				SpotShadowSetup(data, frameNum, mipmapLevel);
+				shType = ShaderType::SpotDepth;
+				break;
+			case LightType::Directional:
+				DirShadowSetup(data, frameNum, mipmapLevel);
+				shType = ShaderType::DirDepth;
+				break;
+			default:
+				ASSERT(false, "");
+			}
+			return shType;
+		}
+
+		void SortLightsByDistance()
+		{
+			for (int i = 0; i < s_Data->LightDataSubmitted.size(); ++i)
+			{
+				auto& ld = s_Data->LightDataSubmitted[i];
+				if (ld.type == LightType::Directional)
+				{
+					//Directional light's distance makes no sense. It will always have mipmap level 0.
+					s_Data->LightIndexByDistance[0].push_back(i);
+					continue;
+				}
+				float distToCam = glm::length(s_Data->Camera->Position() - ld.position);
+				int level = distToCam / SFRAME_MIPMAP_DISTANCE_STEP + 0.5f;
+
+				int maxlv = MAX_SFRAME_MIPMAP_LEVEL - 1;
+				level = level > maxlv ? maxlv : level;
+
+				
+				s_Data->LightIndexByDistance[level].push_back(i);
+			}
+		}
+
+		void RenderLigthDepthToAtlas(std::function<void(ShaderType)> renderDepthFunc)
+		{
+			DepthRenderSetup();
+
+			SortLightsByDistance();
+			
+			for (int lv = 0; lv < MAX_SFRAME_MIPMAP_LEVEL; ++lv)
+			{
+				auto& libd = s_Data->LightIndexByDistance[lv];
+				for (int i = 0; i < libd.size(); ++i)
+				{
+					auto& data = s_Data->LightDataSubmitted[libd[i]];
+					ShaderType shType = ShadowSetupByLightType(data, i, lv);
+					renderDepthFunc(shType);
+				}
+			}
+
+			UploadLightDataToShader();
+			DepthRenderEnd();
+		}
+
+		void DepthRenderEnd()
+		{
 			s_Data->ViewportFB->Bind();
-			//ResetViewport();
-			//s_Data->DepthMapFBO->Unbind(s_Data->viewportWidth, s_Data->viewportHeight);
-			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			
 		}
 
 		void DrawSkybox()
@@ -386,31 +451,9 @@ namespace Crave
 			s_Data->LightUBO->Upload(pos, posSize, lightIndex * SHADER_LIGHT_SIZE);
 		}
 
-		void EraseLightDataAt(unsigned index)
-		{
-			ASSERT(index < MAX_LIGHTS_COUNT, "");
-			s_Data->LightDataSubmitted[index].enabled = false;
-			/*for (unsigned i = 0; i < s_Data->LightDataSubmitted.data.size(); ++i)
-			{
-				if (s_Data->LightDataSubmitted.id[i] == index)
-					s_Data->LightDataSubmitted.data.erase(s_Data->LightDataSubmitted.data.begin() + i);
-			}*/
-			
-			/*for (unsigned i = index; i < MAX_LIGHTS_COUNT-1; ++i)
-			{
-				s_Data->LightDataSubmitted[i] = s_Data->LightDataSubmitted[i+1];
-			}
-
-			s_Data->LightsCount--;*/
-		}
-
 		void SubmitLightData(const LightData& data, unsigned index)
 		{
-			ASSERT(index < MAX_LIGHTS_COUNT, "");
-			s_Data->LightDataSubmitted[index].data = data;
-			s_Data->LightDataSubmitted[index].enabled = true;
-			/*s_Data->LightDataSubmitted.data.push_back(data);
-			s_Data->LightDataSubmitted.id.push_back(index);*/
+			s_Data->LightDataSubmitted.push_back(data);
 		}
 
 		LightData GetDefaultLightData(LightType type)
@@ -434,6 +477,7 @@ namespace Crave
 			data.brightness  = brightness;
 			data.color	     = { 1.f, 1.f, 1.f };
 			data.atlasoffset = { 0, 0 };
+			data.mipmaplevel = 0;
 
 			data.position   = glm::vec3{0.f};
 
@@ -442,7 +486,8 @@ namespace Crave
 
 			if (type == LightType::Point || type == LightType::Spot)
 			{
-				data.ambient   = glm::vec3(0.f);
+				//data.ambient   = glm::vec3(0.f);
+				data.ambient   = ambient;
 
 				data.constant  = constant;
 				data.linear    = linear;
@@ -505,7 +550,17 @@ namespace Crave
 
 		void BeginScene(Ref<Camera> cam, bool castShadows) //unsigned lightCount, 
 		{
+			s_Data->LightDataSubmitted.clear();
+			for (int i = 0; i < MAX_SFRAME_MIPMAP_LEVEL; ++i)
+			{
+				s_Data->LightIndexByDistance[i].clear();
+				s_Data->FramesFilledByLevel[i] = 0;
+			}
 			
+			s_Data->NextSAtlasOffset = { 0, 0 };
+			
+			
+
 			SceneData data = { cam->GetProjViewMat(), cam->Position(), s_Data->LightsCount, castShadows };
 			s_Data->Camera = cam;
 			s_Data->SceneUBO->Upload((const void*)&data, sizeof(data), 0);
@@ -556,11 +611,27 @@ namespace Crave
 		void OnImGuiRender()
 		{
 			ImGui::Begin("Renderer debug info");
-			ImVec2 size = { 600, 400 };
-			ImVec4 tint_col = { 0.3f, 1, 1, 1 };
+			static float scale = 0.1f / (SFRAME_SIZE / 1024) / (SATLAS_DIM.x / 4);
+			ImVec2 size = { SATLAS_SIZE.x * scale, SATLAS_SIZE.y * scale };
+
+			ImVec4 tint_col = { 1.f, 1, 1, 1 };
 			
 			ImGui::Image((void*)s_Data->DepthMap->Id(), size,
 				ImVec2{ 0, 1 }, ImVec2{ 1, 0 }, tint_col);
+
+			ImGui::Text("LightDataSubmitted: %ld", s_Data->LightDataSubmitted.size());
+			ImGui::Separator();
+			for (int lv = 0; lv < MAX_SFRAME_MIPMAP_LEVEL; ++lv)
+			{
+				auto& libd = s_Data->LightIndexByDistance[lv];
+				ImGui::Text("Mipmap level %d: %ld", lv, libd.size());
+				/*for (int i = 0; i < libd.size(); ++i)
+				{
+					auto& data = s_Data->LightDataSubmitted[libd[i]];
+					
+				}*/
+			}
+
 			ImGui::End();
 		}
 
@@ -576,18 +647,10 @@ namespace Crave
 
 		void UploadLightDataToShader()
 		{
-			static LightData buffer[MAX_LIGHTS_COUNT];
-			unsigned i = 0;
-			for (auto& [enabled, data] : s_Data->LightDataSubmitted)
-			{
-				if (enabled)
-				{
-					buffer[i] = data;
-					++i;
-				}
-			}
-			s_Data->LightsCount = i;
-			s_Data->LightUBO->UploadFull(buffer);
+			size_t size = s_Data->LightDataSubmitted.size() * SHADER_LIGHT_SIZE;
+			const void* data = s_Data->LightDataSubmitted.data();
+			s_Data->LightUBO->Upload(data, size, 0);
+			
 		}
 		namespace //private
 		{
@@ -604,39 +667,46 @@ namespace Crave
 					glDrawArrays(GL_TRIANGLES, 0, vao->Count());
 			}
 
-			
-
-			/*void SetUniformBuffer(const Ref<ShaderBlock> ubo, const short slot,
-				std::vector<ShaderType> shTypes)
+			glm::ivec2 GetNextOffsetInAtlas()
 			{
-				ubo->Bind(slot);
-				for (ShaderType type : shTypes)
-				{
-					auto shader = s_Data->Shader[type];
-					unsigned index = glGetUniformBlockIndex(shader->Id(), ubo->Name());
-
-					ASSERT(index != GL_INVALID_INDEX, "UBO not found");
-
-					glUniformBlockBinding(shader->Id(), index, slot);
-				}
+				glm::ivec2 prev = s_Data->NextSAtlasOffset;
+				glm::ivec2& offset = s_Data->NextSAtlasOffset;
+				offset = { (offset.x + SFRAME_SIZE) % SATLAS_SIZE.x,
+					offset.y + (offset.x + SFRAME_SIZE) / SATLAS_SIZE.x * SFRAME_SIZE };
+				return prev;
 			}
 
-			void SetShaderStorageBuffer(const Ref<ShaderBlock> ssbo, const short slot,
-				std::vector<ShaderType> shTypes)
+			glm::ivec2 GetNextOffsetInAtlasMipmap(int level, int& framesize)
 			{
-				ssbo->Bind(slot);
-				for (ShaderType type : shTypes)
+				glm::ivec2 prev = s_Data->NextSAtlasOffset;
+				glm::ivec2& offset = s_Data->NextSAtlasOffset;
+				if (level == 0)
 				{
-					auto shader = s_Data->Shader[type];
-					unsigned index = glGetProgramResourceIndex(
-						shader->Id(), GL_SHADER_STORAGE_BLOCK, ssbo->Name());
-
-					ASSERT(index != GL_INVALID_INDEX, "SSBO not found");
-
-					glShaderStorageBlockBinding(shader->Id(), index, slot);
+					offset = { (offset.x + SFRAME_SIZE) % SATLAS_SIZE.x,
+						offset.y + (offset.x + SFRAME_SIZE) / SATLAS_SIZE.x * SFRAME_SIZE };
+					framesize = SFRAME_SIZE;
+					return prev;
 				}
-			}*/
+					
+				int upframesize = SFRAME_SIZE / std::pow(2, level - 1);
+				framesize = upframesize / 2;
+				int numofframes = std::pow(4, level);
+				int cellsizex = upframesize;
 
+
+				int remx = offset.x % SFRAME_SIZE;
+				int remy = offset.y % SFRAME_SIZE;
+				int basex = offset.x - remx;
+				int basey = offset.y - remy;
+				int addx = (remx + framesize) % SFRAME_SIZE + (remy + framesize) / SFRAME_SIZE * (remx + framesize) / SFRAME_SIZE * SFRAME_SIZE;
+				int addy = (remy + (remx + framesize) / SFRAME_SIZE * framesize) % SFRAME_SIZE;
+				offset = { (basex + addx) % SATLAS_SIZE.x,
+						basey + addy + (basex + addx) / SATLAS_SIZE.x * SFRAME_SIZE };
+				
+
+				return prev;
+			}
+		
 			void BindShader(const Ref<Shader> shader)
 			{
 				if (s_Data->boundShaderId != shader->Id())

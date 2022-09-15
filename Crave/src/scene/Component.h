@@ -126,8 +126,8 @@ namespace Crave
 			void SetEnabled(bool enabled)
 			{
 				Enabled = enabled;
-				if (!enabled)
-					Renderer::EraseLightDataAt(ShaderIndex);
+				/*if (!enabled)
+					Renderer::EraseLightDataAt(ShaderIndex);*/
 			}
 			
 			void UpdateViewMat(const glm::mat4& transform);

@@ -171,46 +171,37 @@ namespace Crave
 
 	void Scene::RenderShadow()
 	{
-		Renderer::GlobalShadowSetup();
+		//Renderer::GlobalShadowSetup();
 
 		int frameNum = 0;
 		auto& view = m_Registry.view<Transform, Light>();
 		for (auto& entity : view)
 		{
 			auto& [transform, light] = view.get(entity);
-			
+
 			//View matrix & position must be updated before data is passed to shader
 			if (transform.UpdatedLastFrame())
 				light.UpdateViewMat(transform);
 			light.SubmitDataToRenderer();
 			//We don't need to render depth map if light is disabled.
-			if (!light.Enabled)
-				continue;
-
-			ShaderType shType;
-			switch (light.Data.type)
-			{
-			case LightType::Point:
-				Renderer::PointShadowSetup(light.Data, light.ShaderIndex);
-				shType = ShaderType::PointDepth;
-				break;
-			case LightType::Spot:
-				Renderer::DirSpotShadowSetup(light.Data, light.ShaderIndex, LightType::Spot);
-				shType = ShaderType::SpotDepth;
-				break;
-			case LightType::Directional:
- 				Renderer::DirSpotShadowSetup(light.Data, light.ShaderIndex, LightType::Directional);
-				shType = ShaderType::DirDepth;
-				break;
-			default:
-				ASSERT(false, "");
-			}
-			RenderSceneDepth(shType);
+			/*if (!light.Enabled)
+				continue;*/
 		}
-		Renderer::ShadowRenderEnd();
-		//Upload of all submitted data must happen here before the scene is rendered,
-		//otherwise scene will be rendered with old light data and light will flicker when moved.
-		Renderer::UploadLightDataToShader();
+		auto func = std::bind(&Scene::RenderSceneDepth, this, std::placeholders::_1);
+		Renderer::RenderLigthDepthToAtlas(func);
+		//Renderer::SortLightsByDistance();
+		//for (auto& entity : view)
+		//{
+		//	auto& [transform, light] = view.get(entity);
+		//	ShaderType shType = Renderer::ShadowSetupByLightType(light.Data, frameNum);
+		//	
+		//	++frameNum;
+		//	RenderSceneDepth(shType);
+		//}
+		//Renderer::ShadowRenderEnd();
+		////Upload of all submitted data must happen here before the scene is rendered,
+		////otherwise scene will be rendered with old light data and light will flicker when moved.
+		//Renderer::UploadLightDataToShader();
 	}
 
 	void Scene::OnUpdate(float deltaTime)
