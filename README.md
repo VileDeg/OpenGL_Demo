@@ -38,6 +38,13 @@ Select _objects(entities)_ with **LMB**. Use **Q**, **W**, **E**, **R** to enabl
 **Drag and drop** one object on another to make it a child
 
 ![Hierarchy](https://user-images.githubusercontent.com/84181987/186784343-60d94465-23a9-4d6d-a733-b18b30cd7853.gif)
+
+### Multiple light sources
+Although ***Crave's renderer*** is only based at **Forward Rendering** it supports scenes with _multiple light sources_ of _different type_.
+
+### Shadow mipmapping
+***Crave*** uses one huge **atlas texture** for shadow maps. The _further_ the light source, the _less_ space it's shadow map takes up on the atlas, resulting in _lower resolution_ and _higher frame rate_.
+
 ### Importing models
 Currently ***Crave*** only supports importing models with _diffuse_ or _diffuse and specular_ textures.
 ### Save/load scene

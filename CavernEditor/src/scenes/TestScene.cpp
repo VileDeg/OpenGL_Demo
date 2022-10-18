@@ -163,7 +163,7 @@ namespace Crave
 #if 1
         float wallscale = 10.f;
         {
-            
+            float yoffset = -7.5f;
             float halfscale = wallscale * 0.5f + 10.f;
             glm::vec3 pos{};
             int total = s_SpotLightsTotal;
@@ -171,16 +171,22 @@ namespace Crave
             int gridy = s_SpotLightsGrid.y;
             float step = wallscale;
             glm::vec3 cubeoffset = { 0.f, 0.f, -step / 4 };
-            glm::vec3 lowerleft = { -step * (gridx - 1) / 2.f, -7.5f, -step * (gridy - 1) / 2.f };
+            glm::vec3 lowerleft = { -step * (gridx - 1) / 2.f, yoffset, -step * (gridy - 1) / 2.f };
 
             for (int i = 0; i < total; ++i)
             {
                 glm::vec3 pos = lowerleft + cubeoffset + glm::vec3(step * (i % gridy), 0.f, step * (i / gridx));
                 auto cube = CreateEntity("Cube_" + std::to_string(i));
                 cube.AddComponent<MeshInstance>(m_CubeMesh);
-                cube.GetComponent<Transform>().Position =
-                    pos;
+                cube.GetComponent<Transform>().Position = pos;
             }
+            float floorscale = 40.f;
+            float floorhaflsc = floorscale * 0.5f;
+            auto floor = CreateEntity("Floor");
+            floor.AddComponent<MeshInstance>(m_CubeMesh);
+            float floory = yoffset - floorhaflsc - wallscale * 0.5f;
+            floor.GetComponent<Transform>().Position = glm::vec3(0.f, floory, 0.f);
+            floor.GetComponent<Transform>().ScaleF(floorscale);
         }
 #endif
 #if 1
@@ -260,8 +266,8 @@ namespace Crave
                 //pl.GetComponent<Transform>().RotateTo(180.f, { 0.f, 1.f, 0.f });
 
                 auto& l = pl.AddComponent<Light>(LightType::Point, true);
-                l.Data.color = { 0.f, 0.f, 1.f };
-                l.Data.brightness *= 3.5f;
+                l.Data.color = { 0.f, 0.2f, 0.8f };
+                l.Data.brightness *= 3.f;
             }
         }
 #endif
