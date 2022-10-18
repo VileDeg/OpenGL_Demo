@@ -207,7 +207,7 @@ namespace Crave
 
         }
 #endif
-#if 1
+#if 0
         {
             glm::vec3 pos{};
             int total = s_SpotLightsTotal;
@@ -231,6 +231,35 @@ namespace Crave
                 pl.GetComponent<Transform>().RotateTo(180.f, {0.f, 1.f, 0.f});
 
                 auto& l = pl.AddComponent<Light>(LightType::Spot, true);
+                l.Data.color = { 0.f, 0.f, 1.f };
+                l.Data.brightness *= 3.5f;
+            }
+        }
+#endif
+#if 1
+        {
+            glm::vec3 pos{};
+            int total = s_SpotLightsTotal;
+            int gridx = s_SpotLightsGrid.x;
+            int gridy = s_SpotLightsGrid.y;
+            float step = wallscale;
+            glm::vec3 lowerleft = { -step * (gridx - 1) / 2.f, -7.5f, -step * (gridy - 1) / 2.f };
+            for (int i = 0; i < total; ++i)
+            {
+
+                /*pos.x += i % 2 ? 0.f : step;
+                pos.y += i % 2 ? step : 0.f;*/
+                glm::vec3 pos = lowerleft + glm::vec3(step * (i % gridy), 0.f, step * (i / gridx));
+                Entity pl = CreateEntity("PointLight_" + std::to_string(i));
+                pl.AddComponent<MeshInstance>(m_CubeMesh, false);
+
+                pl.GetComponent<MeshInstance>().Color = { 1.f, 1.f, 1.f, 1.f };
+
+                pl.GetComponent<Transform>().Position = pos;
+                pl.GetComponent<Transform>().ScaleF(0.2f);
+                //pl.GetComponent<Transform>().RotateTo(180.f, { 0.f, 1.f, 0.f });
+
+                auto& l = pl.AddComponent<Light>(LightType::Point, true);
                 l.Data.color = { 0.f, 0.f, 1.f };
                 l.Data.brightness *= 3.5f;
             }

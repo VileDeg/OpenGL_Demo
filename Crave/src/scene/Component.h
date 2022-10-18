@@ -13,6 +13,9 @@ namespace Crave
 	namespace Component
 	{
 		constexpr const int NUMBER_OF_COMPONENTS = 4;
+		constexpr const char* COMPONENT_LIST[NUMBER_OF_COMPONENTS] = {
+			"Tag", "Transform", "MeshInstance", "Light"
+		};
 
 		struct Tag
 		{
@@ -123,12 +126,12 @@ namespace Crave
 			//bool	  _UpdatedLastFrame{ false };
 
 			
-			void SetEnabled(bool enabled)
-			{
-				Enabled = enabled;
-				/*if (!enabled)
-					Renderer::EraseLightDataAt(ShaderIndex);*/
-			}
+			//void SetEnabled(bool enabled)
+			//{
+			//	Enabled = enabled;
+			//	/*if (!enabled)
+			//		Renderer::EraseLightDataAt(ShaderIndex);*/
+			//}
 			
 			void UpdateViewMat(const glm::mat4& transform);
 
@@ -138,7 +141,11 @@ namespace Crave
 					Renderer::SubmitLightData(Data, ShaderIndex);
 			}
 
-			Light() = default;
+			Light()
+				: Data(Renderer::GetDefaultLightData(LightType::Point)), IsDynamic(true)
+			{
+				ShaderIndex = Renderer::AddNewLight(Data);
+			}
 			//More suitable for dynamic lights
 			//Position, direction etc. will be updated according to transform component.
 			Light(LightType type, bool isDynamic)
@@ -146,7 +153,7 @@ namespace Crave
 			{
 				ShaderIndex = Renderer::AddNewLight(Data);
 			}
-			//More suitable for non-dynamic light since it won't be update with transform
+			//More suitable for non-dynamic light since it won't be updated with transform
 			//Allows to directly set light's position, direction etc.
 			Light(const LightData& lightData, bool isDynamic)
 				: Data(lightData), IsDynamic(isDynamic)

@@ -13,19 +13,27 @@ ivec2 GetLightOffsetInAtlas(ivec2 offset, int level, int face)
 {
     for (int i = 0; i < face; ++i)
     {
-        int upframesize = u_SFrameSize / int(pow(2, level - 1));
-	    int framesize = upframesize / 2;
-	    int numofframes = int(pow(4, level));
-	    int cellsizex = upframesize;
+        if (level == 0)
+		{
+			offset = ivec2( (offset.x + u_SFrameSize) % u_SAtlasSize.x,
+				offset.y + (offset.x + u_SFrameSize) / u_SAtlasSize.x * u_SFrameSize );
+		}
+        else
+        {
+            int upframesize = u_SFrameSize / int(pow(2, level - 1));
+	        int framesize = upframesize / 2;
+	        int numofframes = int(pow(4, level));
+	        int cellsizex = upframesize;
 
-	    int remx = offset.x % u_SFrameSize;
-	    int remy = offset.y % u_SFrameSize;
-	    int basex = offset.x - remx;
-	    int basey = offset.y - remy;
-	    int addx = (remx + framesize) % u_SFrameSize + (remy + framesize) / u_SFrameSize * (remx + framesize) / u_SFrameSize * u_SFrameSize;
-	    int addy = (remy + (remx + framesize) / u_SFrameSize * framesize) % u_SFrameSize;
-	    offset = ivec2( (basex + addx) % u_SAtlasSize.x,
-			basey + addy + (basex + addx) / u_SAtlasSize.x * u_SFrameSize );
+	        int remx = offset.x % u_SFrameSize;
+	        int remy = offset.y % u_SFrameSize;
+	        int basex = offset.x - remx;
+	        int basey = offset.y - remy;
+	        int addx = (remx + framesize) % u_SFrameSize + (remy + framesize) / u_SFrameSize * (remx + framesize) / u_SFrameSize * u_SFrameSize;
+	        int addy = (remy + (remx + framesize) / u_SFrameSize * framesize) % u_SFrameSize;
+	        offset = ivec2( (basex + addx) % u_SAtlasSize.x,
+			    basey + addy + (basex + addx) / u_SAtlasSize.x * u_SFrameSize );
+        }
     }
     return offset;
 }

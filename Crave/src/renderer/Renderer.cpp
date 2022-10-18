@@ -29,49 +29,45 @@ namespace Crave
 				unsigned castShadows;
 			};
 
-			constexpr const int MAX_LIGHTS_COUNT = 16; //6
-			constexpr const int MAX_SFRAME_MIPMAP_LEVEL = 5;
+			constexpr const int   MAX_LIGHTS_COUNT = 16; //6
+			constexpr const int   MAX_SFRAME_MIPMAP_LEVEL = 5;
 			constexpr const float SFRAME_MIPMAP_DISTANCE_STEP = 40.f;
+
+			constexpr const float POINT_NEAR_PLANE = 0.1f;
+			constexpr const float POINT_FAR_PLANE = 250.f;
+			constexpr const float SPOT_NEAR_PLANE = 0.1f;
+			constexpr const float SPOT_FAR_PLANE = 250.f;
+			constexpr const float DIR_NEAR_PLANE = -500.f;
+			constexpr const float DIR_FAR_PLANE = 500.f;
+			constexpr const int	  SHADER_LIGHT_SIZE = 176;
+
+
+			constexpr const int		   SFRAME_SIZE = 1024;
+			constexpr const glm::ivec2 SATLAS_DIM = { 10, 10 };
+			constexpr const glm::ivec2 SATLAS_SIZE = SATLAS_DIM * SFRAME_SIZE;
 
 			struct RenderData
 			{
 				std::unordered_map<ShaderType, Ref<Shader>> Shader;
 				Ref<ShaderBlock> SceneUBO;
 				Ref<ShaderBlock> LightUBO;
-				//std::vector<std::pair<unsigned, LightData>> LightDataSubmitted{ MAX_LIGHTS_COUNT };
-				/*struct
-				{
-					std::vector<unsigned> id;
-					std::vector<LightData> data;
-				} LightDataSubmitted;*/
 
 				int FramesFilledByLevel[MAX_SFRAME_MIPMAP_LEVEL]{};
-				//glm::ivec2 NextSAtlasOffset[MAX_SFRAME_MIPMAP_LEVEL]{};
+				
 				glm::ivec2 NextSAtlasOffset{};
 				std::vector<int> LightIndexByDistance[MAX_SFRAME_MIPMAP_LEVEL];
 				std::vector<LightData> LightDataSubmitted{};
-				//struct
-				//{
-				//	//LightData data[MAX_LIGHTS_COUNT];
-				//	bool enabled;
-				//	LightData data;
-				//} LightDataSubmitted[MAX_LIGHTS_COUNT];
-				//Ref<ShaderBlock> MiscSSBO;
+				
 				Ref<Framebuffer> ViewportFB;
 				Ref<Framebuffer> DepthMapFBO;
 				Ref<Texture> DepthMap;
 				Ref<Camera> Camera;
 
-				//glm::mat4 ViewMat = glm::mat4(1.f);
-				//glm::mat4 ProjMat = glm::mat4(1.f);
-
 				std::unordered_map<unsigned, unsigned> TexSlotId;
-				/*float lightNearPlane{ 0.1f };
-				float lightFarPlane{ 50.f };*/
+
 				unsigned LightsCount;
 				unsigned boundVaoId;
 				unsigned boundShaderId;
-				//unsigned boundFramebufferId;
 				unsigned viewportWidth;
 				unsigned viewportHeight;
 				SkyboxData skyboxData;
@@ -80,28 +76,6 @@ namespace Crave
 				glm::vec4 outlineColor = glm::vec4(glm::vec3(242, 140, 40) / 256.f * outlineBrightness, 1); //bright orange
 			};
 
-			constexpr const float POINT_NEAR_PLANE = 0.1f;
-			constexpr const float POINT_FAR_PLANE = 250.f;
-
-			constexpr const float SPOT_NEAR_PLANE = 0.1f;
-			constexpr const float SPOT_FAR_PLANE = 250.f;
-
-			constexpr const float DIR_NEAR_PLANE = -500.f;
-			constexpr const float DIR_FAR_PLANE = 500.f;
-
-			constexpr const int SHADER_LIGHT_SIZE = 176;
-
-			//constexpr const int MAX_POINT_LIGHTS = 3;
-			
-
-			constexpr const int SFRAME_SIZE = 1024;
-			//Atlas 3x2
-			constexpr const glm::ivec2 SATLAS_DIM = { 10, 10 };
-			constexpr const glm::ivec2 SATLAS_SIZE = SATLAS_DIM * SFRAME_SIZE;
-			//constexpr const unsigned SHADOW_ATLAS_HEIGHT = ;
-
-			//unsigned m_AtlasFramesCount = MAX_POINT_LIGHTS * 6 + MAX_LIGHTS_COUNT - MAX_POINT_LIGHTS;
-			//unsigned m_AtlasFramesPerRow = SHADOW_ATLAS_WIDTH / SHADOW_FRAME_DIM;
 			RenderData* s_Data = nullptr;
 
 			constexpr short DIFF_TEX_SLOT = 0;
@@ -116,6 +90,17 @@ namespace Crave
 
 			glm::ivec2 GetNextOffsetInAtlas();
 			glm::ivec2 GetNextOffsetInAtlasMipmap(int level, int& framesize);
+
+			void DepthRenderSetup();
+			void SortLightsByDistance();
+			ShaderType ShadowSetupByLightType(LightData& data, int frameNum, int level);
+
+			void SpotShadowSetup(LightData& data, int frameNum, int mipmapLevel);
+			void DirShadowSetup(LightData& data, int frameNum, int mipmapLevel);
+			void PointShadowSetup(LightData& data, int frameNum, int level);
+			void DepthRenderEnd();
+
+			void UploadLightDataToShader();
 
 			void BindShader(const Ref<Shader> shader);
 			void BindVAO(const Ref<VAO> vao);
@@ -168,9 +153,6 @@ namespace Crave
 			}
 			glClearColor(0.049f, 0.0f, 0.1f, 1.f); //Dark purple
 		}
-
-		
-		
 
 		void DrawMesh(int drawID, const glm::mat4& modelMat, Ref<Mesh> mesh, bool withTextures, glm::vec4 color)
 		{
@@ -286,115 +268,6 @@ namespace Crave
 			GLDraw(mesh->Vao());
 		}
 
-		void DepthRenderSetup()
-		{
-			s_Data->DepthMapFBO->Bind();
-			glClear(GL_DEPTH_BUFFER_BIT);
-		}
-
-		void SpotShadowSetup(LightData& data, int frameNum, int mipmapLevel)
-		{
-			int framesize{};
-			glm::ivec2 offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
-			data.atlasoffset = offset;
-			glViewport(offset.x, offset.y, framesize, framesize);
-
-			Ref<Shader> sh = s_Data->Shader[ShaderType::SpotDepth];
-			BindShader(sh);
-			//sh->setFloat3("u_LightPos", data.position);
-			sh->setMat4f("u_LightSpaceMat", data.projViewMat);
-		}
-
-		void DirShadowSetup(LightData& data, int frameNum, int mipmapLevel)
-		{
-			glm::ivec2 offset = GetNextOffsetInAtlas();
-			data.atlasoffset = offset;
-			glViewport(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
-
-			Ref<Shader> sh = s_Data->Shader[ShaderType::DirDepth];
-			BindShader(sh);
-			sh->setMat4f("u_LightSpaceMat", data.projViewMat);
-		}
-
-		void PointShadowSetup(LightData& data, int frameNum, int mipmapLevel)
-		{
-			
-			glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f),
-				1.f, POINT_NEAR_PLANE, POINT_FAR_PLANE);
-			std::vector<glm::mat4> shadowTransforms;
-			shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-			shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-			shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-			shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
-			shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-			shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-
-			int framesize{};
-			glm::ivec2 offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
-			data.atlasoffset = offset;
-			glViewportIndexedf(0, offset.x, offset.y, framesize, framesize);
-			for (int i = 1; i < 6; ++i)
-			{
-				offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
-				glViewportIndexedf(i, offset.x, offset.y, framesize, framesize);
-			}
-			
-
-			auto sh = s_Data->Shader[ShaderType::PointDepth];
-			BindShader(sh);
-			for (unsigned int i = 0; i < 6; ++i)
-				sh->setMat4f("u_ShadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
-			
-			
-			sh->setFloat3("u_LightPos", data.position);
-		}
-
-		ShaderType ShadowSetupByLightType(LightData& data, int frameNum, int mipmapLevel)
-		{
-			data.mipmaplevel = mipmapLevel;
-			ShaderType shType;
-			switch (data.type)
-			{
-			case LightType::Point:
-				PointShadowSetup(data, frameNum, mipmapLevel); //light.ShaderIndex
-				shType = ShaderType::PointDepth;
-				break;
-			case LightType::Spot:
-				SpotShadowSetup(data, frameNum, mipmapLevel);
-				shType = ShaderType::SpotDepth;
-				break;
-			case LightType::Directional:
-				DirShadowSetup(data, frameNum, mipmapLevel);
-				shType = ShaderType::DirDepth;
-				break;
-			default:
-				ASSERT(false, "");
-			}
-			return shType;
-		}
-
-		void SortLightsByDistance()
-		{
-			for (int i = 0; i < s_Data->LightDataSubmitted.size(); ++i)
-			{
-				auto& ld = s_Data->LightDataSubmitted[i];
-				if (ld.type == LightType::Directional)
-				{
-					//Directional light's distance makes no sense. It will always have mipmap level 0.
-					s_Data->LightIndexByDistance[0].push_back(i);
-					continue;
-				}
-				float distToCam = glm::length(s_Data->Camera->Position() - ld.position);
-				int level = distToCam / SFRAME_MIPMAP_DISTANCE_STEP + 0.5f;
-
-				int maxlv = MAX_SFRAME_MIPMAP_LEVEL - 1;
-				level = level > maxlv ? maxlv : level;
-
-				
-				s_Data->LightIndexByDistance[level].push_back(i);
-			}
-		}
-
 		void RenderLigthDepthToAtlas(std::function<void(ShaderType)> renderDepthFunc)
 		{
 			DepthRenderSetup();
@@ -414,12 +287,6 @@ namespace Crave
 
 			UploadLightDataToShader();
 			DepthRenderEnd();
-		}
-
-		void DepthRenderEnd()
-		{
-			s_Data->ViewportFB->Bind();
-			
 		}
 
 		void DrawSkybox()
@@ -559,25 +426,15 @@ namespace Crave
 			
 			s_Data->NextSAtlasOffset = { 0, 0 };
 			
-			
-
 			SceneData data = { cam->GetProjViewMat(), cam->Position(), s_Data->LightsCount, castShadows };
 			s_Data->Camera = cam;
 			s_Data->SceneUBO->Upload((const void*)&data, sizeof(data), 0);
 			
-			
-			/*s_Data->ViewMat = cam->GetViewMat();
-			s_Data->ProjMat = cam->GetProjMat();*/
-
 			s_Data->ViewportFB->Bind();
-
-			/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-			s_Data->ViewportFB->ClearIntAttachment(-1);*/
 		}
 
 		void EndScene()
 		{
-			
 			s_Data->ViewportFB->Unbind();
 		}
 
@@ -635,38 +492,15 @@ namespace Crave
 			ImGui::End();
 		}
 
-		//void ResetViewport()
-		//{
-		//	glViewport(0, 0, s_Data->viewportWidth, s_Data->viewportHeight);
-		//}
-
 		void Shutdown()
 		{
 			delete s_Data;
 		}
 
-		void UploadLightDataToShader()
-		{
-			size_t size = s_Data->LightDataSubmitted.size() * SHADER_LIGHT_SIZE;
-			const void* data = s_Data->LightDataSubmitted.data();
-			s_Data->LightUBO->Upload(data, size, 0);
-			
-		}
+		
 		namespace //private
 		{
-			void GLDraw(const Ref<VAO> vao)
-			{
-				BindVAO(vao);
-				auto ebo = vao->Ebo();
-				if (ebo)
-				{
-					ebo->Bind();
-					glDrawElements(GL_TRIANGLES, ebo->Count(), GL_UNSIGNED_INT, 0);
-				}
-				else
-					glDrawArrays(GL_TRIANGLES, 0, vao->Count());
-			}
-
+			
 			glm::ivec2 GetNextOffsetInAtlas()
 			{
 				glm::ivec2 prev = s_Data->NextSAtlasOffset;
@@ -693,7 +527,6 @@ namespace Crave
 				int numofframes = std::pow(4, level);
 				int cellsizex = upframesize;
 
-
 				int remx = offset.x % SFRAME_SIZE;
 				int remy = offset.y % SFRAME_SIZE;
 				int basex = offset.x - remx;
@@ -707,6 +540,143 @@ namespace Crave
 				return prev;
 			}
 		
+
+			void DepthRenderSetup()
+			{
+				s_Data->DepthMapFBO->Bind();
+				glClear(GL_DEPTH_BUFFER_BIT);
+			}
+
+			void SpotShadowSetup(LightData& data, int frameNum, int mipmapLevel)
+			{
+				int framesize{};
+				glm::ivec2 offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
+				data.atlasoffset = offset;
+				glViewport(offset.x, offset.y, framesize, framesize);
+
+				Ref<Shader> sh = s_Data->Shader[ShaderType::SpotDepth];
+				BindShader(sh);
+				//sh->setFloat3("u_LightPos", data.position);
+				sh->setMat4f("u_LightSpaceMat", data.projViewMat);
+			}
+
+			void DirShadowSetup(LightData& data, int frameNum, int mipmapLevel)
+			{
+				glm::ivec2 offset = GetNextOffsetInAtlas();
+				data.atlasoffset = offset;
+				glViewport(offset.x, offset.y, SFRAME_SIZE, SFRAME_SIZE);
+
+				Ref<Shader> sh = s_Data->Shader[ShaderType::DirDepth];
+				BindShader(sh);
+				sh->setMat4f("u_LightSpaceMat", data.projViewMat);
+			}
+
+			void PointShadowSetup(LightData& data, int frameNum, int mipmapLevel)
+			{
+
+				glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f),
+					1.f, POINT_NEAR_PLANE, POINT_FAR_PLANE);
+				std::vector<glm::mat4> shadowTransforms;
+				shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+				shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+				shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+				shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+				shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+				shadowTransforms.push_back(shadowProj * glm::lookAt(data.position, data.position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+
+				int framesize{};
+				glm::ivec2 offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
+				data.atlasoffset = offset;
+				glViewportIndexedf(0, offset.x, offset.y, framesize, framesize);
+				for (int i = 1; i < 6; ++i)
+				{
+					offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
+					glViewportIndexedf(i, offset.x, offset.y, framesize, framesize);
+				}
+
+
+				auto sh = s_Data->Shader[ShaderType::PointDepth];
+				BindShader(sh);
+				for (unsigned int i = 0; i < 6; ++i)
+					sh->setMat4f("u_ShadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+
+
+				sh->setFloat3("u_LightPos", data.position);
+			}
+
+			ShaderType ShadowSetupByLightType(LightData& data, int frameNum, int mipmapLevel)
+			{
+				data.mipmaplevel = mipmapLevel;
+				ShaderType shType;
+				switch (data.type)
+				{
+				case LightType::Point:
+					PointShadowSetup(data, frameNum, mipmapLevel); //light.ShaderIndex
+					shType = ShaderType::PointDepth;
+					break;
+				case LightType::Spot:
+					SpotShadowSetup(data, frameNum, mipmapLevel);
+					shType = ShaderType::SpotDepth;
+					break;
+				case LightType::Directional:
+					DirShadowSetup(data, frameNum, mipmapLevel);
+					shType = ShaderType::DirDepth;
+					break;
+				default:
+					ASSERT(false, "");
+				}
+				return shType;
+			}
+
+			void SortLightsByDistance()
+			{
+				for (int i = 0; i < s_Data->LightDataSubmitted.size(); ++i)
+				{
+					auto& ld = s_Data->LightDataSubmitted[i];
+					if (ld.type == LightType::Directional)
+					{
+						//Directional light's distance makes no sense. It will always have mipmap level 0.
+						s_Data->LightIndexByDistance[0].push_back(i);
+						continue;
+					}
+					float distToCam = glm::length(s_Data->Camera->Position() - ld.position);
+					int level = distToCam / SFRAME_MIPMAP_DISTANCE_STEP + 0.5f;
+
+					int maxlv = MAX_SFRAME_MIPMAP_LEVEL - 1;
+					level = level > maxlv ? maxlv : level;
+
+
+					s_Data->LightIndexByDistance[level].push_back(i);
+				}
+			}
+
+			void DepthRenderEnd()
+			{
+				s_Data->ViewportFB->Bind();
+			}
+
+			void UploadLightDataToShader()
+			{
+				size_t size = s_Data->LightDataSubmitted.size() * SHADER_LIGHT_SIZE;
+				const void* data = s_Data->LightDataSubmitted.data();
+				s_Data->LightUBO->Upload(data, size, 0);
+			}
+
+
+
+			void GLDraw(const Ref<VAO> vao)
+			{
+				BindVAO(vao);
+				auto ebo = vao->Ebo();
+				if (ebo)
+				{
+					ebo->Bind();
+					glDrawElements(GL_TRIANGLES, ebo->Count(), GL_UNSIGNED_INT, 0);
+				}
+				else
+					glDrawArrays(GL_TRIANGLES, 0, vao->Count());
+			}
+
 			void BindShader(const Ref<Shader> shader)
 			{
 				if (s_Data->boundShaderId != shader->Id())

@@ -57,18 +57,8 @@ namespace Crave
 			bool withTextures, glm::vec4 color = { 1.f, 0.f, 1.f, 1.f });
 		void DrawDepth(const glm::mat4& modelMat, Ref<Mesh> mesh, ShaderType shType);
 
-		void DepthRenderSetup();
-		void SortLightsByDistance();
-		ShaderType ShadowSetupByLightType(LightData& data, int frameNum, int level);
 		void RenderLigthDepthToAtlas(std::function<void(ShaderType)> renderDepthFunc);
-
-		void SpotShadowSetup(LightData& data, int frameNum, int mipmapLevel);
-		void DirShadowSetup(LightData& data, int frameNum, int mipmapLevel);
-		//void SpotShadowSetup(LightData& data, int frameNum);
-		void PointShadowSetup(LightData& data, int frameNum, int level);
-		void DepthRenderEnd();
-
-		void UploadLightDataToShader();
+		
 		void DrawSkybox();
 
 		LightData GetDefaultLightData(LightType type);
@@ -94,8 +84,8 @@ namespace Crave
 
 		void OnImGuiRender();
 
-		constexpr const int LIGHT_MIN_RADIUS = 1.f;
-		constexpr const int LIGHT_MAX_RADIUS = 15.f;
+		/*constexpr const int LIGHT_MIN_RADIUS = 1.f;
+		constexpr const int LIGHT_MAX_RADIUS = 15.f;*/
 
 		constexpr const int LIGHT_MAX_BRIGHTNESS = 10.f;
 	};

@@ -58,6 +58,7 @@ namespace Crave
 
 	void SceneHierarchyPanel::OnImGuiRender(ImGuiWindowFlags panelFlags)
 	{
+		ImGui::ShowDemoWindow();
 		ImGui::Begin("Scene Hierarchy", (bool*)0, panelFlags);
 
 		for (auto& entity : m_Scene->m_RootEntity.GetComponent<Transform>().Children)
@@ -96,7 +97,7 @@ namespace Crave
 			if (ImGui::MenuItem("Create Empty Entity"))
 				m_Scene->CreateEntity("Empty Entity");
 
-			ImGui::EndPopup();	
+			ImGui::EndPopup();
 		}
 
 		ImGui::End();
@@ -303,6 +304,17 @@ namespace Crave
 		}
 	}
 
+#define PRESTRING(x) (#x)
+	//#define STRING(x) #(PRESTRING(x))
+#define ADD_COMPONENT_BTN(entity, compname, boolname) do { \
+		if (!entity.HasComponent<compname>()) \
+		{ \
+			boolname = false; \
+			if (ImGui::Button((#compname))) \
+				entity.AddComponent<compname>(); \
+		} \
+	} while(0)
+
 	void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		if (entity.HasComponent<Tag>())
@@ -326,7 +338,13 @@ namespace Crave
 
 		if (ImGui::BeginPopup("AddComponent"))
 		{
+			bool hasAll = true;
 
+			ADD_COMPONENT_BTN(entity, MeshInstance, hasAll);
+			ADD_COMPONENT_BTN(entity, Light, hasAll);
+
+			if (hasAll)
+				ImGui::Text("No components to add.");
 
 			ImGui::EndPopup();
 		}
@@ -343,22 +361,89 @@ namespace Crave
 				ImGui::Text("Parent:			 %s", tr.Parent.GetComponent<Tag>().String.c_str());
 				ImGui::Text("Number of children: %ld", tr.Children.size());
 			});
+		
+#define PREFIX(name) li.Data.name
 
-		DrawComponent<Light>("Light", entity, [](auto& li)
+#define PRCSN ".2"
+#define FMTF "%"PRCSN"f"
+#define FMTI "%d"
+
+#define FMT_INT(v) FMTI, v
+#define FMT_FLT(v) FMTF, v
+#define FMT_VEC2(v) "["FMTF", "FMTF"]", v.x, v.y
+#define FMT_VEC3(v) "["FMTF", "FMTF", "FMTF"]", v.x, v.y, v.z
+
+#define LIGHT_PARAM_INT(name) #name ": " FMT_INT(PREFIX(name))
+#define LIGHT_PARAM_FLT(name) #name ": " FMT_FLT(PREFIX(name))
+#define LIGHT_PARAM_VEC3(name) #name ": " FMT_VEC3(PREFIX(name))
+
+#define LIGHT_PARAM_TEXT(name, fmt) #name ": " FMT_##fmt##(PREFIX(name))
+
+		DrawComponent<Light>("Light", entity, [&](auto& li)
 			{
-				bool enabled = li.Enabled;
-				ImGui::Checkbox("Enabled", &enabled);
-				li.SetEnabled(enabled);
-				ImGui::DragFloat("Brightness", &li.Data.brightness, 0.1f, 0.f, Renderer::LIGHT_MAX_BRIGHTNESS);
-				ImGui::Text("Attenuation: ");
-				
-				float min{ 0.f }, max{ 0.1f };
-				ImGui::DragFloat("Constant", &li.Data.constant, 0.1f, min, 1.f);
-				ImGui::DragFloat("Linear", &li.Data.linear, 0.01f, min, max);
-				ImGui::DragFloat("Quadratic", &li.Data.quadratic, 0.001f, min, max);
+				ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+				if (ImGui::BeginTabBar("LightTabBar", tab_bar_flags))
+				{
+					if (ImGui::BeginTabItem("Parameters"))
+					{
+						ImGui::Checkbox("Enabled", &li.Enabled);
+						ImGui::Separator();
+						static const int numtypes = 3;
+						static LightType types[numtypes] = { LightType::Point, LightType::Spot, LightType::Directional };
+						static const char* items[numtypes] = {
+							magic_enum::enum_name(types[0]).data(),
+							magic_enum::enum_name(types[1]).data(),
+							magic_enum::enum_name(types[2]).data() };
 
+						/*for (int i = 0; i < numtypes; ++i)
+							items[i] = magic_enum::enum_name(types[i]).data();*/
+						static int curr = 0;
+						ImGui::Combo("Type", &curr, items, IM_ARRAYSIZE(items));
+						if (types[curr] != li.Data.type)
+						{
+							bool dynamic = li.IsDynamic;
+							entity.RemoveComponent<Light>();
+							entity.AddComponent<Light>(types[curr], dynamic);
+						}
+						ImGui::Separator();
+						ImGui::DragFloat("Brightness", &li.Data.brightness, 0.1f, 0.f, Renderer::LIGHT_MAX_BRIGHTNESS);
+						ImGui::Separator();
+						ImGui::Text("Attenuation: ");
+						float min{ 0.f }, max{ 0.1f };
+						ImGui::DragFloat("Constant", &li.Data.constant, 0.1f, min, 1.f);
+						ImGui::DragFloat("Linear", &li.Data.linear, 0.01f, min, max);
+						ImGui::DragFloat("Quadratic", &li.Data.quadratic, 0.001f, min, max);
+
+						ImGui::EndTabItem();
+					}
+					if (ImGui::BeginTabItem("Internal Data"))
+					{
+						ImGui::Text(LIGHT_PARAM_INT(type));
+						ImGui::Text(LIGHT_PARAM_INT(mipmaplevel));
+						ImGui::Text(LIGHT_PARAM_TEXT(atlasoffset, VEC2));
+						ImGui::Text(LIGHT_PARAM_FLT(brightness));
+						ImGui::Text(LIGHT_PARAM_VEC3(color));
+						ImGui::Separator();
+						ImGui::Text(LIGHT_PARAM_VEC3(position));
+						ImGui::Text(LIGHT_PARAM_VEC3(direction));
+						ImGui::Separator();		
+						ImGui::Text(LIGHT_PARAM_VEC3(ambient));
+						ImGui::Text(LIGHT_PARAM_VEC3(diffuse));
+						ImGui::Text(LIGHT_PARAM_VEC3(specular));
+						ImGui::Separator();
+						ImGui::Text(LIGHT_PARAM_FLT(constant));
+						ImGui::Text(LIGHT_PARAM_FLT(linear));
+						ImGui::Text(LIGHT_PARAM_FLT(quadratic));
+						ImGui::Separator();
+						ImGui::Text(LIGHT_PARAM_FLT(cutOff));
+						ImGui::Text(LIGHT_PARAM_FLT(outerCutOff));
+
+						ImGui::EndTabItem();
+					}
+
+					ImGui::EndTabBar();
+				}
 			});
-
 		DrawComponent<MeshInstance>("MeshInstance", entity, [](auto& mi)
 			{
 				ImGui::Checkbox("HasTextures", &mi.HasTextures);
@@ -375,4 +460,5 @@ namespace Crave
 				}
 			});
 	}
+	
 }
