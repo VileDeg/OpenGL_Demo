@@ -6,7 +6,7 @@ It is in early stage of development and currently only available for **Windows**
 ## Building the engine
 Clone the repository via
 ```sh
-git clone https://github.com/VileDeg/crave-engine
+git clone https://github.com/VileDeg/crave-engine .
 ```
 ***Crave*** uses [premake5](https://premake.github.io/) build system so first to *configure* run **GenerateProjects.bat** file.
 By default it's contents should look like this:
@@ -15,7 +15,7 @@ call vendor\premake5.exe vs2022
 PAUSE
 ```
 You can change **vs2022** option, for available options see [premake documentation](https://premake.github.io/).
-After projects were configured, build the solution through visual studio(if configured with **vs****** option).
+After projects were configured, open **Crave.sln** and _build the solution_ through visual studio(if configured with **vs****** option).
 
 The solution consists of **Crave** static library and **CavernEditor** console application that uses the library.
 In premake5.lua script there is a postbuild task to call the scripts that will copy all necessary DLLs into executable folder.
