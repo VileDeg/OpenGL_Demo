@@ -19,7 +19,6 @@ namespace Crave
 		{
 			glDeleteFramebuffers(1, &m_Id);
 			m_ColorAttachments.clear();
-			//m_DepthAttachment = {};
 			m_IntColorAttachmentId = 0;
 		}
 
@@ -114,21 +113,6 @@ namespace Crave
 		glClearTexImage(m_IntColorAttachmentId, 0,
 			GL_RED_INTEGER, GL_INT, &clearVal);
 	}
-
-
-	/*void Framebuffer::AttachDepthCubemap(const unsigned textureId,
-		const unsigned width, const unsigned height)
-	{
-		m_Width = width;
-		m_Height = height;
-		m_DepthAtnId = textureId;
-
-		glBindFramebuffer(GL_FRAMEBUFFER, m_Id);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureId, 0);
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}*/
 
 	void Framebuffer::Bind()
 	{

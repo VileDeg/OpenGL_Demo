@@ -1,6 +1,4 @@
 #pragma once
-//#include <cereal/access.hpp>
-//#include <cereal/archives/json.hpp>
 
 namespace Crave
 {
@@ -47,15 +45,6 @@ namespace Crave
 			Key m_GlId;
 			KeyEvent m_GlEventType;
 			actionType m_Action;
-		//private:
-		//	friend class cereal::access;
-		//	template<typename Archive>
-		//	void serialize(Archive& ar)
-		//	{
-		//		ar& cereal::make_nvp("GL_ID", m_GlId);
-		//		ar& cereal::make_nvp("GLEventType", m_GlEventType);
-		//		//ar& cereal::make_nvp("Action", m_Action);
-		//	}
 		};
 	}
 }

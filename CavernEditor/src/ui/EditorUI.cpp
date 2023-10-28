@@ -118,7 +118,6 @@ namespace Crave
                     float snapValues[3] = { snapValue, snapValue, snapValue };
                    
                     //We pass global transform matrix to gizmo so that it shows correctly at object center
-                    //glm::mat4 deltaMat = glm::mat4(1.f);
                     ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
                         (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
                         nullptr, snap ? snapValues : nullptr);
@@ -134,7 +133,6 @@ namespace Crave
                         glm::vec4 perspective;
                         glm::decompose(transform, scale, rotation, translation, skew, perspective);
 
-                        //glm::quat deltaQuat = rotation * glm::inverse(tc.Quaternion);
                         glm::vec3 deltaRotation = glm::degrees(glm::eulerAngles(rotation)) - tc.EulerAngles;
 
                         tc.Position = translation;

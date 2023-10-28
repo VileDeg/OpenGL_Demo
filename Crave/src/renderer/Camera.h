@@ -64,7 +64,6 @@ namespace Crave
 		glm::mat4 m_ViewMat;
 		glm::mat4 m_PerspectiveProjMat;
 		glm::mat4 m_OrthographicProjMat;
-		//glm::mat4 m_ProjViewMat;
 
 		glm::vec3 m_Position;
 		glm::vec3 m_Up;
@@ -78,9 +77,6 @@ namespace Crave
 		float m_MovementSpeed;
 		float m_MouseSensitivity;
 		float m_Zoom;
-
-		/*float m_NearPlane;
-		float m_FarPlane;*/
 
 		bool  m_IsPerspective;
 

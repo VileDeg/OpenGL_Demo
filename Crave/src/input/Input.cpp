@@ -7,9 +7,6 @@
 
 #include "core/Window.h"
 #include <GLFW/glfw3.h>
-//#include <cereal/cereal.hpp>
-//#include <cereal/types/unordered_map.hpp>
-//#include <cereal/archives/json.hpp>
 
 namespace Crave
 {
@@ -20,23 +17,7 @@ namespace Crave
 			struct KeybindsData
 			{
 				std::unordered_map<KeybindName, Keybind> Keybinds{};
-				
-				//std::unordered_map<std::string, Keybind> CamKeybinds{};
-
-				//friend class cereal::access;
-				//template<typename Archive>
-				//void serialize(Archive& ar)
-				//{
-				//	ar& cereal::make_nvp("Keybinds", Keybinds);
-				//	//ar& cereal::make_nvp("CameraKeybinds", CamKeybinds);
-
-				//}
 			};
-
-			/*void AddKeybind(const std::string& name, Keybind kb)
-			{
-				m_KbData.Keybinds[name] = kb;
-			}*/
 
 			KeybindsData m_KbData{};
 		}
@@ -57,25 +38,7 @@ namespace Crave
 			m_KbData.Keybinds[KeybindName::GizmoScale	 ] = { Key::R  , KeyEvent::Press };
 		}
 
-		/*void SaveControls()
-		{
-			std::ofstream ofs(CONTROLS_FILE_PATH);
-			ASSERT(ofs.is_open() && ofs.good(), "Open file failed.");
-
-			cereal::JSONOutputArchive oa(ofs);
-
-			oa& m_KbData;
-		}
-
-		void LoadControls()
-		{
-			std::ifstream ifs(CONTROLS_FILE_PATH);
-			ASSERT(ifs.is_open() && ifs.good(), "Open file failed.");
-
-			cereal::JSONInputArchive ia(ifs);
-
-			ia& m_KbData;
-		}*/
+		
 
 		bool IsKeyDown(Key key)
 		{

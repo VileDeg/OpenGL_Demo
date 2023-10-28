@@ -119,7 +119,6 @@ namespace Crave
 					{Texture::Type::Depth, Texture::Target::Texture2D, Texture::MMFilter::Nearest, Texture::WrapMode::ClampToEdge} } });
 			s_Data->DepthMapFBO->Invalidate(SATLAS_SIZE);
 			s_Data->DepthMap = s_Data->DepthMapFBO->GetDepthAttachment();
-			//s_Data->DepthMapFBO->AttachDepthCubemap(s_Data->DepthMap->Id(), SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
 
 			LoadShaders();
 			CreateSkybox();
@@ -136,12 +135,6 @@ namespace Crave
 				256,
 				GL_UNIFORM_BUFFER);
 			s_Data->SceneUBO->Bind(1);
-
-			/*s_Data->MiscSSBO = CreateRef<ShaderBlock>(
-				"LightData", (const void*)NULL,
-				MAX_LIGHTS_COUNT * 64,
-				GL_SHADER_STORAGE_BUFFER);
-			s_Data->MiscSSBO->Bind(0);*/
 
 			{
 				glEnable(GL_CULL_FACE);
@@ -169,35 +162,25 @@ namespace Crave
 				BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
 				if (!diff.empty() && !norm.empty())
 				{
-					/*sh = s_Data->Shader[ShaderType::NormalMap];
-					BindShader(sh);*/
 					BindTexture(diff[0], DIFF_TEX_SLOT);
 					BindTexture(norm[0], NORM_TEX_SLOT);
 					sh->setUint("u_ObjType", 2);
 				}
 				else if (!diff.empty() && !spec.empty())
 				{
-					/*sh = s_Data->Shader[ShaderType::DiffNSpec];
-					BindShader(sh);*/
 					BindTexture(diff[0], DIFF_TEX_SLOT);
 					BindTexture(spec[0], SPEC_TEX_SLOT);
-					//BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
 					sh->setUint("u_ObjType", 1);
 				}
 				else if (!diff.empty())
 				{
-					/*sh = s_Data->Shader[ShaderType::Diffuse];
-					BindShader(sh);*/
+				
 					BindTexture(diff[0], DIFF_TEX_SLOT);
-					//BindTexture(s_Data->DepthMap, DEPTH_TEX_SLOT);
 					sh->setUint("u_ObjType", 0);
 				}
 				else
 				{
 					//Mesh has no textues. Most likely error.
-					//sh = s_Data->Shader[ShaderType::UniformColor];
-					//BindShader(sh);
-					//sh->setFloat4("u_Color", { 1.f, 0.f, 1.f, 1.f }); //magenta
 					ASSERT(false, "");
 				}
 			}
@@ -294,7 +277,6 @@ namespace Crave
 			glDepthFunc(GL_LEQUAL);
 			Ref<Shader> sh = s_Data->Shader[ShaderType::Skybox];
 			BindShader(sh);
-			//s_Data->Shader[ShaderType::Skybox]->setInt("u_SkyboxTex", SKYBOX_TEX_SLOT);
 			bool isPersp = s_Data->Camera->GetIsPerspective();
 			s_Data->Camera->SetIsPerspective(true);
 			sh->setMat4f("u_ProjMat", s_Data->Camera->GetProjMat());
@@ -339,7 +321,6 @@ namespace Crave
 			static float outerCutOff = cutOff + 5.f;
 
 			LightData data{};
-			//data.enabled     = true;
 			data.type	     = type;
 			data.brightness  = brightness;
 			data.color	     = { 1.f, 1.f, 1.f };
@@ -353,7 +334,6 @@ namespace Crave
 
 			if (type == LightType::Point || type == LightType::Spot)
 			{
-				//data.ambient   = glm::vec3(0.f);
 				data.ambient   = ambient;
 
 				data.constant  = constant;
@@ -390,13 +370,9 @@ namespace Crave
 		unsigned AddNewLight(const LightData& data)
 		{
 			s_Data->LightsCount++;
-			//static unsigned offset = 0;
 			static unsigned lightIndex = 0;
 
 			SubmitLightData(data, lightIndex);
-			//s_Data->LightUBO->Upload(&data, SHADER_LIGHT_SIZE, offset);
-
-			//offset += SHADER_LIGHT_SIZE;
 			++lightIndex;
 			return lightIndex - 1;
 		}
@@ -482,11 +458,6 @@ namespace Crave
 			{
 				auto& libd = s_Data->LightIndexByDistance[lv];
 				ImGui::Text("Mipmap level %d: %ld", lv, libd.size());
-				/*for (int i = 0; i < libd.size(); ++i)
-				{
-					auto& data = s_Data->LightDataSubmitted[libd[i]];
-					
-				}*/
 			}
 
 			ImGui::End();
@@ -556,7 +527,6 @@ namespace Crave
 
 				Ref<Shader> sh = s_Data->Shader[ShaderType::SpotDepth];
 				BindShader(sh);
-				//sh->setFloat3("u_LightPos", data.position);
 				sh->setMat4f("u_LightSpaceMat", data.projViewMat);
 			}
 
@@ -593,7 +563,6 @@ namespace Crave
 					offset = GetNextOffsetInAtlasMipmap(mipmapLevel, framesize);
 					glViewportIndexedf(i, offset.x, offset.y, framesize, framesize);
 				}
-
 
 				auto sh = s_Data->Shader[ShaderType::PointDepth];
 				BindShader(sh);
@@ -710,7 +679,6 @@ namespace Crave
 					std::unordered_map<Shader::Type, std::string>{
 						{ Shader::Type::VERTEX, "general.vert" },
 						{ Shader::Type::FRAGMENT, "general.frag" }});
-				//auto sh = s_Data->Shader[ShaderType::General] = CreateRef<Shader>("general.shader");
 				sh->Bind();
 
 				sh->setInt("material.diffuseTex", DIFF_TEX_SLOT);
@@ -743,8 +711,7 @@ namespace Crave
 				sh->setFloat("u_FarPlane", POINT_FAR_PLANE);
 
 				sh = s_Data->Shader[ShaderType::DirDepth] = CreateRef<Shader>("dirDepth.shader");
-				/*sh->Bind();
-				sh->setFloat("u_FarPlane", DIR_FAR_PLANE);*/
+			
 				sh = s_Data->Shader[ShaderType::SpotDepth] = CreateRef<Shader>("spotDepth.shader");
 				sh->Bind();
 				sh->setFloat("u_FarPlane", SPOT_FAR_PLANE);

@@ -11,8 +11,6 @@ namespace Crave
 
 		void SetContext(Ref<Scene> scene);
 
-		//Entity GetSelectedEntity() const { return m_SelectedEntity; }
-
 		void OnImGuiRender(ImGuiWindowFlags panelFlags);
 	private:
 		void ReparentTransform(Entity dragged, Entity newParent);
@@ -22,7 +20,5 @@ namespace Crave
 
 	private:
 		Ref<Scene> m_Scene{};
-
-		//Entity m_SelectedEntity;
 	};
 }

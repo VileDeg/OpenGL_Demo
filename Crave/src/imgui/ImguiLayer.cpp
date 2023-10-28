@@ -29,21 +29,14 @@ namespace Crave
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
 		io.Fonts->AddFontFromFileTTF("res/fonts/CascadiaCode/static/CascadiaMono-Bold.ttf", 18.0f * s_FontScale);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/CascadiaCode/CascadiaMono.ttf", 18.0f * s_FontScale);
-		//bold->Scale = font->Scale = s_FontScale;
-		//io.FontGlobalScale = s_FontScale;
-
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsClassic();
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -69,12 +62,6 @@ namespace Crave
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-
-		//Turn off mouse input if cursor if disabled.
-		/*if (!Window::CursorVisible())
-			ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
-		else
-			ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;*/
 
 		ImGuizmo::BeginFrame();
 	}

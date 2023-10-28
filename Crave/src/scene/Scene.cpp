@@ -59,9 +59,7 @@ namespace Crave
 		entity.AddComponent<MeshInstance>(nd.meshes[0]);
 
 		auto& tr = entity.GetComponent<Transform>();
-		//tr.Parent = parent;
-		//Transform* pTr = &entity.GetComponent<Transform>();
-
+	
 		glm::vec3 scale;
 		glm::quat rotation;
 		glm::vec3 translation;
@@ -76,7 +74,7 @@ namespace Crave
 
 		for (auto& child : nd.childData)
 		{
-			PocessNodeData(child, entity);//tr.Children.push_back(
+			PocessNodeData(child, entity);
 		}
 
 		return entity;
@@ -171,8 +169,6 @@ namespace Crave
 
 	void Scene::RenderShadow()
 	{
-		//Renderer::GlobalShadowSetup();
-
 		int frameNum = 0;
 		auto& view = m_Registry.view<Transform, Light>();
 		for (auto& entity : view)
@@ -184,24 +180,9 @@ namespace Crave
 				light.UpdateViewMat(transform);
 			light.SubmitDataToRenderer();
 			//We don't need to render depth map if light is disabled.
-			/*if (!light.Enabled)
-				continue;*/
 		}
 		auto func = std::bind(&Scene::RenderSceneDepth, this, std::placeholders::_1);
 		Renderer::RenderLigthDepthToAtlas(func);
-		//Renderer::SortLightsByDistance();
-		//for (auto& entity : view)
-		//{
-		//	auto& [transform, light] = view.get(entity);
-		//	ShaderType shType = Renderer::ShadowSetupByLightType(light.Data, frameNum);
-		//	
-		//	++frameNum;
-		//	RenderSceneDepth(shType);
-		//}
-		//Renderer::ShadowRenderEnd();
-		////Upload of all submitted data must happen here before the scene is rendered,
-		////otherwise scene will be rendered with old light data and light will flicker when moved.
-		//Renderer::UploadLightDataToShader();
 	}
 
 	void Scene::OnUpdate(float deltaTime)

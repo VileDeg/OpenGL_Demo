@@ -9,8 +9,6 @@ namespace Crave
 {
 	namespace Import { class Model; struct ModelNodeData; }
 	
-	//struct Import::Model::NodeData;
-
 	class Scene
 	{
 	protected:
@@ -19,7 +17,6 @@ namespace Crave
 		Scene();
 		virtual ~Scene() = 0;
 
-		//const Component::Transform& GetTransformComponent(entt::entity entity);
 		Entity GetEntity(entt::entity id);
 
 		Entity CreateEntity(const std::string& name, bool hasParent = false, Entity parent = { entt::null, nullptr });
@@ -43,7 +40,6 @@ namespace Crave
 		size_t m_NumOfEntities{};
 		Entity m_SelectedEntity{};
 		Entity m_RootEntity{};
-		//Component::Transform m_Root;
 		std::vector<Import::Model> m_ImportedModels{};
 
 

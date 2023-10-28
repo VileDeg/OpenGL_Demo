@@ -93,7 +93,6 @@ namespace Crave
 		{
 			Ref<Mesh> PMesh{};
 			bool HasTextures{ true };
-			//bool NormalsOut { true };
 			glm::vec4 Color{ 1.f, 0.f, 1.f, 1.f }; //magenta
 
 			void Draw(int drawID, const glm::mat4& modelMat)
@@ -120,18 +119,7 @@ namespace Crave
 			bool	  Enabled{ true };
 			bool	  IsDynamic{ false };
 			unsigned  ShaderIndex{};
-			//float	  Brightness{ 1.f };
-			//float	  Radius{};
-
-			//bool	  _UpdatedLastFrame{ false };
-
-			
-			//void SetEnabled(bool enabled)
-			//{
-			//	Enabled = enabled;
-			//	/*if (!enabled)
-			//		Renderer::EraseLightDataAt(ShaderIndex);*/
-			//}
+		
 			
 			void UpdateViewMat(const glm::mat4& transform);
 

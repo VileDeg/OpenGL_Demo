@@ -51,7 +51,6 @@ namespace Crave
 		{
 			std::string code;
 			unsigned id;
-			//bool found = false;
 		};
 
 		std::unordered_map<Type, ShaderTypeData> m_Data;

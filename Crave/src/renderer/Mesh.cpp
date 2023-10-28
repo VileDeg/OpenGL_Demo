@@ -27,7 +27,6 @@ namespace Crave
             for (auto& p : paths)
             {
                 m_Textures[type].push_back(CreateRef<Texture>(p));
-                //m_HasTextures = true;
             }
         }
     }
@@ -57,7 +56,6 @@ namespace Crave
             for (auto& p : paths)
             {
                 m_Textures[type].push_back(CreateRef<Texture>(p, false));
-                //m_HasTextures = true;
             }
         }
     }

@@ -65,7 +65,6 @@ namespace Crave
 		unsigned Id()      const { return m_Id; }
 		unsigned Slot()    const { return m_BoundSlot; }
 		int		 Target()  const { return m_Target; }
-		//Type	 GetType() const { return m_Type; }
 		
 		Texture(const Texture&) = delete;
 		Texture(Texture&& t) = delete;
@@ -75,7 +74,6 @@ namespace Crave
 		int		 m_Target = -1;
 		unsigned m_BoundSlot{};
 		unsigned m_Id{};
-		//Type	 m_Type;
 
 	private:
 		friend class cereal::access;

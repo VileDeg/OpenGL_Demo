@@ -34,7 +34,6 @@ namespace Crave
 			default:
 				return{ nullptr, 0, 0 };
 			}
-			//ASSERT(false, "GetData error.");
 			LOG_ERROR("GetData error.");
 		}
 

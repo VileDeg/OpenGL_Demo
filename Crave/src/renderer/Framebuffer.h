@@ -33,15 +33,6 @@ namespace Crave
 		Framebuffer(Config config);
 		~Framebuffer() {}
 
-		//unsignedm_IntColorAttachmentId
-		/*unsigned GetIntegerColorAttachmentId() const
-		{
-			for (auto& ca : m_ColorAttachments)
-			{
-				if (ca.)
-			}
-			return m_ColorAttachments[index].Id();
-		}*/
 		Ref<Texture> GetDepthAttachment() { return m_DepthAttachment; }
 		unsigned GetColorAttachmentId(unsigned index) const
 		{
@@ -49,8 +40,6 @@ namespace Crave
 			return m_ColorAttachments[index]->Id();
 		}
 		void Invalidate(glm::vec2 newDimensions);
-		/*void AttachDepthCubemap(const unsigned textureId,
-			const unsigned textureWidth, const unsigned textureHeight);*/
 
 		int ReadPixelInt(unsigned x, unsigned y);
 		void ClearIntAttachment(int clearVal);

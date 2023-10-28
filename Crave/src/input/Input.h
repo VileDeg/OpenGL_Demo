@@ -28,13 +28,7 @@ namespace Crave
 		void Init();
 
 		void ProcessInput(int key, int action);
-		//void ProcessCameraInput(GLFWwindow* handle);
 		void KeybindBindAction(KeybindName kbName, Keybind::actionType func);
-		//void SetCameraKeybind(const std::string& name, Key keyCode,
-		//	KeyEvent eventType, Keybind::actionType func);
 		void UIDisplayControlsConfig(bool* p_open, ImGuiWindowFlags panelFlags);
-
-		//void SaveControls();
-		//void LoadControls();
 	}
 }

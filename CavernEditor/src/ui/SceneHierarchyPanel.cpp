@@ -305,7 +305,7 @@ namespace Crave
 	}
 
 #define PRESTRING(x) (#x)
-	//#define STRING(x) #(PRESTRING(x))
+
 #define ADD_COMPONENT_BTN(entity, compname, boolname) do { \
 		if (!entity.HasComponent<compname>()) \
 		{ \
@@ -395,8 +395,6 @@ namespace Crave
 							magic_enum::enum_name(types[1]).data(),
 							magic_enum::enum_name(types[2]).data() };
 
-						/*for (int i = 0; i < numtypes; ++i)
-							items[i] = magic_enum::enum_name(types[i]).data();*/
 						static int curr = 0;
 						ImGui::Combo("Type", &curr, items, IM_ARRAYSIZE(items));
 						if (types[curr] != li.Data.type)

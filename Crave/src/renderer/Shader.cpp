@@ -23,10 +23,10 @@ namespace Crave
 	void Shader::ParseIncludes(std::string& code, std::string filename)
 	{
 		char error[256] = {'\0'};
-		//std::string linefile = filename; //BASE_SHADER_PATH + 
+		
 		char* newstr = stb_include_string(
 			code.c_str(), nullptr, BASE_SHADER_PATH,
-			nullptr, error); //const_cast<char*>(linefile.c_str())
+			nullptr, error);
 		code = newstr;
 		free(newstr);
 		if (error[0] != '\0')
@@ -97,7 +97,7 @@ namespace Crave
 						DEBUG_BREAK("ERROR::SHADER::TYPE_NOT_SPECIFIED: {}", line);
 						return;
 					}
-					//m_Data[type].found = true;
+					
 				}
 				else
 				{

@@ -10,7 +10,6 @@ namespace Crave
         : m_Front(glm::vec3(0.0f, 0.0f, -1.0f)), m_MovementSpeed(SPEED),
         m_MouseSensitivity(SENSITIVITY), m_Zoom(ZOOM),
         m_Position(position), m_WorldUp(up), m_Yaw(yaw), m_Pitch(pitch),
-        //m_NearPlane(NEAR_PLANE), m_FarPlane(FAR_PLANE),
         m_ViewMat(glm::lookAt(m_Position, m_Position + m_Front, m_Up)),
         m_IsPerspective(isPerspective)
     {

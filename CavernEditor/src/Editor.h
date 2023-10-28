@@ -12,7 +12,5 @@ namespace Crave
 		void Run();
 		void SaveSceneAs();
 		void LoadScene();
-		/*const Camera& GetCamera();
-		const Scene&  GetActiveScene();*/
 	};
 }

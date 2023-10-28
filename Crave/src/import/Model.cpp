@@ -27,8 +27,6 @@ namespace Crave
         {
             std::string path = BASE_MODEL_PATH + shortPath;
             Assimp::Importer importer;
-            //importer.SetPropertyInteger(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0); //< Get rid of $AssimpFbx$_PreRotation nodes
-            //importer.SetPropertyInteger(AI_CONFIG_FBX_CONVERT_TO_M, 0); //< Convert FBX cm to m.
             const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate |
                 aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
             if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -39,7 +37,6 @@ namespace Crave
             m_Directory = path.substr(0, path.find_last_of('/') + 1);
             std::cout << "Dir: " << m_Directory << '\n';
 
-            //aiMatrix4x4 transform = scene->mRootNode->mTransformation;
             m_NodeData = processNode(scene->mRootNode, scene);
 
             std::cout << "Finished loading model at path :" << path << ".\n";
@@ -59,7 +56,6 @@ namespace Crave
             {
                 aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
                 nodeData.meshes.push_back(processMesh(mesh, scene, node->mTransformation));
-                //m_Meshes.push_back(processMesh(mesh, scene, node->mTransformation));
             }
 
             for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -73,20 +69,13 @@ namespace Crave
         {
             std::vector<Mesh::Vertex> vertices;
             std::vector<unsigned int> indices;
-            //std::unordered_map<TexType, const char*> textures;
 
             for (unsigned int i = 0; i < mesh->mNumVertices; i++)
             {
                 Mesh::Vertex vertex;
                 glm::vec3 vector;
                 // positions
-                /*glm::mat4 tf;
-                for (int i = 0; i < 4; ++i)
-                    for (int j = 0; j < 4; ++j)
-                        tf[i][j] = nodeTransform[i][j];*/
                 auto v = mesh->mVertices[i];
-                /*glm::vec4 gv = { v.x, v.y, v.z, 1.0f };
-                glm::vec4 vert = gv * tf;*/
                 vector.x = v.x; //vert
                 vector.y = v.y; //vert
                 vector.z = v.z; //vert
@@ -142,8 +131,7 @@ namespace Crave
             }
             // process materials
             aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-            /*aiColor3D color(0.f, 0.f, 0.f);
-            material->Get(AI_MATKEY_COLOR_DIFFUSE, color);*/
+           
 
             // 1. diffuse maps
             std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE);

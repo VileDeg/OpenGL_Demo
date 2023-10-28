@@ -74,7 +74,7 @@ namespace Crave
 		m_Target = (int)config.target;
 
 		glGenTextures(1, &m_Id);
-		//glCreateTextures(m_Target, 1, &m_Id);
+		
 		glBindTexture(m_Target, m_Id);
 
 		switch (config.target)

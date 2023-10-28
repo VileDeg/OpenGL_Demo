@@ -65,7 +65,6 @@ namespace Crave
 		unsigned AddNewLight(const LightData& data);
 
 		void SubmitLightData(const LightData& data, unsigned index);
-		//void UpdateLightPosition(const float pos[3], const unsigned lightIndex);
 
 		void Init(Ref<Framebuffer> viewportfb, unsigned width, unsigned height);
 		void ClearState();
@@ -83,9 +82,6 @@ namespace Crave
 		glm::mat4& GetSpotLightProjMat();
 
 		void OnImGuiRender();
-
-		/*constexpr const int LIGHT_MIN_RADIUS = 1.f;
-		constexpr const int LIGHT_MAX_RADIUS = 15.f;*/
 
 		constexpr const int LIGHT_MAX_BRIGHTNESS = 10.f;
 	};

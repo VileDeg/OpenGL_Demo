@@ -366,3 +366,4 @@ FodyWeavers.xsd
 **/bin/
 **/bin-int/
 !/vendor/**
+Crave.sln

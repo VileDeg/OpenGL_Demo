@@ -35,8 +35,4 @@
       <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="res\shaders\defs.glsl" />
-    <None Include="res\shaders\shadowMapping.glsl" />
-  </ItemGroup>
 </Project>
